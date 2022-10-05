@@ -2,8 +2,8 @@ from . import __version__ as app_version
 
 app_name = "church_management"
 app_title = "Church Management"
-app_publisher = "jeomar.bayoguina@gmail.com"
-app_description = "Manages Tithes/Offering/Mission Collections and Church Membership"
+app_publisher = "Jeomar Bayoguina"
+app_description = "Manage Church Collections and Membership"
 app_email = "jeomar.bayoguina@gmail.com"
 app_license = "MIT"
 

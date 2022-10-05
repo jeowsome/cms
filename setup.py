@@ -9,8 +9,8 @@ from church_management import __version__ as version
 setup(
 	name="church_management",
 	version=version,
-	description="Manages Tithes/Offering/Mission Collections and Church Membership",
-	author="jeomar.bayoguina@gmail.com",
+	description="Manage Church Collections and Membership",
+	author="Jeomar Bayoguina",
 	author_email="jeomar.bayoguina@gmail.com",
 	packages=find_packages(),
 	zip_safe=False,
