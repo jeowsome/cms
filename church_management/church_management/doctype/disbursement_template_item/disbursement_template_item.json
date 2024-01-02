@@ -1,0 +1,57 @@
+{
+ "actions": [],
+ "autoname": "autoincrement",
+ "creation": "2023-09-05 17:30:54.083265",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "disbursed_for",
+  "disbursed_to",
+  "disbursed_amount",
+  "disbursement_purpose"
+ ],
+ "fields": [
+  {
+   "fieldname": "disbursed_for",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Disbursement For",
+   "options": "Church Worker",
+   "reqd": 1
+  },
+  {
+   "fieldname": "disbursed_to",
+   "fieldtype": "Link",
+   "label": "Disbursed To",
+   "options": "Church Worker"
+  },
+  {
+   "fieldname": "disbursed_amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "disbursement_purpose",
+   "fieldtype": "Select",
+   "label": "Purpose",
+   "options": "Allowance\nRegular Activity\nTransportation\nMission Support\nRent\nUnplanned\nDigital\nMaintenance\nGovernment",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2023-09-05 17:37:19.926389",
+ "modified_by": "Administrator",
+ "module": "Church Management",
+ "name": "Disbursement Template Item",
+ "naming_rule": "Autoincrement",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

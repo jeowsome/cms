@@ -1,0 +1,96 @@
+{
+ "actions": [],
+ "autoname": "format:{envelope_number}",
+ "creation": "2021-06-20 15:11:28.064812",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "member_number",
+  "envelope_number",
+  "firstname",
+  "lastname",
+  "birthday",
+  "address",
+  "contact_number",
+  "email_address",
+  "member_since"
+ ],
+ "fields": [
+  {
+   "fieldname": "member_number",
+   "fieldtype": "Data",
+   "label": "Member Number"
+  },
+  {
+   "fieldname": "envelope_number",
+   "fieldtype": "Data",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "label": "Envelope Number"
+  },
+  {
+   "fieldname": "firstname",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Firstname"
+  },
+  {
+   "fieldname": "lastname",
+   "fieldtype": "Data",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "label": "Lastname"
+  },
+  {
+   "fieldname": "birthday",
+   "fieldtype": "Date",
+   "label": "Birthday"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Data",
+   "label": "Address"
+  },
+  {
+   "fieldname": "contact_number",
+   "fieldtype": "Data",
+   "label": "Contact Number"
+  },
+  {
+   "fieldname": "email_address",
+   "fieldtype": "Data",
+   "label": "Email Address"
+  },
+  {
+   "fieldname": "member_since",
+   "fieldtype": "Data",
+   "label": "Member Since"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2022-10-05 15:43:08.115014",
+ "modified_by": "Administrator",
+ "module": "Church Management",
+ "name": "Church Member",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

@@ -1,0 +1,131 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "creation": "2022-01-07 15:25:16.097698",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "date_recorded",
+  "disbursement_template",
+  "column_break_2",
+  "month_recorded",
+  "year_recorded",
+  "week_recorded",
+  "section_break_2",
+  "disbursed",
+  "section_break_4",
+  "total_amount_disbursed",
+  "column_break_6",
+  "total_disbursed",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "default": "Today",
+   "fieldname": "date_recorded",
+   "fieldtype": "Date",
+   "label": "Date Recorded",
+   "read_only": 1
+  },
+  {
+   "fieldname": "disbursed",
+   "fieldtype": "Table",
+   "label": "Disbursed To:",
+   "options": "Disbursement Item"
+  },
+  {
+   "fieldname": "total_amount_disbursed",
+   "fieldtype": "Currency",
+   "label": "Total Amount Disbursed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_disbursed",
+   "fieldtype": "Int",
+   "label": "Total Disbursed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Disbursement",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_2",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_4",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "month_recorded",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Month ",
+   "options": "January\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember",
+   "reqd": 1
+  },
+  {
+   "fieldname": "year_recorded",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Year",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "week_recorded",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Week",
+   "options": "1\n2\n3\n4\n5",
+   "reqd": 1
+  },
+  {
+   "fieldname": "disbursement_template",
+   "fieldtype": "Link",
+   "label": "Disbursement Template",
+   "options": "Disbursement Template"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2023-09-05 17:42:53.522417",
+ "modified_by": "Administrator",
+ "module": "Church Management",
+ "name": "Disbursement",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

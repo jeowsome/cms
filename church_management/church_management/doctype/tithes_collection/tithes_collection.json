@@ -1,0 +1,79 @@
+{
+ "actions": [],
+ "creation": "2021-06-25 19:56:19.768395",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "number",
+  "first_name",
+  "last_name",
+  "amount",
+  "column_break_5",
+  "account_type",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fetch_from": "number.firstname",
+   "fieldname": "first_name",
+   "fieldtype": "Data",
+   "label": "First Name",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "number.lastname",
+   "fieldname": "last_name",
+   "fieldtype": "Data",
+   "label": "Last Name",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "tithes_number.envelope_number",
+   "fieldname": "number",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Tithes Number",
+   "options": "Church Member"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Tithes Amount"
+  },
+  {
+   "fieldname": "column_break_5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Cash",
+   "fieldname": "account_type",
+   "fieldtype": "Select",
+   "label": "Account Type",
+   "options": "Cash\nBank\nGCash"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Tithes Collection",
+   "print_hide": 1,
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2021-09-05 23:22:45.348876",
+ "modified_by": "Administrator",
+ "module": "Church Management",
+ "name": "Tithes Collection",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

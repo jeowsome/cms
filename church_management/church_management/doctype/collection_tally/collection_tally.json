@@ -1,0 +1,59 @@
+{
+ "actions": [],
+ "creation": "2021-06-25 20:00:15.303706",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "denum_name",
+  "column_break_4",
+  "denomination",
+  "quantity",
+  "total"
+ ],
+ "fields": [
+  {
+   "fetch_from": "denum_name.denomination",
+   "fieldname": "denomination",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Denomination",
+   "precision": "2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "quantity",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Quantity"
+  },
+  {
+   "fieldname": "total",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Total",
+   "precision": "2"
+  },
+  {
+   "fieldname": "denum_name",
+   "fieldtype": "Link",
+   "label": "Denomination Name",
+   "options": "Denomination"
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2022-01-07 17:26:13.421430",
+ "modified_by": "Administrator",
+ "module": "Church Management",
+ "name": "Collection Tally",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
