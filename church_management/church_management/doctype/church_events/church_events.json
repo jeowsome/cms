@@ -1,0 +1,201 @@
+{
+    "actions": [],
+    "allow_guest_to_view": 1,
+    "allow_import": 1,
+    "autoname": "autoincrement",
+    "creation": "2024-01-02 20:38:36.912327",
+    "default_view": "Calendar",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+        "event_name",
+        "repeats_every",
+        "budget",
+        "van_req",
+        "to_announce",
+        "all_day",
+        "is_moved",
+        "status",
+        "event_from",
+        "event_to",
+        "column_break_fnpx",
+        "event_date",
+        "new_date",
+        "until",
+        "new_date_until",
+        "event_tag",
+        "route",
+        "color"
+    ],
+    "fields": [
+        {
+            "fieldname": "event_name",
+            "fieldtype": "Data",
+            "label": "Event Name"
+        },
+        {
+            "fieldname": "event_date",
+            "fieldtype": "Date",
+            "label": "Event Date",
+            "read_only_depends_on": "eval: doc.status === \"Moved\""
+        },
+        {
+            "fieldname": "event_tag",
+            "fieldtype": "Table MultiSelect",
+            "label": "Event Tag",
+            "options": "Event Tag"
+        },
+        {
+            "fieldname": "column_break_fnpx",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "route",
+            "fieldtype": "Data",
+            "hidden": 1,
+            "label": "Route"
+        },
+        {
+            "default": "Once Only",
+            "fieldname": "repeats_every",
+            "fieldtype": "Select",
+            "label": "Repeats every",
+            "options": "Monthly - Every 1st Sunday\nMonthly - Every Last Sunday\nOnce Only\nWeekly\nWeekly Except Last Sunday"
+        },
+        {
+            "fieldname": "budget",
+            "fieldtype": "Currency",
+            "label": "Budget Alloted",
+            "precision": "2"
+        },
+        {
+            "default": "0",
+            "fieldname": "van_req",
+            "fieldtype": "Check",
+            "label": "Van Required"
+        },
+        {
+            "default": "1",
+            "fieldname": "to_announce",
+            "fieldtype": "Check",
+            "label": "Include Announcement"
+        },
+        {
+            "default": "Upcoming",
+            "fieldname": "status",
+            "fieldtype": "Select",
+            "label": "Status",
+            "options": "Done\nMoved\nCancelled\nUpcoming"
+        },
+        {
+            "fieldname": "until",
+            "fieldtype": "Date",
+            "label": "Event Until",
+            "read_only_depends_on": "eval: doc.status === \"Moved\""
+        },
+        {
+            "default": "1",
+            "fieldname": "all_day",
+            "fieldtype": "Check",
+            "label": "All Day",
+            "options": "1"
+        },
+        {
+            "fieldname": "color",
+            "fieldtype": "Color",
+            "hidden": 1
+        },
+        {
+            "depends_on": "eval: doc.is_moved == 1",
+            "fieldname": "event_from",
+            "fieldtype": "Link",
+            "label": "Event From",
+            "options": "Church Events"
+        },
+        {
+            "depends_on": "eval: doc.status === \"Moved\"",
+            "fieldname": "event_to",
+            "fieldtype": "Link",
+            "label": "Event Moved To",
+            "options": "Church Events"
+        },
+        {
+            "depends_on": "eval: doc.status === \"Moved\"",
+            "fieldname": "new_date",
+            "fieldtype": "Date",
+            "label": "New Event Date",
+            "mandatory_depends_on": "eval: doc.status === \"Moved\""
+        },
+        {
+            "depends_on": "eval: doc.status === \"Moved\"",
+            "fieldname": "new_date_until",
+            "fieldtype": "Date",
+            "label": "New Event Until",
+            "mandatory_depends_on": "eval: doc.status === \"Moved\""
+        },
+        {
+            "default": "0",
+            "depends_on": "eval: doc.status === \"Moved\"",
+            "fieldname": "is_moved",
+            "fieldtype": "Check",
+            "label": "Moved"
+        }
+    ],
+    "force_re_route_to_default_view": 1,
+    "index_web_pages_for_search": 1,
+    "is_calendar_and_gantt": 1,
+    "is_published_field": "route",
+    "links": [],
+    "modified": "2024-01-08 19:46:10.485705",
+    "modified_by": "Administrator",
+    "module": "Church Management",
+    "name": "Church Events",
+    "naming_rule": "Autoincrement",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        },
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "Church Facilitator",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": [
+        {
+            "color": "Green",
+            "title": "Upcoming"
+        },
+        {
+            "color": "Yellow",
+            "title": "Done"
+        },
+        {
+            "color": "Red",
+            "title": "Cancelled"
+        },
+        {
+            "color": "Gray",
+            "title": "Moved"
+        }
+    ]
+}
