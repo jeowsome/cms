@@ -40,6 +40,7 @@
   "no_of_tithes",
   "no_of_offering",
   "no_of_mission",
+  "coins_total",
   "tally_total",
   "column_break_23",
   "tithes_total_cls",
@@ -332,12 +333,19 @@
    "fieldtype": "Currency",
    "label": "Cash Difference",
    "read_only": 1
+  },
+  {
+   "fieldname": "coins_total",
+   "fieldtype": "Currency",
+   "label": "Coins Total",
+   "read_only": 1
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-09-05 16:28:46.859171",
+ "modified": "2025-07-05 14:40:02.998552",
  "modified_by": "Administrator",
  "module": "Church Management",
  "name": "Collection",
@@ -356,6 +364,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

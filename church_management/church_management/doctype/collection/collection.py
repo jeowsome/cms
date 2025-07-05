@@ -4,7 +4,7 @@
 import frappe
 from frappe.model.document import Document
 from operator import itemgetter
-
+from frappe.utils import flt
 
 class Collection(Document):
 
@@ -35,10 +35,19 @@ class Collection(Document):
 
 	def compute_tally_total(self):
 		total = 0
+		coins_total = 0
 		for i in self.get('collection_tally'):
 			total += i.total
+			if i.denum_name in ('20', '10', '5', '1', '0.25'):
+				if i.denum_name == '20':
+					coins_total += flt(i.denomination *  i.quantity_coins)
+					continue
+				coins_total += flt(i.denomination *  i.quantity)
 
-		return total
+		return {
+			'tally_total': total,
+			'coins_total': coins_total
+		}
 
 	def validate(self):
 		tithes = self.compute_total('tithes_collection')
@@ -60,7 +69,10 @@ class Collection(Document):
 		self.no_of_offering = offering.get('cash_count')
 		self.no_of_offering_cls = offering.get('cls_count')
 
-		self.tally_total = self.compute_tally_total()
+		tally_total = self.compute_tally_total()
+
+		self.tally_total = tally_total.get('tally_total')
+		self.coins_total = tally_total.get('coins_total')
 
 		self.grand_total = sum((self.tithes_total or 0,
 								self.mission_total or 0,

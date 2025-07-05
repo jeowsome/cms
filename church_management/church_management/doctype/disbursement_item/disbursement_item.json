@@ -95,7 +95,7 @@
    "fieldtype": "Select",
    "label": "Activity Type",
    "mandatory_depends_on": "eval: doc.purpose === 'Regular Activity';",
-   "options": "\nSunday School\nDiscipleship - Boys\nDiscipleship - Girls\nDiscipleship - Men\nLadies Visitation\nColSPro Regular Fellowship\nJuniors Fellowship"
+   "options": "\nSunday School\nDiscipleship - Boys\nDiscipleship - Girls\nDiscipleship - Men\nLadies Visitation\nColSPro Regular Fellowship\nJuniors Fellowship\nMusic Team Practice\nLadies Everybody's Birthday"
   },
   {
    "fieldname": "signature",
@@ -106,13 +106,14 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-01-19 11:50:05.409050",
+ "modified": "2025-07-05 14:27:31.179867",
  "modified_by": "Administrator",
  "module": "Church Management",
  "name": "Disbursement Item",
  "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
