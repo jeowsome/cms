@@ -1,0 +1,57 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-07-10 11:17:42.373572",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "date_donated",
+  "amount_donated",
+  "column_break_hjmz",
+  "donation_type",
+  "description"
+ ],
+ "fields": [
+  {
+   "fieldname": "date_donated",
+   "fieldtype": "Date",
+   "label": "Date Donated"
+  },
+  {
+   "fieldname": "amount_donated",
+   "fieldtype": "Currency",
+   "label": "Amount Donated"
+  },
+  {
+   "fieldname": "column_break_hjmz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Cash",
+   "fieldname": "donation_type",
+   "fieldtype": "Select",
+   "label": "Donation Type",
+   "options": "Cash\nGCash"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text",
+   "label": "Description"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-07-10 11:19:37.074237",
+ "modified_by": "Administrator",
+ "module": "Church Management",
+ "name": "Donation Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

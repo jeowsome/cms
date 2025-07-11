@@ -185,3 +185,38 @@ app_license = "MIT"
 # auth_hooks = [
 #	"church_management.auth.validate"
 # ]
+
+fixtures = [
+    {
+        "dt": "Role",
+        "filters": [
+            [
+                "name", "in", [
+                    "Donation Creator",
+                    "Donation Editor"
+                ]
+            ]
+        ]
+    },
+    {
+        "dt": "Workspace",
+        "filters": [
+            [
+                "name", "in", [
+                "JBC CMS"
+                ]
+            ]
+        ]
+    },
+    {
+        "dt": "DocType",
+        "filters": [
+            [
+                "name", "in", [
+                    "Donation Item",
+                    "Donation"
+                ]
+            ]
+        ]
+    }
+]
