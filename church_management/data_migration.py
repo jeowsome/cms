@@ -89,17 +89,29 @@ def import_module_data(module_name):
             print(f"Importing {len(data)} records for {doctype}...")
             
             for doc_data in data:
-                doc_data["doctype"] = doctype
-                
-                # Check if exists
-                if frappe.db.exists(doctype, doc_data.get("name")):
-                    doc = frappe.get_doc(doctype, doc_data.get("name"))
-                    doc.update(doc_data)
-                    doc.save(ignore_permissions=True)
-                else:
-                    doc = frappe.get_doc(doc_data)
-                    # We often need to insert with exact name
-                    doc.insert(ignore_permissions=True, set_name=doc_data.get("name"), set_child_names=False)
+                try:
+                    doc_data["doctype"] = doctype
+                    name = doc_data.get("name")
+                    
+                    # Remove metadata fields to avoid version and permission errors
+                    for field in ["modified", "creation", "modified_by", "owner", "idx"]:
+                        if field in doc_data:
+                            del doc_data[field]
+                        
+                    # Check if exists
+                    if frappe.db.exists(doctype, name):
+                        doc = frappe.get_doc(doctype, name)
+                        doc.update(doc_data)
+                        doc.flags.ignore_version = True
+                        doc.flags.ignore_links = True
+                        doc.save(ignore_permissions=True)
+                    else:
+                        doc = frappe.get_doc(doc_data)
+                        doc.flags.ignore_version = True
+                        doc.flags.ignore_links = True
+                        doc.insert(ignore_permissions=True, set_name=name, set_child_names=False)
+                except Exception as e:
+                    print(f"Error importing {doctype} {doc_data.get('name')}: {e}")
             
         except Exception as e:
             print(f"Error importing {doctype}: {e}")
