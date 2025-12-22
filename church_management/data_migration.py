@@ -20,18 +20,9 @@ def export_module_data(module_name):
     data_path = get_data_path(module_name)
     print(f"Exporting data for module '{module_name}' to {data_path}...")
 
-<<<<<<< HEAD
-    # Get all DocTypes in the module
-    doctypes = frappe.get_all("DocType", filters={"module": module_name, "issingle": 0, "custom": 1}, pluck="name")
-    # Also include standard doctypes if needed, currently filtering by custom=1 might skip standard ones.
-    # The user said "Get all doctype under that module". Usually this means Custom DocTypes or standard ones where they added data.
-    # Let's adjust to get ALL DocTypes for the module, but filter out Single types.
-    doctypes = frappe.get_all("DocType", filters={"module": module_name, "issingle": 0}, pluck="name")
-=======
     # Get all DocTypes in the module, excluding Single doctypes and Child Tables (istable=1)
     # Child tables are exported within their parent documents.
     doctypes = frappe.get_all("DocType", filters={"module": module_name, "issingle": 0, "istable": 0}, pluck="name")
->>>>>>> 6c29744 (data migration)
 
     if not doctypes:
         print(f"No DocTypes found for module: {module_name}")
@@ -42,10 +33,6 @@ def export_module_data(module_name):
             # Check if table exists to avoid errors on virtual doctypes or similar issues
             if not frappe.db.table_exists(doctype):
                 continue
-<<<<<<< HEAD
-                
-            docs = frappe.get_all(doctype, fields="*")
-=======
             
             # Fetch all record names
             names = frappe.get_all(doctype, pluck="name")
@@ -54,7 +41,6 @@ def export_module_data(module_name):
                 # get_doc returns the full document with child tables
                 docs.append(frappe.get_doc(doctype, name).as_dict())
 
->>>>>>> 6c29744 (data migration)
             if not docs:
                 continue
 
@@ -103,14 +89,7 @@ def import_module_data(module_name):
             print(f"Importing {len(data)} records for {doctype}...")
             
             for doc_data in data:
-<<<<<<< HEAD
-                # remove some fields that shouldn't be blindly overwritten if they cause issues, 
-                # but usually for restoration we want everything. 
-                # However, 'modified', 'creation', 'owner' might be overwritten by system 
-                # unless we force them (which get_doc().insert normally overrides).
-=======
                 doc_data["doctype"] = doctype
->>>>>>> 6c29744 (data migration)
                 
                 # Check if exists
                 if frappe.db.exists(doctype, doc_data.get("name")):
