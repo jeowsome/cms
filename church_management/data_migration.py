@@ -1,0 +1,107 @@
+
+import frappe
+import json
+import os
+from frappe.model.document import Document
+from frappe.utils import get_site_path
+
+def get_data_path(module_name):
+    # Path: /workspace/development/frappe-bench/apps/church_management/church_management/data
+    app_path = frappe.get_app_path("church_management")
+    data_path = os.path.join(app_path, "data", module_name)
+    if not os.path.exists(data_path):
+        os.makedirs(data_path)
+    return data_path
+
+def export_module_data(module_name):
+    """
+    Exports all documents for all DocTypes in the specified module to JSON files.
+    """
+    data_path = get_data_path(module_name)
+    print(f"Exporting data for module '{module_name}' to {data_path}...")
+
+    # Get all DocTypes in the module
+    doctypes = frappe.get_all("DocType", filters={"module": module_name, "issingle": 0, "custom": 1}, pluck="name")
+    # Also include standard doctypes if needed, currently filtering by custom=1 might skip standard ones.
+    # The user said "Get all doctype under that module". Usually this means Custom DocTypes or standard ones where they added data.
+    # Let's adjust to get ALL DocTypes for the module, but filter out Single types.
+    doctypes = frappe.get_all("DocType", filters={"module": module_name, "issingle": 0}, pluck="name")
+
+    if not doctypes:
+        print(f"No DocTypes found for module: {module_name}")
+        return
+
+    for doctype in doctypes:
+        try:
+            # Check if table exists to avoid errors on virtual doctypes or similar issues
+            if not frappe.db.table_exists(doctype):
+                continue
+                
+            docs = frappe.get_all(doctype, fields="*")
+            if not docs:
+                continue
+
+            # Handle datetime serialization
+            json_data = json.dumps(docs, default=str, indent=4)
+            
+            file_path = os.path.join(data_path, f"{doctype}.json")
+            with open(file_path, "w") as f:
+                f.write(json_data)
+            
+            print(f"Exported {len(docs)} records for {doctype}")
+            
+        except Exception as e:
+            print(f"Error exporting {doctype}: {e}")
+
+    print("Export completed.")
+
+def import_module_data(module_name):
+    """
+    Imports data from JSON files for the specified module.
+    """
+    data_path = get_data_path(module_name)
+    print(f"Importing data for module '{module_name}' from {data_path}...")
+
+    if not os.path.exists(data_path):
+        print("Data directory not found.")
+        return
+
+    files = [f for f in os.listdir(data_path) if f.endswith(".json")]
+    
+    if not files:
+        print("No JSON files found to import.")
+        return
+
+    for filename in files:
+        doctype = filename.replace(".json", "")
+        file_path = os.path.join(data_path, filename)
+        
+        try:
+            with open(file_path, "r") as f:
+                data = json.load(f)
+            
+            if not data:
+                continue
+
+            print(f"Importing {len(data)} records for {doctype}...")
+            
+            for doc_data in data:
+                # remove some fields that shouldn't be blindly overwritten if they cause issues, 
+                # but usually for restoration we want everything. 
+                # However, 'modified', 'creation', 'owner' might be overwritten by system 
+                # unless we force them (which get_doc().insert normally overrides).
+                
+                # Check if exists
+                if frappe.db.exists(doctype, doc_data.get("name")):
+                    doc = frappe.get_doc(doctype, doc_data.get("name"))
+                    doc.update(doc_data)
+                    doc.save(ignore_permissions=True)
+                else:
+                    doc = frappe.get_doc(doc_data)
+                    # We often need to insert with exact name
+                    doc.insert(ignore_permissions=True, set_name=doc_data.get("name"), set_child_names=False)
+            
+        except Exception as e:
+            print(f"Error importing {doctype}: {e}")
+
+    print("Import completed.")
