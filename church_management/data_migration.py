@@ -80,6 +80,14 @@ def import_module_data(module_name):
         file_path = os.path.join(data_path, filename)
         
         try:
+            # Skip if doctype is a child table or doesn't exist
+            if not frappe.db.table_exists(doctype):
+                continue
+                
+            if frappe.get_meta(doctype).istable:
+                print(f"Skipping child table {doctype}")
+                continue
+
             with open(file_path, "r") as f:
                 data = json.load(f)
             
@@ -104,11 +112,13 @@ def import_module_data(module_name):
                         doc.update(doc_data)
                         doc.flags.ignore_version = True
                         doc.flags.ignore_links = True
+                        doc.flags.ignore_validate_update_after_submit = True
                         doc.save(ignore_permissions=True)
                     else:
                         doc = frappe.get_doc(doc_data)
                         doc.flags.ignore_version = True
                         doc.flags.ignore_links = True
+                        doc.flags.ignore_validate_update_after_submit = True
                         doc.insert(ignore_permissions=True, set_name=name, set_child_names=False)
                 except Exception as e:
                     print(f"Error importing {doctype} {doc_data.get('name')}: {e}")
