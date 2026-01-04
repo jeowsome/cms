@@ -1,0 +1,220 @@
+{
+    "actions": [],
+    "creation": "2025-01-01 00:00:00.000000",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+        "defaults_section",
+        "cost_center_mapping",
+        "default_cost_center",
+        "default_income_account",
+        "default_expense_account",
+        "income_accounts_section",
+        "tithes_income_account",
+        "offering_income_account",
+        "mission_income_account",
+        "benevolence_income_account",
+        "loose_income_account",
+        "sunday_school_income_account",
+        "white_gift_income_account",
+        "fund_accounts_section",
+        "tithes_cash_account",
+        "tithes_cashless_account",
+        "offering_cash_account",
+        "offering_cashless_account",
+        "mission_cash_account",
+        "mission_cashless_account",
+        "benevolence_cash_account",
+        "benevolence_cashless_account",
+        "loose_cash_account",
+        "loose_cashless_account",
+        "sunday_school_cash_account",
+        "white_gift_cash_account",
+        "white_gift_cashless_account"
+    ],
+    "fields": [
+        {
+            "fieldname": "defaults_section",
+            "fieldtype": "Section Break",
+            "label": "Defaults"
+        },
+        {
+            "fieldname": "cost_center_mapping",
+            "fieldtype": "Table",
+            "label": "Cost Center Mapping",
+            "options": "Church Cost Center Mapping",
+            "description": "Override automatic Department matching"
+        },
+        {
+            "fieldname": "default_cost_center",
+            "fieldtype": "Link",
+            "label": "Default Cost Center",
+            "options": "Cost Center"
+        },
+        {
+            "description": "Fallback income account",
+            "fieldname": "default_income_account",
+            "fieldtype": "Link",
+            "label": "Default Income Account",
+            "options": "Account"
+        },
+        {
+            "description": "Default expense account",
+            "fieldname": "default_expense_account",
+            "fieldtype": "Link",
+            "label": "Default Expense Account",
+            "options": "Account"
+        },
+        {
+            "fieldname": "income_accounts_section",
+            "fieldtype": "Section Break",
+            "label": "Income Accounts (Credit)"
+        },
+        {
+            "fieldname": "tithes_income_account",
+            "fieldtype": "Link",
+            "label": "Tithes Income Account (4101)",
+            "options": "Account"
+        },
+        {
+            "fieldname": "offering_income_account",
+            "fieldtype": "Link",
+            "label": "Offering Income Account (4102)",
+            "options": "Account"
+        },
+        {
+            "fieldname": "mission_income_account",
+            "fieldtype": "Link",
+            "label": "Mission Income Account (4103)",
+            "options": "Account"
+        },
+        {
+            "fieldname": "benevolence_income_account",
+            "fieldtype": "Link",
+            "label": "Benevolence Income Account (4105)",
+            "options": "Account"
+        },
+        {
+            "fieldname": "loose_income_account",
+            "fieldtype": "Link",
+            "label": "Loose Income Account (4104)",
+            "options": "Account"
+        },
+        {
+            "fieldname": "sunday_school_income_account",
+            "fieldtype": "Link",
+            "label": "Sunday School Income Account (4106)",
+            "options": "Account"
+        },
+        {
+            "fieldname": "white_gift_income_account",
+            "fieldtype": "Link",
+            "label": "White Gift Income Account (4107)",
+            "options": "Account"
+        },
+        {
+            "fieldname": "fund_accounts_section",
+            "fieldtype": "Section Break",
+            "label": "Wallet/Asset Accounts (Debit)"
+        },
+        {
+            "fieldname": "tithes_cash_account",
+            "fieldtype": "Link",
+            "label": "Tithes Cash Account",
+            "options": "Account"
+        },
+        {
+            "fieldname": "tithes_cashless_account",
+            "fieldtype": "Link",
+            "label": "Tithes Cashless Account",
+            "options": "Account"
+        },
+        {
+            "fieldname": "offering_cash_account",
+            "fieldtype": "Link",
+            "label": "Offering Cash Account",
+            "options": "Account"
+        },
+        {
+            "fieldname": "offering_cashless_account",
+            "fieldtype": "Link",
+            "label": "Offering Cashless Account",
+            "options": "Account"
+        },
+        {
+            "fieldname": "mission_cash_account",
+            "fieldtype": "Link",
+            "label": "Mission Cash Account",
+            "options": "Account"
+        },
+        {
+            "fieldname": "mission_cashless_account",
+            "fieldtype": "Link",
+            "label": "Mission Cashless Account",
+            "options": "Account"
+        },
+        {
+            "fieldname": "benevolence_cash_account",
+            "fieldtype": "Link",
+            "label": "Benevolence Cash Account",
+            "options": "Account"
+        },
+        {
+            "fieldname": "benevolence_cashless_account",
+            "fieldtype": "Link",
+            "label": "Benevolence Cashless Account",
+            "options": "Account"
+        },
+        {
+            "fieldname": "loose_cash_account",
+            "fieldtype": "Link",
+            "label": "Loose Cash Account",
+            "options": "Account"
+        },
+        {
+            "fieldname": "loose_cashless_account",
+            "fieldtype": "Link",
+            "label": "Loose Cashless Account",
+            "options": "Account"
+        },
+        {
+            "fieldname": "sunday_school_cash_account",
+            "fieldtype": "Link",
+            "label": "Sunday School Cash Account",
+            "options": "Account"
+        },
+        {
+            "fieldname": "white_gift_cash_account",
+            "fieldtype": "Link",
+            "label": "White Gift Cash Account",
+            "options": "Account"
+        },
+        {
+            "fieldname": "white_gift_cashless_account",
+            "fieldtype": "Link",
+            "label": "White Gift Cashless Account",
+            "options": "Account"
+        }
+    ],
+    "issingle": 1,
+    "modified": "2025-01-01 00:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "Church Management",
+    "name": "Church Management Settings",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "print": 1,
+            "read": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 1
+}

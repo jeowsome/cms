@@ -1,0 +1,32 @@
+[
+ {
+  "benevolence_cash_account": "Benevolence Cash - NTC",
+  "benevolence_cashless_account": "Benevolence Cashless - NTC",
+  "benevolence_income_account": "Benevolence Income - NTC",
+  "cost_center_mapping": [],
+  "default_cost_center": "Pasig General - NTC",
+  "default_expense_account": "Ministry Program Expenses - NTC",
+  "default_income_account": "Church Income - NTC",
+  "docstatus": 0,
+  "doctype": "Church Management Settings",
+  "loose_cash_account": "General Cash - NTC",
+  "loose_cashless_account": "General Cashless - NTC",
+  "loose_income_account": "Loose Income - NTC",
+  "mission_cash_account": "Mission Cash - NTC",
+  "mission_cashless_account": "Mission Cashless - NTC",
+  "mission_income_account": "Mission Income - NTC",
+  "modified": "2025-12-27 22:49:58.316088",
+  "name": "Church Management Settings",
+  "offering_cash_account": "General Cash - NTC",
+  "offering_cashless_account": "General Cashless - NTC",
+  "offering_income_account": "Offering Income - NTC",
+  "sunday_school_cash_account": "General Cash - NTC",
+  "sunday_school_income_account": "Sunday School Income - NTC",
+  "tithes_cash_account": "General Cash - NTC",
+  "tithes_cashless_account": "General Cashless - NTC",
+  "tithes_income_account": "Tithes Income - NTC",
+  "white_gift_cash_account": "White Gift Cash - NTC",
+  "white_gift_cashless_account": "White Gift Cashless - NTC",
+  "white_gift_income_account": "White Gift Income - NTC"
+ }
+]

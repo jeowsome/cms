@@ -17,13 +17,21 @@
   "tally_total",
   "amended_from",
   "column_break_dmqw",
-  "difference"
+  "difference",
+  "journal_entry"
  ],
  "fields": [
   {
    "fieldname": "year_recorded",
    "fieldtype": "Datetime",
    "label": "Year Recorded"
+  },
+  {
+   "fieldname": "journal_entry",
+   "fieldtype": "Link",
+   "label": "Journal Entry",
+   "options": "Journal Entry",
+   "read_only": 1
   },
   {
    "fieldname": "white_gift_entry",

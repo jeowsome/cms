@@ -1,372 +1,388 @@
 {
- "actions": [],
- "allow_import": 1,
- "creation": "2021-06-25 19:45:18.388469",
- "doctype": "DocType",
- "editable_grid": 1,
- "engine": "InnoDB",
- "field_order": [
-  "date",
-  "column_break_2",
-  "attendees",
-  "section_break_4",
-  "tithes_collection",
-  "offering_collection",
-  "mission_collection",
-  "miscellaneous_collections_section",
-  "benevolence_collection",
-  "loose_collection",
-  "sunday_school_collection",
-  "column_break_11",
-  "benevolence_collection_cls",
-  "loose_collection_cls",
-  "section_break_16",
-  "collection_tally",
-  "all_totals_section",
-  "all_benevolence_total",
-  "all_loose_total",
-  "all_grand_total",
-  "column_break_12",
-  "all_tithes_total",
-  "all_offering_total",
-  "all_mission_total",
-  "cash_totals_column",
-  "tithes_total",
-  "offering_total",
-  "mission_total",
-  "grand_total",
-  "cash_grand_total_difference",
-  "column_break_16",
-  "no_of_tithes",
-  "no_of_offering",
-  "no_of_mission",
-  "coins_total",
-  "tally_total",
-  "column_break_23",
-  "tithes_total_cls",
-  "offering_total_cls",
-  "mission_total_cls",
-  "grand_total_cls",
-  "column_break_26",
-  "no_of_tithes_cls",
-  "no_of_offering_cls",
-  "no_of_mission_cls",
-  "amended_from"
- ],
- "fields": [
-  {
-   "default": "now",
-   "fieldname": "date",
-   "fieldtype": "Datetime",
-   "label": "Date"
-  },
-  {
-   "fieldname": "tithes_collection",
-   "fieldtype": "Table",
-   "label": "Tithes Collection",
-   "options": "Tithes Collection"
-  },
-  {
-   "fieldname": "offering_collection",
-   "fieldtype": "Table",
-   "label": "Offering Collection",
-   "options": "Offering Collection"
-  },
-  {
-   "fieldname": "mission_collection",
-   "fieldtype": "Table",
-   "label": "Mission Collection",
-   "options": "Mission Collection"
-  },
-  {
-   "default": "0",
-   "fieldname": "benevolence_collection",
-   "fieldtype": "Currency",
-   "label": "Benevolence Cash Collection"
-  },
-  {
-   "default": "0",
-   "fieldname": "loose_collection",
-   "fieldtype": "Currency",
-   "label": "Loose Cash Collection"
-  },
-  {
-   "default": "0",
-   "fieldname": "sunday_school_collection",
-   "fieldtype": "Currency",
-   "label": "Sunday School Collection"
-  },
-  {
-   "default": "0",
-   "fieldname": "tithes_total",
-   "fieldtype": "Currency",
-   "label": "Cash Tithes Total",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "offering_total",
-   "fieldtype": "Currency",
-   "label": "Cash Offering Total",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "mission_total",
-   "fieldtype": "Currency",
-   "label": "Cash Mission Total",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "grand_total",
-   "fieldtype": "Currency",
-   "label": "Cash Grand Total",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "no_of_tithes",
-   "fieldtype": "Int",
-   "label": "No. of Cash Tithes",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "no_of_offering",
-   "fieldtype": "Int",
-   "label": "No. of Cash Offering",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "no_of_mission",
-   "fieldtype": "Int",
-   "label": "No. of Cash Mission",
-   "read_only": 1
-  },
-  {
-   "fieldname": "collection_tally",
-   "fieldtype": "Table",
-   "label": "Collection Tally",
-   "options": "Collection Tally"
-  },
-  {
-   "fieldname": "column_break_2",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "section_break_4",
-   "fieldtype": "Tab Break",
-   "label": "Collections"
-  },
-  {
-   "fieldname": "section_break_16",
-   "fieldtype": "Tab Break",
-   "label": "Collection Tally"
-  },
-  {
-   "fieldname": "column_break_16",
-   "fieldtype": "Column Break"
-  },
-  {
-   "default": "0",
-   "fieldname": "tally_total",
-   "fieldtype": "Currency",
-   "label": "Cash Tally Total",
-   "read_only": 1
-  },
-  {
-   "fieldname": "attendees",
-   "fieldtype": "Int",
-   "label": "Attendees"
-  },
-  {
-   "fieldname": "cash_totals_column",
-   "fieldtype": "Section Break",
-   "label": "Cash Totals"
-  },
-  {
-   "collapsible": 1,
-   "fieldname": "column_break_23",
-   "fieldtype": "Section Break",
-   "label": "Cashless Totals"
-  },
-  {
-   "fieldname": "column_break_26",
-   "fieldtype": "Column Break"
-  },
-  {
-   "default": "0",
-   "fieldname": "tithes_total_cls",
-   "fieldtype": "Currency",
-   "label": "Cashlesss Tithes Total",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "offering_total_cls",
-   "fieldtype": "Currency",
-   "label": "Cashlesss Offering Total",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "mission_total_cls",
-   "fieldtype": "Currency",
-   "label": "Cashlesss Mission Total",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "grand_total_cls",
-   "fieldtype": "Currency",
-   "label": "Cashlesss Grand Total",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "no_of_tithes_cls",
-   "fieldtype": "Int",
-   "label": "No. of Cashless Tithes",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "no_of_offering_cls",
-   "fieldtype": "Int",
-   "label": "No. of Cashless Offering",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "no_of_mission_cls",
-   "fieldtype": "Int",
-   "label": "No. of Cashless Mission",
-   "read_only": 1
-  },
-  {
-   "fieldname": "all_totals_section",
-   "fieldtype": "Tab Break",
-   "label": "Collection Totals (Cash + Cashless)"
-  },
-  {
-   "fieldname": "column_break_12",
-   "fieldtype": "Column Break"
-  },
-  {
-   "default": "0",
-   "fieldname": "all_tithes_total",
-   "fieldtype": "Currency",
-   "label": "Tithes Grand Total",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "all_offering_total",
-   "fieldtype": "Currency",
-   "label": "Offering Grand Total",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "all_mission_total",
-   "fieldtype": "Currency",
-   "label": "Mission Grand Total",
-   "read_only": 1
-  },
-  {
-   "fieldname": "miscellaneous_collections_section",
-   "fieldtype": "Tab Break",
-   "label": "Miscellaneous Collections"
-  },
-  {
-   "default": "0",
-   "fieldname": "all_benevolence_total",
-   "fieldtype": "Currency",
-   "label": "Benevolence Grand Total",
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "all_loose_total",
-   "fieldtype": "Currency",
-   "label": "Loose Grand Total",
-   "read_only": 1
-  },
-  {
-   "fieldname": "column_break_11",
-   "fieldtype": "Column Break"
-  },
-  {
-   "default": "0",
-   "fieldname": "benevolence_collection_cls",
-   "fieldtype": "Currency",
-   "label": "Benevolence Cashless Collection"
-  },
-  {
-   "default": "0",
-   "fieldname": "loose_collection_cls",
-   "fieldtype": "Currency",
-   "label": "Loose Cashless Collection"
-  },
-  {
-   "bold": 1,
-   "default": "0",
-   "fieldname": "all_grand_total",
-   "fieldtype": "Currency",
-   "label": "Collection Grand Total (All Collection)",
-   "read_only": 1
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "Collection",
-   "print_hide": 1,
-   "read_only": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "cash_grand_total_difference",
-   "fieldtype": "Currency",
-   "label": "Cash Difference",
-   "read_only": 1
-  },
-  {
-   "fieldname": "coins_total",
-   "fieldtype": "Currency",
-   "label": "Coins Total",
-   "read_only": 1
-  }
- ],
- "grid_page_length": 50,
- "index_web_pages_for_search": 1,
- "is_submittable": 1,
- "links": [],
- "modified": "2025-07-05 14:40:02.998552",
- "modified_by": "Administrator",
- "module": "Church Management",
- "name": "Collection",
- "owner": "Administrator",
- "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  }
- ],
- "row_format": "Dynamic",
- "sort_field": "modified",
- "sort_order": "DESC",
- "states": [],
- "track_changes": 1
+    "actions": [],
+    "allow_import": 1,
+    "creation": "2025-12-22 23:53:53.506981",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "date",
+        "cost_center",
+        "journal_entry",
+        "column_break_2",
+        "attendees",
+        "section_break_4",
+        "tithes_collection",
+        "offering_collection",
+        "mission_collection",
+        "miscellaneous_collections_section",
+        "benevolence_collection",
+        "loose_collection",
+        "sunday_school_collection",
+        "column_break_11",
+        "benevolence_collection_cls",
+        "loose_collection_cls",
+        "section_break_16",
+        "collection_tally",
+        "all_totals_section",
+        "all_benevolence_total",
+        "all_loose_total",
+        "all_grand_total",
+        "column_break_12",
+        "all_tithes_total",
+        "all_offering_total",
+        "all_mission_total",
+        "cash_totals_column",
+        "tithes_total",
+        "offering_total",
+        "mission_total",
+        "grand_total",
+        "cash_grand_total_difference",
+        "column_break_16",
+        "no_of_tithes",
+        "no_of_offering",
+        "no_of_mission",
+        "coins_total",
+        "tally_total",
+        "column_break_23",
+        "tithes_total_cls",
+        "offering_total_cls",
+        "mission_total_cls",
+        "grand_total_cls",
+        "column_break_26",
+        "no_of_tithes_cls",
+        "no_of_offering_cls",
+        "no_of_mission_cls",
+        "amended_from"
+    ],
+    "fields": [
+        {
+            "default": "now",
+            "fieldname": "date",
+            "fieldtype": "Datetime",
+            "label": "Date",
+            "read_only": 1
+        },
+        {
+            "fieldname": "cost_center",
+            "fieldtype": "Link",
+            "label": "Cost Center (Department)",
+            "options": "Cost Center"
+        },
+        {
+            "fieldname": "tithes_collection",
+            "fieldtype": "Table",
+            "label": "Tithes Collection",
+            "options": "Tithes Collection"
+        },
+        {
+            "fieldname": "offering_collection",
+            "fieldtype": "Table",
+            "label": "Offering Collection",
+            "options": "Offering Collection"
+        },
+        {
+            "fieldname": "mission_collection",
+            "fieldtype": "Table",
+            "label": "Mission Collection",
+            "options": "Mission Collection"
+        },
+        {
+            "default": "0",
+            "fieldname": "benevolence_collection",
+            "fieldtype": "Currency",
+            "label": "Benevolence Cash Collection"
+        },
+        {
+            "default": "0",
+            "fieldname": "loose_collection",
+            "fieldtype": "Currency",
+            "label": "Loose Cash Collection"
+        },
+        {
+            "default": "0",
+            "fieldname": "sunday_school_collection",
+            "fieldtype": "Currency",
+            "label": "Sunday School Collection"
+        },
+        {
+            "default": "0",
+            "fieldname": "tithes_total",
+            "fieldtype": "Currency",
+            "label": "Cash Tithes Total",
+            "read_only": 1
+        },
+        {
+            "default": "0",
+            "fieldname": "offering_total",
+            "fieldtype": "Currency",
+            "label": "Cash Offering Total",
+            "read_only": 1
+        },
+        {
+            "default": "0",
+            "fieldname": "mission_total",
+            "fieldtype": "Currency",
+            "label": "Cash Mission Total",
+            "read_only": 1
+        },
+        {
+            "default": "0",
+            "fieldname": "grand_total",
+            "fieldtype": "Currency",
+            "label": "Cash Grand Total",
+            "read_only": 1
+        },
+        {
+            "default": "0",
+            "fieldname": "no_of_tithes",
+            "fieldtype": "Int",
+            "label": "No. of Cash Tithes",
+            "read_only": 1
+        },
+        {
+            "default": "0",
+            "fieldname": "no_of_offering",
+            "fieldtype": "Int",
+            "label": "No. of Cash Offering",
+            "read_only": 1
+        },
+        {
+            "default": "0",
+            "fieldname": "no_of_mission",
+            "fieldtype": "Int",
+            "label": "No. of Cash Mission",
+            "read_only": 1
+        },
+        {
+            "fieldname": "collection_tally",
+            "fieldtype": "Table",
+            "label": "Collection Tally",
+            "options": "Collection Tally"
+        },
+        {
+            "fieldname": "column_break_2",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "section_break_4",
+            "fieldtype": "Tab Break",
+            "label": "Collections"
+        },
+        {
+            "fieldname": "section_break_16",
+            "fieldtype": "Tab Break",
+            "label": "Collection Tally"
+        },
+        {
+            "fieldname": "column_break_16",
+            "fieldtype": "Column Break"
+        },
+        {
+            "default": "0",
+            "fieldname": "tally_total",
+            "fieldtype": "Currency",
+            "label": "Cash Tally Total",
+            "read_only": 1
+        },
+        {
+            "fieldname": "attendees",
+            "fieldtype": "Int",
+            "label": "Attendees"
+        },
+        {
+            "fieldname": "cash_totals_column",
+            "fieldtype": "Section Break",
+            "label": "Cash Totals"
+        },
+        {
+            "collapsible": 1,
+            "fieldname": "column_break_23",
+            "fieldtype": "Section Break",
+            "label": "Cashless Totals"
+        },
+        {
+            "fieldname": "column_break_26",
+            "fieldtype": "Column Break"
+        },
+        {
+            "default": "0",
+            "fieldname": "tithes_total_cls",
+            "fieldtype": "Currency",
+            "label": "Cashlesss Tithes Total",
+            "read_only": 1
+        },
+        {
+            "default": "0",
+            "fieldname": "offering_total_cls",
+            "fieldtype": "Currency",
+            "label": "Cashlesss Offering Total",
+            "read_only": 1
+        },
+        {
+            "default": "0",
+            "fieldname": "mission_total_cls",
+            "fieldtype": "Currency",
+            "label": "Cashlesss Mission Total",
+            "read_only": 1
+        },
+        {
+            "default": "0",
+            "fieldname": "grand_total_cls",
+            "fieldtype": "Currency",
+            "label": "Cashlesss Grand Total",
+            "read_only": 1
+        },
+        {
+            "default": "0",
+            "fieldname": "no_of_tithes_cls",
+            "fieldtype": "Int",
+            "label": "No. of Cashless Tithes",
+            "read_only": 1
+        },
+        {
+            "default": "0",
+            "fieldname": "no_of_offering_cls",
+            "fieldtype": "Int",
+            "label": "No. of Cashless Offering",
+            "read_only": 1
+        },
+        {
+            "default": "0",
+            "fieldname": "no_of_mission_cls",
+            "fieldtype": "Int",
+            "label": "No. of Cashless Mission",
+            "read_only": 1
+        },
+        {
+            "fieldname": "all_totals_section",
+            "fieldtype": "Tab Break",
+            "label": "Collection Totals (Cash + Cashless)"
+        },
+        {
+            "fieldname": "column_break_12",
+            "fieldtype": "Column Break"
+        },
+        {
+            "default": "0",
+            "fieldname": "all_tithes_total",
+            "fieldtype": "Currency",
+            "label": "Tithes Grand Total",
+            "read_only": 1
+        },
+        {
+            "default": "0",
+            "fieldname": "all_offering_total",
+            "fieldtype": "Currency",
+            "label": "Offering Grand Total",
+            "read_only": 1
+        },
+        {
+            "default": "0",
+            "fieldname": "all_mission_total",
+            "fieldtype": "Currency",
+            "label": "Mission Grand Total",
+            "read_only": 1
+        },
+        {
+            "fieldname": "miscellaneous_collections_section",
+            "fieldtype": "Tab Break",
+            "label": "Miscellaneous Collections"
+        },
+        {
+            "default": "0",
+            "fieldname": "all_benevolence_total",
+            "fieldtype": "Currency",
+            "label": "Benevolence Grand Total",
+            "read_only": 1
+        },
+        {
+            "default": "0",
+            "fieldname": "all_loose_total",
+            "fieldtype": "Currency",
+            "label": "Loose Grand Total",
+            "read_only": 1
+        },
+        {
+            "fieldname": "column_break_11",
+            "fieldtype": "Column Break"
+        },
+        {
+            "default": "0",
+            "fieldname": "benevolence_collection_cls",
+            "fieldtype": "Currency",
+            "label": "Benevolence Cashless Collection"
+        },
+        {
+            "default": "0",
+            "fieldname": "loose_collection_cls",
+            "fieldtype": "Currency",
+            "label": "Loose Cashless Collection"
+        },
+        {
+            "bold": 1,
+            "default": "0",
+            "fieldname": "all_grand_total",
+            "fieldtype": "Currency",
+            "label": "Collection Grand Total (All Collection)",
+            "read_only": 1
+        },
+        {
+            "fieldname": "amended_from",
+            "fieldtype": "Link",
+            "label": "Amended From",
+            "no_copy": 1,
+            "options": "Collection",
+            "print_hide": 1,
+            "read_only": 1
+        },
+        {
+            "default": "0",
+            "fieldname": "cash_grand_total_difference",
+            "fieldtype": "Currency",
+            "label": "Cash Difference",
+            "read_only": 1
+        },
+        {
+            "fieldname": "coins_total",
+            "fieldtype": "Currency",
+            "label": "Coins Total",
+            "read_only": 1
+        },
+        {
+            "fieldname": "journal_entry",
+            "fieldtype": "Link",
+            "label": "Journal Entry",
+            "options": "Journal Entry",
+            "read_only": 1
+        }
+    ],
+    "grid_page_length": 50,
+    "index_web_pages_for_search": 1,
+    "is_submittable": 1,
+    "links": [],
+    "modified": "2025-12-23 00:48:14.479152",
+    "modified_by": "Administrator",
+    "module": "Church Management",
+    "name": "Collection",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "row_format": "Dynamic",
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": [],
+    "track_changes": 1
 }

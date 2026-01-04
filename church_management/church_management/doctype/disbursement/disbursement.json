@@ -1,39 +1,43 @@
 {
  "actions": [],
  "allow_import": 1,
- "creation": "2022-01-07 15:25:16.097698",
+ "creation": "2025-12-23 12:10:25.476381",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "date_recorded",
+  "company",
   "disbursement_template",
   "column_break_2",
   "month_recorded",
   "year_recorded",
-  "week_recorded",
-  "section_break_2",
-  "disbursed",
   "section_break_4",
   "total_amount_disbursed",
   "column_break_6",
   "total_disbursed",
-  "amended_from"
+  "amended_from",
+  "journal_entry",
+  "weekly_tab",
+  "week_1_section",
+  "disbursement_item_week_1",
+  "expense_item_week_1",
+  "week_2_section",
+  "disbursement_item_week_2",
+  "expense_item_week_2",
+  "week_3_section",
+  "disbursement_item_week_3",
+  "expense_item_week_3",
+  "week_4_section",
+  "disbursement_item_week_4",
+  "expense_item_week_4",
+  "week_5_section",
+  "disbursement_item_week_5",
+  "expense_item_week_5",
+  "monthly_tab_1",
+  "monthly_expense_items",
+  "monthly_disbursement_items"
  ],
  "fields": [
-  {
-   "default": "Today",
-   "fieldname": "date_recorded",
-   "fieldtype": "Date",
-   "label": "Date Recorded",
-   "read_only": 1
-  },
-  {
-   "fieldname": "disbursed",
-   "fieldtype": "Table",
-   "label": "Disbursed To:",
-   "options": "Disbursement Item"
-  },
   {
    "fieldname": "total_amount_disbursed",
    "fieldtype": "Currency",
@@ -54,10 +58,6 @@
    "options": "Disbursement",
    "print_hide": 1,
    "read_only": 1
-  },
-  {
-   "fieldname": "section_break_2",
-   "fieldtype": "Section Break"
   },
   {
    "fieldname": "section_break_4",
@@ -88,26 +88,145 @@
    "reqd": 1
   },
   {
-   "fieldname": "week_recorded",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Week",
-   "options": "1\n2\n3\n4\n5",
-   "reqd": 1
-  },
-  {
    "fieldname": "disbursement_template",
    "fieldtype": "Link",
    "label": "Disbursement Template",
    "link_filters": "[[\"Disbursement Template\",\"active\",\"=\",1]]",
    "options": "Disbursement Template"
+  },
+  {
+   "fieldname": "journal_entry",
+   "fieldtype": "Link",
+   "label": "Journal Entry",
+   "options": "Journal Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "weekly_tab",
+   "fieldtype": "Tab Break",
+   "label": "Weekly"
+  },
+  {
+   "fieldname": "disbursement_item_week_3",
+   "fieldtype": "Table",
+   "label": "Week 3 Allowances",
+   "options": "Disbursement Week Item"
+  },
+  {
+   "fieldname": "disbursement_item_week_2",
+   "fieldtype": "Table",
+   "label": "Week 2 Allowances",
+   "options": "Disbursement Week Item"
+  },
+  {
+   "fieldname": "disbursement_item_week_5",
+   "fieldtype": "Table",
+   "label": "Week 5 Allowances",
+   "options": "Disbursement Week Item"
+  },
+  {
+   "fieldname": "disbursement_item_week_4",
+   "fieldtype": "Table",
+   "label": "Week 4 Allowances",
+   "options": "Disbursement Week Item"
+  },
+  {
+   "fieldname": "disbursement_item_week_1",
+   "fieldtype": "Table",
+   "label": "Week 1 Allowances",
+   "options": "Disbursement Week Item"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "week_1_section",
+   "fieldtype": "Section Break",
+   "label": "Week 1"
+  },
+  {
+   "fieldname": "expense_item_week_4",
+   "fieldtype": "Table",
+   "label": "Week 4 Expenses",
+   "options": "Disbursement Week Expense Item"
+  },
+  {
+   "fieldname": "expense_item_week_2",
+   "fieldtype": "Table",
+   "label": "Week 2 Expenses",
+   "options": "Disbursement Week Expense Item"
+  },
+  {
+   "fieldname": "expense_item_week_3",
+   "fieldtype": "Table",
+   "label": "Week 3 Expenses",
+   "options": "Disbursement Week Expense Item"
+  },
+  {
+   "fieldname": "expense_item_week_5",
+   "fieldtype": "Table",
+   "label": "Week 5 Expenses",
+   "options": "Disbursement Week Expense Item"
+  },
+  {
+   "fieldname": "expense_item_week_1",
+   "fieldtype": "Table",
+   "label": "Week 1 Expenses",
+   "options": "Disbursement Week Expense Item"
+  },
+  {
+   "fieldname": "monthly_expense_items",
+   "fieldtype": "Table",
+   "label": "Monthly Expenses",
+   "options": "Disbursement Week Expense Item"
+  },
+  {
+   "fieldname": "monthly_disbursement_items",
+   "fieldtype": "Table",
+   "label": "Monthly Mission Support",
+   "options": "Disbursement Week Item"
+  },
+  {
+   "fieldname": "monthly_tab_1",
+   "fieldtype": "Tab Break",
+   "label": "Monthly"
+  },
+  {
+   "default": "nxtech test company",
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "week_2_section",
+   "fieldtype": "Section Break",
+   "label": "Week 2"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "week_3_section",
+   "fieldtype": "Section Break",
+   "label": "Week 3"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "week_4_section",
+   "fieldtype": "Section Break",
+   "label": "Week 4"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "week_5_section",
+   "fieldtype": "Section Break",
+   "label": "Week 5"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-05 14:29:47.688316",
+ "modified": "2026-01-04 01:51:53.738636",
  "modified_by": "Administrator",
  "module": "Church Management",
  "name": "Disbursement",

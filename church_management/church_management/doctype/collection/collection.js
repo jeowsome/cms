@@ -49,6 +49,16 @@ const computeGrandTotal = (frm) => {
 }
 
 frappe.ui.form.on('Collection', {
+    onload: function (frm) {
+        if (!frm.doc.cost_center) {
+            frappe.db.get_single_value('Church Management Settings', 'default_cost_center')
+                .then(value => {
+                    if (value) {
+                        frm.set_value('cost_center', value);
+                    }
+                });
+        }
+    },
     loose_collection: computeGrandTotal,
     loose_collection_cls: computeGrandTotal,
     benevolence_collection: computeGrandTotal,
@@ -57,29 +67,29 @@ frappe.ui.form.on('Collection', {
 });
 
 frappe.ui.form.on('Tithes Collection', {
-    amount:(frm, cdt, cdn) => {
+    amount: (frm, cdt, cdn) => {
         computeTotals(frm, frm.doc.tithes_collection, 'tithes_total', 'no_of_tithes',
             'tithes_total_cls', 'no_of_tithes_cls');
     },
-    tithes_collection_remove:(frm, cdt, cdn) => {
+    tithes_collection_remove: (frm, cdt, cdn) => {
         computeTotals(frm, frm.doc.tithes_collection, 'tithes_total', 'no_of_tithes',
             'tithes_total_cls', 'no_of_tithes_cls');
     },
 });
 
 frappe.ui.form.on('Offering Collection', {
-    amount:(frm, cdt, cdn) => {
+    amount: (frm, cdt, cdn) => {
         computeTotals(frm, frm.doc.offering_collection, 'offering_total', 'no_of_offering',
             'offering_total_cls', 'no_of_offering_cls');
     },
-    offering_collection_remove:(frm, cdt, cdn) => {
+    offering_collection_remove: (frm, cdt, cdn) => {
         computeTotals(frm, frm.doc.offering_collection, 'offering_total', 'no_of_offering',
             'offering_total_cls', 'no_of_offering_cls');
     },
 });
 
 frappe.ui.form.on('Mission Collection', {
-    amount:(frm, cdt, cdn) => {
+    amount: (frm, cdt, cdn) => {
         computeTotals(frm, frm.doc.mission_collection, 'mission_total', 'no_of_mission',
             'mission_total_cls', 'no_of_mission_cls');
     },
@@ -90,7 +100,7 @@ frappe.ui.form.on('Mission Collection', {
 });
 
 frappe.ui.form.on('Collection Tally', {
-    quantity:(frm, cdt, cdn) => {
+    quantity: (frm, cdt, cdn) => {
         const row = locals[cdt][cdn];
         let total = 0;
         const tally = frm.doc.collection_tally;
@@ -104,7 +114,7 @@ frappe.ui.form.on('Collection Tally', {
         frm.refresh_field('collection_tally');
     },
 
-    denomination:(frm, cdt, cdn) => {
+    denomination: (frm, cdt, cdn) => {
         const row = locals[cdt][cdn];
         let total = 0;
         const tally = frm.doc.collection_tally;

@@ -1,121 +1,121 @@
 {
- "actions": [],
- "autoname": "{receiver}-{date_released}-{purpose}",
- "creation": "2022-01-07 15:23:55.505932",
- "doctype": "DocType",
- "editable_grid": 1,
- "engine": "InnoDB",
- "field_order": [
-  "worker_name",
-  "receiver",
-  "disbursed_amount",
-  "column_break_3",
-  "department",
-  "date_released",
-  "source",
-  "section_break_5",
-  "purpose",
-  "activity_type",
-  "remarks",
-  "column_break_7",
-  "signature"
- ],
- "fields": [
-  {
-   "fieldname": "receiver",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Released To(Receiver)",
-   "options": "Church Worker"
-  },
-  {
-   "fieldname": "disbursed_amount",
-   "fieldtype": "Currency",
-   "in_list_view": 1,
-   "label": "Amount",
-   "non_negative": 1,
-   "options": "Currency",
-   "precision": "2"
-  },
-  {
-   "fieldname": "date_released",
-   "fieldtype": "Date",
-   "in_list_view": 1,
-   "label": "Date Released"
-  },
-  {
-   "default": "Allowance",
-   "fieldname": "purpose",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Purpose",
-   "options": "Allowance\nRegular Activity\nTransportation\nMission Support\nRent\nUnplanned\nDigital\nMaintenance\nGovernment\nSpecial Event\nBenevolence",
-   "reqd": 1
-  },
-  {
-   "fieldname": "remarks",
-   "fieldtype": "Text",
-   "label": "Remarks",
-   "mandatory_depends_on": "eval:in_list([\"Special Event\", \"Unplanned\", \"Benevolence\", \"Transportation\", \"Maintenance\"], doc.purpose)"
-  },
-  {
-   "fieldname": "column_break_3",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "section_break_5",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "column_break_7",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "worker_name",
-   "fieldtype": "Link",
-   "label": "Disbursed For(Worker)",
-   "options": "Church Worker"
-  },
-  {
-   "fetch_from": "worker_name.department",
-   "fieldname": "department",
-   "fieldtype": "Data",
-   "label": "Department"
-  },
-  {
-   "default": "Cash",
-   "fieldname": "source",
-   "fieldtype": "Select",
-   "label": "Source",
-   "options": "Cash\nGcash\nBank\nWhite Gift (Cash)"
-  },
-  {
-   "depends_on": "eval: doc.purpose === 'Regular Activity';",
-   "fieldname": "activity_type",
-   "fieldtype": "Select",
-   "label": "Activity Type",
-   "mandatory_depends_on": "eval: doc.purpose === 'Regular Activity';",
-   "options": "\nSunday School\nDiscipleship - Boys\nDiscipleship - Girls\nDiscipleship - Men\nLadies Visitation\nColSPro Regular Fellowship\nJuniors Fellowship\nMusic Team Practice\nLadies Everybody's Birthday"
-  },
-  {
-   "fieldname": "signature",
-   "fieldtype": "Signature",
-   "label": "Signature"
-  }
- ],
- "index_web_pages_for_search": 1,
- "istable": 1,
- "links": [],
- "modified": "2025-07-05 14:27:31.179867",
- "modified_by": "Administrator",
- "module": "Church Management",
- "name": "Disbursement Item",
- "naming_rule": "Expression (old style)",
- "owner": "Administrator",
- "permissions": [],
- "row_format": "Dynamic",
- "sort_field": "modified",
- "sort_order": "DESC",
- "states": [],
- "track_changes": 1
+    "actions": [],
+    "autoname": "{receiver}-{date_released}-{purpose}",
+    "creation": "2022-01-07 15:23:55.505932",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "worker_name",
+        "receiver",
+        "disbursed_amount",
+        "column_break_3",
+        "department",
+        "date_released",
+        "source",
+        "section_break_5",
+        "purpose",
+        "activity_type",
+        "remarks",
+        "column_break_7",
+        "signature"
+    ],
+    "fields": [
+        {
+            "fieldname": "receiver",
+            "fieldtype": "Link",
+            "in_list_view": 1,
+            "label": "Released To(Receiver)",
+            "options": "Church Worker"
+        },
+        {
+            "fieldname": "disbursed_amount",
+            "fieldtype": "Currency",
+            "in_list_view": 1,
+            "label": "Amount",
+            "non_negative": 1,
+            "options": "Currency",
+            "precision": "2"
+        },
+        {
+            "fieldname": "date_released",
+            "fieldtype": "Date",
+            "in_list_view": 1,
+            "label": "Date Released"
+        },
+        {
+            "default": "Allowance",
+            "fieldname": "purpose",
+            "fieldtype": "Select",
+            "in_list_view": 1,
+            "label": "Purpose",
+            "options": "Allowance\nRegular Activity\nTransportation\nMission Support\nRent\nUnplanned\nDigital\nMaintenance\nGovernment\nSpecial Event\nBenevolence",
+            "reqd": 1
+        },
+        {
+            "fieldname": "remarks",
+            "fieldtype": "Text",
+            "label": "Remarks",
+            "mandatory_depends_on": "eval:in_list([\"Special Event\", \"Unplanned\", \"Benevolence\", \"Transportation\", \"Maintenance\"], doc.purpose)"
+        },
+        {
+            "fieldname": "column_break_3",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "section_break_5",
+            "fieldtype": "Section Break"
+        },
+        {
+            "fieldname": "column_break_7",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "worker_name",
+            "fieldtype": "Link",
+            "label": "Disbursed For(Worker)",
+            "options": "Church Worker"
+        },
+        {
+            "fetch_from": "worker_name.department",
+            "fieldname": "department",
+            "fieldtype": "Data",
+            "label": "Department"
+        },
+        {
+            "default": "Cash",
+            "fieldname": "source",
+            "fieldtype": "Select",
+            "label": "Source",
+            "options": "Cash\nGcash\nBank\nWhite Gift (Cash)\nBenevolence\nMission"
+        },
+        {
+            "depends_on": "eval: doc.purpose === 'Regular Activity';",
+            "fieldname": "activity_type",
+            "fieldtype": "Select",
+            "label": "Activity Type",
+            "mandatory_depends_on": "eval: doc.purpose === 'Regular Activity';",
+            "options": "\nSunday School\nDiscipleship - Boys\nDiscipleship - Girls\nDiscipleship - Men\nLadies Visitation\nColSPro Regular Fellowship\nJuniors Fellowship\nMusic Team Practice\nLadies Everybody's Birthday"
+        },
+        {
+            "fieldname": "signature",
+            "fieldtype": "Signature",
+            "label": "Signature"
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "istable": 1,
+    "links": [],
+    "modified": "2025-07-05 14:27:31.179867",
+    "modified_by": "Administrator",
+    "module": "Church Management",
+    "name": "Disbursement Item",
+    "naming_rule": "Expression (old style)",
+    "owner": "Administrator",
+    "permissions": [],
+    "row_format": "Dynamic",
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": [],
+    "track_changes": 1
 }

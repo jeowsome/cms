@@ -1,0 +1,102 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-01-03 02:42:20.561200",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "description",
+  "amount",
+  "received_by",
+  "received_date",
+  "department",
+  "source",
+  "remarks",
+  "status",
+  "purpose",
+  "claim_btn"
+ ],
+ "fields": [
+  {
+   "fieldname": "description",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Description",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Amount",
+   "reqd": 1
+  },
+  {
+   "fieldname": "received_by",
+   "fieldtype": "Link",
+   "label": "Received By",
+   "options": "Church Worker"
+  },
+  {
+   "fieldname": "received_date",
+   "fieldtype": "Date",
+   "label": "Received Date"
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department Name"
+  },
+  {
+   "fieldname": "source",
+   "fieldtype": "Link",
+   "label": "Source",
+   "link_filters": "[[\"Account\",\"is_group\",\"=\",0],[\"Account\",\"account_type\",\"in\",[\"Cash\",\"Bank\"]]]",
+   "options": "Account"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Data",
+   "label": "Remarks"
+  },
+  {
+   "default": "Unclaimed",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Unclaimed\nClaimed"
+  },
+  {
+   "fieldname": "purpose",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Purpose",
+   "options": "Disbursement Purpose"
+  },
+  {
+   "depends_on": "eval:doc.status == 'Unclaimed'",
+   "fieldname": "claim_btn",
+   "fieldtype": "Button",
+   "in_list_view": 1,
+   "label": "Claim",
+   "width": "100"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-01-04 13:04:15.555372",
+ "modified_by": "Administrator",
+ "module": "Church Management",
+ "name": "Disbursement Week Expense Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

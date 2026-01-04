@@ -65,6 +65,10 @@ app_license = "MIT"
 
 # before_install = "church_management.install.before_install"
 # after_install = "church_management.install.after_install"
+after_migrate = [
+    "church_management.setup_accounting.execute",
+    "church_management.populate_purpose.execute"
+]
 
 # Uninstallation
 # ------------
@@ -215,6 +219,26 @@ fixtures = [
                 "name", "in", [
                     "Donation Item",
                     "Donation"
+                ]
+            ]
+        ]
+    },
+    {
+        "dt": "Church Management Settings"
+    },
+    {
+        "dt": "Account",
+        "filters": [
+            [
+                "name", "in", [
+                    "General Cash - NTC",
+                    "General Cashless - NTC",
+                    "Mission Cash - NTC",
+                    "Mission Cashless - NTC",
+                    "Benevolence Cash - NTC",
+                    "Benevolence Cashless - NTC",
+                    "White Gift Cash - NTC",
+                    "White Gift Cashless - NTC"
                 ]
             ]
         ]

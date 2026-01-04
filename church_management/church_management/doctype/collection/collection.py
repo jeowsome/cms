@@ -5,6 +5,7 @@ import frappe
 from frappe.model.document import Document
 from operator import itemgetter
 from frappe.utils import flt
+from collections import defaultdict
 
 class Collection(Document):
 
@@ -96,6 +97,80 @@ class Collection(Document):
 		self.all_offering_total = self.offering_total + self.offering_total_cls
 		self.all_mission_total = self.mission_total + self.mission_total_cls
 		self.cash_grand_total_difference = self.tally_total - self.grand_total
+
+	def on_submit(self):
+		self.make_journal_entry()
+
+	def make_journal_entry(self):
+		settings = frappe.get_single("Church Management Settings")
+		if not settings.default_income_account:
+			return
+
+		je = frappe.new_doc("Journal Entry")
+		je.posting_date = self.date
+		je.voucher_type = "Journal Entry"
+		je.company = frappe.db.get_single_value("Global Defaults", "default_company")
+		
+		accounts = []
+		
+		# Map collection amounts to their respective accounts (Asset and Income)
+		# Structure: Field: (Asset Account, Income Account)
+		mapping = {
+			"tithes_total": (settings.tithes_cash_account, settings.tithes_income_account),
+			"tithes_total_cls": (settings.tithes_cashless_account, settings.tithes_income_account),
+			"offering_total": (settings.offering_cash_account, settings.offering_income_account),
+			"offering_total_cls": (settings.offering_cashless_account, settings.offering_income_account),
+			"mission_total": (settings.mission_cash_account, settings.mission_income_account),
+			"mission_total_cls": (settings.mission_cashless_account, settings.mission_income_account),
+			"benevolence_collection": (settings.benevolence_cash_account, settings.benevolence_income_account),
+			"benevolence_collection_cls": (settings.benevolence_cashless_account, settings.benevolence_income_account),
+			"loose_collection": (settings.loose_cash_account, settings.loose_income_account),
+			"loose_collection_cls": (settings.loose_cashless_account, settings.loose_income_account),
+			"sunday_school_collection": (settings.sunday_school_cash_account, settings.sunday_school_income_account)
+		}
+
+		# Aggregation Dictionaries
+		# Key: (Account, Cost Center), Value: Amount
+		debits = defaultdict(float)
+		credits = defaultdict(float)
+
+		for field, (asset_acc, income_acc) in mapping.items():
+			amount = self.get(field) or 0
+			if amount > 0:
+				# Use specific Cost Center if set on the Collection, else specific default
+				cost_center = self.cost_center or settings.default_cost_center
+
+				# Aggregate Debit (Asset/Wallet)
+				if asset_acc:
+					debits[(asset_acc, cost_center)] += amount
+				
+				# Aggregate Credit (Income)
+				# Use specific income account if set, otherwise default
+				credit_acc = income_acc or settings.default_income_account
+				if credit_acc:
+					credits[(credit_acc, cost_center)] += amount
+		
+		# Construct Accounts List from Aggregated Data
+		for (acc, cc), amt in debits.items():
+			accounts.append({
+				"account": acc,
+				"debit_in_account_currency": amt,
+				"cost_center": cc
+			})
+			
+		for (acc, cc), amt in credits.items():
+			accounts.append({
+				"account": acc,
+				"credit_in_account_currency": amt,
+				"cost_center": cc
+			})
+			
+		if accounts:
+			je.set("accounts", accounts)
+			je.save()
+			je.submit()
+			self.db_set("journal_entry", je.name)
+			frappe.msgprint(frappe._("Journal Entry {0} created.").format(je.name))
 
 
 @frappe.whitelist()

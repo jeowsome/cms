@@ -1,54 +1,108 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "prompt",
+ "autoname": "format: DT - {disbursement_year}",
  "creation": "2023-09-05 17:28:55.153197",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "active",
-  "template_type",
-  "column_break_wsmn",
-  "section_break_2",
-  "disbursement_receivers"
+  "company",
+  "section_break_bzfk",
+  "disbursement_year",
+  "column_break_bbfv",
+  "weekly_tab",
+  "section_break_nhid",
+  "weekly_allowances",
+  "section_break_ljup",
+  "weekly_activity",
+  "monthly_tab",
+  "monthly_disbursement",
+  "monthly_expenses",
+  "mission_support"
  ],
  "fields": [
   {
-   "fieldname": "template_type",
-   "fieldtype": "Select",
-   "label": "Template Type",
-   "options": "Week 1\nWeekly"
-  },
-  {
-   "fieldname": "section_break_2",
+   "fieldname": "section_break_bzfk",
    "fieldtype": "Section Break"
   },
   {
-   "fieldname": "disbursement_receivers",
-   "fieldtype": "Table",
-   "label": "Disburse",
-   "options": "Disbursement Template Item"
+   "fieldname": "section_break_nhid",
+   "fieldtype": "Section Break"
   },
   {
-   "fieldname": "column_break_wsmn",
+   "fieldname": "disbursement_year",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Year",
+   "options": "\nJanuary\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_bbfv",
    "fieldtype": "Column Break"
   },
   {
-   "default": "1",
-   "fieldname": "active",
-   "fieldtype": "Check",
-   "label": "Active"
+   "fieldname": "weekly_tab",
+   "fieldtype": "Tab Break",
+   "label": "Weekly"
+  },
+  {
+   "fieldname": "monthly_tab",
+   "fieldtype": "Tab Break",
+   "label": "Monthly"
+  },
+  {
+   "fieldname": "monthly_disbursement",
+   "fieldtype": "Table",
+   "label": "Monthly Disbursement",
+   "options": "Monthly Disbursement Item"
+  },
+  {
+   "fieldname": "monthly_expenses",
+   "fieldtype": "Table",
+   "label": "Monthly Expenses",
+   "options": "Monthly Expense Item"
+  },
+  {
+   "fieldname": "mission_support",
+   "fieldtype": "Table",
+   "label": "Mission Support",
+   "options": "Mission Support Item"
+  },
+  {
+   "fieldname": "section_break_ljup",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "weekly_allowances",
+   "fieldtype": "Table",
+   "label": "Allowances",
+   "options": "Weekly Allowance Item"
+  },
+  {
+   "fieldname": "weekly_activity",
+   "fieldtype": "Table",
+   "label": "Activity",
+   "options": "Weekly Activity Item"
+  },
+  {
+   "default": "nxtech test company",
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-05 14:28:49.987226",
+ "modified": "2026-01-04 01:11:41.957751",
  "modified_by": "Administrator",
  "module": "Church Management",
  "name": "Disbursement Template",
- "naming_rule": "Set by user",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

@@ -1,8 +1,7 @@
 {
- "app": "Church Management",
  "charts": [],
- "content": "[{\"id\":\"6JEFHqxh8P\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">JBC CMS</span>\",\"col\":12}},{\"id\":\"Y_BBXJBqdW\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Church Events\",\"col\":3}},{\"id\":\"2s2kvDqd1B\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Donations Per Department\",\"col\":3}}]",
- "creation": "2024-01-02 18:27:08.039616",
+ "content": "[{\"id\":\"6JEFHqxh8P\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">JBC CMS</span>\",\"col\":12}},{\"id\":\"Y_BBXJBqdW\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Church Events\",\"col\":3}},{\"id\":\"2s2kvDqd1B\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Donations Per Department\",\"col\":3}},{\"id\":\"CMS_SETTINGS\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Church Management Settings\",\"col\":3}},{\"id\":\"CMS_COLLECTION\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Collection\",\"col\":3}},{\"id\":\"CMS_WHITE_GIFT\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"White Gift\",\"col\":3}},{\"id\":\"CMS_DISBURSEMENT\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Disbursement\",\"col\":3}},{\"id\":\"CMS_DISB_TEMP\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Disbursement Template\",\"col\":3}}]",
+ "creation": "2025-12-22 23:21:25.256319",
  "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
@@ -13,7 +12,7 @@
  "is_hidden": 0,
  "label": "JBC CMS",
  "links": [],
- "modified": "2025-07-11 13:09:34.042001",
+ "modified": "2025-12-22 23:36:13.756139",
  "modified_by": "Administrator",
  "module": "Church Management",
  "name": "JBC CMS",
@@ -40,8 +39,46 @@
    "link_to": "Donation",
    "stats_filter": "[]",
    "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Church Management Settings",
+   "link_to": "Church Management Settings",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Collection",
+   "link_to": "Collection",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "White Gift",
+   "link_to": "White Gift",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Disbursement",
+   "link_to": "Disbursement",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Disbursement Template",
+   "link_to": "Disbursement Template",
+   "stats_filter": "[]",
+   "type": "DocType"
   }
  ],
- "title": "JBC CMS",
- "type": "Workspace"
+ "title": "JBC CMS"
 }
