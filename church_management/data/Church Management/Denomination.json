@@ -1,0 +1,122 @@
+[
+    {
+        "name": "0.25",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 16:56:28.636669",
+        "modified": "2022-10-05 16:56:28.636669",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 67,
+        "denomination": 0.25,
+        "denum_name": "0.25",
+        "doctype": "Denomination"
+    },
+    {
+        "name": "1000",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 16:50:16.898485",
+        "modified": "2022-10-05 16:50:16.898485",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 287,
+        "denomination": 1000.0,
+        "denum_name": "1000",
+        "doctype": "Denomination"
+    },
+    {
+        "name": "500",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 16:50:16.886096",
+        "modified": "2022-10-05 16:50:16.886096",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 295,
+        "denomination": 500.0,
+        "denum_name": "500",
+        "doctype": "Denomination"
+    },
+    {
+        "name": "200",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 16:50:16.874789",
+        "modified": "2022-10-05 16:50:16.874789",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 212,
+        "denomination": 200.0,
+        "denum_name": "200",
+        "doctype": "Denomination"
+    },
+    {
+        "name": "100",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 16:50:16.862837",
+        "modified": "2022-10-05 16:50:16.862837",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 320,
+        "denomination": 100.0,
+        "denum_name": "100",
+        "doctype": "Denomination"
+    },
+    {
+        "name": "50",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 16:50:16.851506",
+        "modified": "2022-10-05 16:50:16.851506",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 311,
+        "denomination": 50.0,
+        "denum_name": "50",
+        "doctype": "Denomination"
+    },
+    {
+        "name": "20",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 16:50:16.840215",
+        "modified": "2022-10-05 16:50:16.840215",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 305,
+        "denomination": 20.0,
+        "denum_name": "20",
+        "doctype": "Denomination"
+    },
+    {
+        "name": "10",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 16:50:16.826882",
+        "modified": "2022-10-05 16:50:16.826882",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 241,
+        "denomination": 10.0,
+        "denum_name": "10",
+        "doctype": "Denomination"
+    },
+    {
+        "name": "5",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 16:50:16.814918",
+        "modified": "2022-10-05 16:50:16.814918",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 267,
+        "denomination": 5.0,
+        "denum_name": "5",
+        "doctype": "Denomination"
+    },
+    {
+        "name": "1",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 16:50:16.803607",
+        "modified": "2022-10-05 16:50:16.803607",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 241,
+        "denomination": 1.0,
+        "denum_name": "1",
+        "doctype": "Denomination"
+    }
+]

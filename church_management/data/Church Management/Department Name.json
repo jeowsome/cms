@@ -1,0 +1,233 @@
+[
+    {
+        "name": "Pasig ColSPro",
+        "owner": "Administrator",
+        "creation": "2025-01-05 20:22:52.524920",
+        "modified": "2025-01-05 20:22:52.524920",
+        "modified_by": "Administrator",
+        "docstatus": 0,
+        "idx": 1,
+        "department_name": "Pasig ColSPro",
+        "doctype": "Department Name"
+    },
+    {
+        "name": "Pasig Music Team",
+        "owner": "Administrator",
+        "creation": "2023-09-08 21:06:22.937659",
+        "modified": "2023-09-08 21:06:22.937659",
+        "modified_by": "Administrator",
+        "docstatus": 0,
+        "idx": 0,
+        "department_name": "Pasig Music Team",
+        "doctype": "Department Name"
+    },
+    {
+        "name": "Pasig Discipleship - Men",
+        "owner": "Administrator",
+        "creation": "2023-09-05 13:51:40.066290",
+        "modified": "2023-09-05 13:51:40.066290",
+        "modified_by": "Administrator",
+        "docstatus": 0,
+        "idx": 0,
+        "department_name": "Pasig Discipleship - Men",
+        "doctype": "Department Name"
+    },
+    {
+        "name": "Pasig Discipleship - Girls",
+        "owner": "Administrator",
+        "creation": "2023-09-05 13:51:05.985010",
+        "modified": "2023-09-05 13:51:05.985010",
+        "modified_by": "Administrator",
+        "docstatus": 0,
+        "idx": 0,
+        "department_name": "Pasig Discipleship - Girls",
+        "doctype": "Department Name"
+    },
+    {
+        "name": "Pasig Discipleship - Boys",
+        "owner": "Administrator",
+        "creation": "2023-09-05 13:49:47.644339",
+        "modified": "2023-09-05 13:49:47.644339",
+        "modified_by": "Administrator",
+        "docstatus": 0,
+        "idx": 0,
+        "department_name": "Pasig Discipleship - Boys",
+        "doctype": "Department Name"
+    },
+    {
+        "name": "Pasig Admin",
+        "owner": "Administrator",
+        "creation": "2023-09-05 13:48:29.033582",
+        "modified": "2023-09-05 13:48:29.033582",
+        "modified_by": "Administrator",
+        "docstatus": 0,
+        "idx": 0,
+        "department_name": "Pasig Admin",
+        "doctype": "Department Name"
+    },
+    {
+        "name": "Pasig General",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 17:07:22.437791",
+        "modified": "2022-10-05 17:07:22.437791",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 0,
+        "department_name": "Pasig General",
+        "doctype": "Department Name"
+    },
+    {
+        "name": "Pasig Men",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 17:07:22.426186",
+        "modified": "2022-10-05 17:07:22.426186",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 0,
+        "department_name": "Pasig Men",
+        "doctype": "Department Name"
+    },
+    {
+        "name": "Pasig Ladies",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 17:07:22.414010",
+        "modified": "2022-10-05 17:07:22.414010",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 2,
+        "department_name": "Pasig Ladies",
+        "doctype": "Department Name"
+    },
+    {
+        "name": "Pasig Young Pro",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 17:07:22.401520",
+        "modified": "2022-10-05 17:07:22.401520",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 0,
+        "department_name": "Pasig Young Pro",
+        "doctype": "Department Name"
+    },
+    {
+        "name": "Pasig Young People",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 17:07:22.389516",
+        "modified": "2022-10-05 17:07:22.389516",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 0,
+        "department_name": "Pasig Young People",
+        "doctype": "Department Name"
+    },
+    {
+        "name": "Pasig Juniors",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 17:07:22.376733",
+        "modified": "2022-10-05 17:07:22.376733",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 0,
+        "department_name": "Pasig Juniors",
+        "doctype": "Department Name"
+    },
+    {
+        "name": "Pasig Sunday School",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 17:07:22.364086",
+        "modified": "2022-10-05 17:07:22.364086",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 1,
+        "department_name": "Pasig Sunday School",
+        "doctype": "Department Name"
+    },
+    {
+        "name": "Cainta General",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 17:07:22.351480",
+        "modified": "2022-10-05 17:07:22.351480",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 1,
+        "department_name": "Cainta General",
+        "doctype": "Department Name"
+    },
+    {
+        "name": "Cainta Men",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 17:07:22.339428",
+        "modified": "2022-10-05 17:07:22.339428",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 0,
+        "department_name": "Cainta Men",
+        "doctype": "Department Name"
+    },
+    {
+        "name": "Cainta Ladies",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 17:07:22.327990",
+        "modified": "2022-10-05 17:07:22.327990",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 0,
+        "department_name": "Cainta Ladies",
+        "doctype": "Department Name"
+    },
+    {
+        "name": "Cainta Young Pro",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 17:07:22.316478",
+        "modified": "2022-10-05 17:07:22.316478",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 0,
+        "department_name": "Cainta Young Pro",
+        "doctype": "Department Name"
+    },
+    {
+        "name": "Cainta Young People",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 17:07:22.304311",
+        "modified": "2022-10-05 17:07:22.304311",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 0,
+        "department_name": "Cainta Young People",
+        "doctype": "Department Name"
+    },
+    {
+        "name": "Cainta Juniors",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 17:07:22.291658",
+        "modified": "2022-10-05 17:07:22.291658",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 0,
+        "department_name": "Cainta Juniors",
+        "doctype": "Department Name"
+    },
+    {
+        "name": "Cainta Sunday School",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 17:07:22.277807",
+        "modified": "2022-10-05 17:07:22.277807",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 0,
+        "department_name": "Cainta Sunday School",
+        "doctype": "Department Name"
+    },
+    {
+        "name": "Missionary",
+        "owner": "jeomar.bayoguina@gmail.com",
+        "creation": "2022-10-05 17:07:22.245408",
+        "modified": "2022-10-05 17:07:22.245408",
+        "modified_by": "jeomar.bayoguina@gmail.com",
+        "docstatus": 0,
+        "idx": 0,
+        "department_name": "Missionary",
+        "doctype": "Department Name"
+    }
+]

@@ -1,0 +1,29 @@
+{% block head_include %}
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>JBC Church Management</title>
+<link rel="stylesheet" href="/assets/church_management/dist/assets/main.css" />
+<style>
+    /* Strip all Frappe chrome for full SPA takeover */
+    html, body { margin: 0; padding: 0; overflow: hidden; height: 100%; }
+    .web-footer, .navbar, .page-header, .page-header-wrapper,
+    .website-footer, footer, .banner, .hero { display: none !important; }
+    [data-page-container], .main-section, .container,
+    .web-content, .main-column {
+        padding: 0 !important; margin: 0 !important;
+        max-width: 100% !important; width: 100% !important;
+        min-height: 100vh !important;
+    }
+    .page-content { padding: 0 !important; }
+    /* Prevent Frappe's body scroll */
+    body > .container { display: contents !important; }
+</style>
+{% endblock %}
+
+{% block page_content %}
+<div id="app"></div>
+<script>
+    window.csrfToken = "{{ csrf_token }}";
+</script>
+<script type="module" src="/assets/church_management/dist/assets/index.js"></script>
+{% endblock %}

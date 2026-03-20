@@ -3,7 +3,7 @@
 
 frappe.ui.form.on('Disbursement Template', {
 	onload: function (frm) {
-		if (frm.is_new() && !frm.doc.company) {
+		if (frm.is_new()) {
 			frm.set_value('company', frappe.defaults.get_user_default("Company"));
 		}
 	},

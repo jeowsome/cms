@@ -14,7 +14,8 @@
   "source",
   "remarks",
   "purpose",
-  "claim_btn"
+  "claim_btn",
+  "is_planned"
  ],
  "fields": [
   {
@@ -75,6 +76,12 @@
    "in_list_view": 1,
    "label": "Claim",
    "width": "100"
+  },
+  {
+   "default": "1",
+   "fieldname": "is_planned",
+   "fieldtype": "Check",
+   "label": "Is Planned"
   }
  ],
  "grid_page_length": 50,

@@ -12,7 +12,8 @@
   "description",
   "column_break_rfto",
   "department",
-  "default_receiver"
+  "default_receiver",
+  "is_planned"
  ],
  "fields": [
   {
@@ -64,6 +65,12 @@
    "label": "Source",
    "link_filters": "[[\"Account\",\"is_group\",\"=\",0],[\"Account\",\"account_type\",\"in\",[\"Cash\",\"Bank\"]]]",
    "options": "Account"
+  },
+  {
+   "default": "1",
+   "fieldname": "is_planned",
+   "fieldtype": "Check",
+   "label": "Is Planned"
   }
  ],
  "grid_page_length": 50,

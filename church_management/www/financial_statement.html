@@ -1,0 +1,281 @@
+{% extends "templates/web.html" %}
+
+{% block title %}JBC Financial Statement{% endblock %}
+
+{% block header %}
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<style>
+    [x-cloak] { display: none !important; }
+    .transition-all { transition: all 0.3s ease-in-out; }
+</style>
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    brand: {
+                        50: '#f0f9ff',
+                        100: '#e0f2fe',
+                        500: '#0ea5e9',
+                        600: '#0284c7',
+                        900: '#0c4a6e',
+                    }
+                }
+            }
+        }
+    }
+</script>
+{% endblock %}
+
+{% block page_content %}
+<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 font-sans" x-data="financialStatement()">
+    
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight sm:text-5xl mb-4">
+                JBC Financial Statement
+            </h1>
+            <p class="text-lg text-gray-500 max-w-2xl mx-auto">
+                {{ selected_year }} Yearly Overview & Dynamic Fund Tracking
+            </p>
+            <div class="mt-6 flex justify-center gap-4">
+                <button @click="downloadExcel()" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Download Disbursement Ledger (Excel)
+                </button>
+            </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
+            <form id="filter-form" method="GET" class="flex flex-col sm:flex-row gap-4 items-end justify-center">
+                <div class="w-full sm:w-48">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Fiscal Year</label>
+                    <select name="year" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm p-2 border bg-gray-100 pointer-events-none text-gray-500">
+                        {% for y in available_years %}
+                            <option value="{{ y }}" {% if y == selected_year %}selected{% endif %}>{{ y }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="w-full sm:w-48">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Select Month</label>
+                    <select name="month" @change="$el.form.submit()" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm p-2 border bg-white cursor-pointer hover:border-brand-500 transition-colors">
+                        <option value="">All Months Summary</option>
+                        {% for m in available_months %}
+                            <option value="{{ m }}" {% if m == selected_month %}selected{% endif %}>{{ m }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="w-full sm:w-48">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Group Highlights By</label>
+                    <select name="group_by" @change="$el.form.submit()" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm p-2 border bg-white cursor-pointer hover:border-brand-500 transition-colors">
+                        {% for opt in group_options %}
+                            <option value="{{ opt }}" {% if opt == group_by %}selected{% endif %}>{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+        </div>
+
+        <!-- Projected Fund Summary (The most important context for the user now) -->
+        <div class="mb-12">
+            <div class="flex items-center gap-2 mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Virtual Fund Summary</h2>
+                <div class="group relative">
+                    <svg class="w-5 h-5 text-gray-400 cursor-help" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <div class="invisible group-hover:visible absolute z-20 w-64 p-2 bg-gray-900 text-white text-xs rounded shadow-lg -translate-y-full mb-1">
+                        Calculated as: All Collections - Claimed Disbursements for {{ selected_year }}. This tracks money allocated to specific purposes regardless of physical bank account.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% if financial_summary and financial_summary['funds'] %}
+                    {% for fund_name, data in financial_summary['funds'].items() %}
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all">
+                    <div class="px-5 py-4 border-b border-gray-50 bg-gray-50/50 flex justify-between items-center">
+                        <span class="font-bold text-gray-700">{{ fund_name }} Fund</span>
+                        <div class="w-2 h-2 rounded-full {% if data.collected - data.disbursed > 0 %}bg-green-400{% else %}bg-amber-400{% endif %}"></div>
+                    </div>
+                    <div class="p-5 flex flex-col gap-3">
+                        <div class="flex justify-between text-xs">
+                            <span class="text-gray-500">Total Collected</span>
+                            <span class="font-semibold text-green-600">₱ {{ "{:,.2f}".format(data.collected or 0) }}</span>
+                        </div>
+                        <div class="flex justify-between text-xs">
+                            <span class="text-gray-500">Total Disbursed</span>
+                            <span class="font-semibold text-red-500">₱ {{ "{:,.2f}".format(data.disbursed or 0) }}</span>
+                        </div>
+                        <div class="pt-3 border-t border-gray-50 flex justify-between items-end">
+                            <span class="text-xs font-medium text-gray-400">Available Balance</span>
+                            <span class="text-xl font-black text-brand-600">₱ {{ "{:,.2f}".format((data.collected or 0) - (data.disbursed or 0)) }}</span>
+                        </div>
+                    </div>
+                </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-span-full p-4 bg-orange-50 text-orange-700 rounded-lg text-sm italic">
+                        No fund summary data available.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Effective Account Balances -->
+        <div class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Effective Account Balances (Cash & Bank)</h2>
+            <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-100">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Account Name</th>
+                            <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Ledger Balance</th>
+                            <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Claimed Disbursements</th>
+                            <th class="px-6 py-3 text-right text-xs font-semibold text-brand-600 uppercase tracking-wider">Available Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        {% for acc in account_balances %}
+                        <tr class="hover:bg-gray-50/50 transition-colors">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="text-sm font-bold text-gray-800">{{ acc.name }}</span>
+                            </td>
+                            <td class="px-6 py-4 text-right whitespace-nowrap text-sm text-gray-600">
+                                ₱ {{ "{:,.2f}".format(acc.ledger_balance or 0) }}
+                            </td>
+                            <td class="px-6 py-4 text-right whitespace-nowrap text-sm text-red-500">
+                                - ₱ {{ "{:,.2f}".format(acc.pending_deductions or 0) }}
+                            </td>
+                            <td class="px-6 py-4 text-right whitespace-nowrap">
+                                <span class="text-lg font-black {% if (acc.effective_balance or 0) < 0 %}text-red-700{% else %}text-brand-600{% endif %}">
+                                    ₱ {{ "{:,.2f}".format(acc.effective_balance or 0) }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <p class="mt-4 text-xs text-gray-400 italic">
+                * Available Balance = Ledger Balance (includes Collections) minus all Claimed Disbursements that haven't been reconciled as bank transactions yet.
+            </p>
+        </div>
+
+        <!-- Monthly Highlights -->
+        <div id="monthly-breakdown" class="space-y-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Monthly Highlight Details</h2>
+                <span class="text-sm text-gray-500 italic">Breakdown of specific ledger entries</span>
+            </div>
+            
+            {% if not monthly_data %}
+            <div class="text-center py-12 bg-white rounded-xl shadow-sm border border-gray-100">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">No data found</h3>
+                <p class="mt-1 text-sm text-gray-500">Adjust filters to see activity.</p>
+            </div>
+            {% endif %}
+
+            {% for month in monthly_data %}
+            <div class="bg-white shadow rounded-xl overflow-hidden border border-gray-100">
+                <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <h3 class="text-xl font-bold text-gray-900">{{ month.month }} {{ selected_year }} Activity</h3>
+                    <div class="flex gap-4">
+                        <div class="text-center sm:text-right">
+                            <p class="text-xs text-gray-500 uppercase tracking-wide">Collections</p>
+                            <p class="text-lg font-bold text-green-600">₱ {{ "{:,.2f}".format((month.cash_collected or 0) + (month.cashless_collected or 0)) }}</p>
+                        </div>
+                        <div class="text-center sm:text-right border-l border-gray-200 pl-4">
+                            <p class="text-xs text-gray-500 uppercase tracking-wide">Disbursements</p>
+                            <p class="text-lg font-bold text-red-600">₱ {{ "{:,.2f}".format(month.total_disbursed or 0) }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6">
+                    {% if month.groups %}
+                    <div class="space-y-4">
+                        {% for group_name, data in month.groups.items() %}
+                        {% set group_id = month.month + "_" + group_name|replace(" ", "_") %}
+                        <div class="border border-gray-100 rounded-lg overflow-hidden transition-all shadow-sm hover:shadow-md">
+                            <button 
+                                @click="toggleGroup('{{ group_id }}')"
+                                class="w-full flex items-center justify-between p-4 bg-white hover:bg-gray-50 transition-colors text-left"
+                            >
+                                <div class="flex items-center gap-3">
+                                    <div class="p-2 rounded-md {% if 'Unknown' in group_name %}bg-orange-50{% else %}bg-brand-50{% endif %}">
+                                        <svg class="w-4 h-4 {% if 'Unknown' in group_name %}text-orange-500{% else %}text-brand-500{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                                    </div>
+                                    <div>
+                                        <span class="text-sm font-bold text-gray-800">{{ group_name }}</span>
+                                        <p class="text-xs text-gray-400">{{ data.entries|length }} items</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <span class="font-bold text-gray-900">₱ {{ "{:,.2f}".format(data.total or 0) }}</span>
+                                    <svg 
+                                        class="w-5 h-5 text-gray-400 transition-transform duration-200"
+                                        :class="isGroupOpen('{{ group_id }}') ? 'rotate-180' : ''"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    >
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
+                            </button>
+                            
+                            <div x-show="isGroupOpen('{{ group_id }}')" x-cloak class="bg-gray-50 border-t border-gray-100 px-4 py-3">
+                                <table class="min-w-full text-xs">
+                                    <thead>
+                                        <tr class="text-left text-gray-400 font-medium border-b border-gray-200">
+                                            <th class="pb-2">Date</th>
+                                            <th class="pb-2">Description</th>
+                                            <th class="pb-2">Received By</th>
+                                            <th class="pb-2 text-right">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-100">
+                                        {% for item in data.entries %}
+                                        <tr class="text-gray-600">
+                                            <td class="py-2 whitespace-nowrap">{{ item.date or 'N/A' }}</td>
+                                            <td class="py-2">{{ item.description }}</td>
+                                            <td class="py-2">{{ item.received_by or '-' }}</td>
+                                            <td class="py-2 text-right font-semibold text-gray-900 whitespace-nowrap">₱ {{ "{:,.2f}".format(item.amount or 0) }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-sm text-gray-500 italic">No disbursement details for this month.</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+            
+        </div>
+    </div>
+</div>
+
+<script>
+    function financialStatement() {
+        return {
+            openGroups: [],
+            toggleGroup(id) {
+                this.openGroups.includes(id) ? this.openGroups = this.openGroups.filter(g => g !== id) : this.openGroups.push(id);
+            },
+            isGroupOpen(id) { return this.openGroups.includes(id); },
+            downloadExcel() {
+                const year = '{{ selected_year }}';
+                window.location.href = `/api/method/church_management.www.financial_statement.download_disbursements_excel?year=${year}`;
+            }
+        }
+    }
+</script>
+{% endblock %}

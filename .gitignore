@@ -5,4 +5,7 @@
 tags
 church_management/docs/current
 node_modules/
-church_management/data/*
+church_management/public/dist/
+church_management/frontend/node_modules/
+church_management/data/*.dual-graph/
+.dual-graph/

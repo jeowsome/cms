@@ -87,7 +87,6 @@
    "options": "Weekly Activity Item"
   },
   {
-   "default": "nxtech test company",
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",

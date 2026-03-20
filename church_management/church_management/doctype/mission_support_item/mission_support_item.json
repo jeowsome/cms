@@ -11,7 +11,9 @@
   "description",
   "column_break_hdbz",
   "default_receiver",
-  "purpose"
+  "purpose",
+  "is_planned",
+  "source"
  ],
  "fields": [
   {
@@ -57,13 +59,25 @@
    "link_filters": "[[\"Disbursement Purpose\",\"active\",\"=\",1]]",
    "options": "Disbursement Purpose",
    "reqd": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "is_planned",
+   "fieldtype": "Check",
+   "label": "Is Planned"
+  },
+  {
+   "fieldname": "source",
+   "fieldtype": "Link",
+   "label": "Source",
+   "options": "Account"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-04 02:07:06.823278",
+ "modified": "2026-03-21 01:41:10.096474",
  "modified_by": "Administrator",
  "module": "Church Management",
  "name": "Mission Support Item",

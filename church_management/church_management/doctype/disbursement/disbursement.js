@@ -7,7 +7,8 @@ frappe.ui.form.on('Disbursement', {
 			let [year, month, date] = frappe.datetime.now_date().split("-")
 			frm.set_value({
 				year_recorded: year,
-				month_recorded: moment(month, 'M').format('MMMM')
+				month_recorded: moment(month, 'M').format('MMMM'),
+				company: frappe.defaults.get_user_default("Company")
 			}).then(() => frm.refresh_fields())
 		}
 	},
@@ -95,6 +96,14 @@ frappe.ui.form.on('Disbursement Week Item', {
 		}
 	},
 
+	received_date(frm, cdt, cdn) {
+		let row = frappe.get_doc(cdt, cdn);
+		if (row.received_date && moment(row.received_date).year() != frm.doc.year_recorded) {
+			frappe.msgprint(__('Please select a date within the year {0}', [frm.doc.year_recorded]));
+			frappe.model.set_value(cdt, cdn, 'received_date', '');
+		}
+	},
+
 	claim_btn(frm, cdt, cdn) {
 		let row = frappe.get_doc(cdt, cdn);
 		if (row.status === 'Claimed') {
@@ -133,20 +142,21 @@ frappe.ui.form.on('Disbursement Week Item', {
 					fieldname: 'received_date',
 					fieldtype: 'Date',
 					reqd: 1,
-					default: frappe.datetime.get_today()
+					default: get_nearest_sunday()
 				}
 			],
 			primary_action_label: __('Confirm Claim'),
 			primary_action(values) {
+				if (moment(values.received_date).year() != frm.doc.year_recorded) {
+					frappe.msgprint(__('Please select a date within the year {0}', [frm.doc.year_recorded]));
+					return;
+				}
+
 				frappe.model.set_value(cdt, cdn, 'received_by', values.received_by);
 				frappe.model.set_value(cdt, cdn, 'received_date', values.received_date);
 				frappe.model.set_value(cdt, cdn, 'status', 'Claimed');
 
 				d.hide();
-
-				// Refresh the specific row/grid if needed, but model set_value usually handles it
-				// Maybe force refresh the layout?
-				// Since we are changing status, the button visibility might change if we used depends_on
 			}
 		});
 
@@ -155,6 +165,14 @@ frappe.ui.form.on('Disbursement Week Item', {
 });
 
 frappe.ui.form.on('Disbursement Week Expense Item', {
+	received_date(frm, cdt, cdn) {
+		let row = frappe.get_doc(cdt, cdn);
+		if (row.received_date && moment(row.received_date).year() != frm.doc.year_recorded) {
+			frappe.msgprint(__('Please select a date within the year {0}', [frm.doc.year_recorded]));
+			frappe.model.set_value(cdt, cdn, 'received_date', '');
+		}
+	},
+
 	claim_btn(frm, cdt, cdn) {
 		let row = frappe.get_doc(cdt, cdn);
 		if (row.status === 'Claimed') {
@@ -192,11 +210,16 @@ frappe.ui.form.on('Disbursement Week Expense Item', {
 					fieldname: 'received_date',
 					fieldtype: 'Date',
 					reqd: 1,
-					default: frappe.datetime.get_today()
+					default: get_nearest_sunday()
 				}
 			],
 			primary_action_label: __('Confirm Claim'),
 			primary_action(values) {
+				if (moment(values.received_date).year() != frm.doc.year_recorded) {
+					frappe.msgprint(__('Please select a date within the year {0}', [frm.doc.year_recorded]));
+					return;
+				}
+
 				frappe.model.set_value(cdt, cdn, 'received_by', values.received_by);
 				frappe.model.set_value(cdt, cdn, 'received_date', values.received_date);
 				frappe.model.set_value(cdt, cdn, 'status', 'Claimed');
@@ -208,3 +231,16 @@ frappe.ui.form.on('Disbursement Week Expense Item', {
 		d.show();
 	}
 });
+
+function get_nearest_sunday() {
+	let today = moment();
+	let last_sunday = moment().day(0);
+	let next_sunday = moment().day(7);
+
+	if (Math.abs(today.diff(last_sunday, 'days')) <= Math.abs(today.diff(next_sunday, 'days'))) {
+		return last_sunday.format('YYYY-MM-DD');
+	} else {
+		return next_sunday.format('YYYY-MM-DD');
+	}
+}
+
