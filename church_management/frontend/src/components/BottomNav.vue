@@ -1,7 +1,32 @@
 <script setup>
 import { RouterLink, useRoute } from "vue-router";
+import { useScroll } from "@vueuse/core";
+import { onMounted, ref, watch } from "vue";
 
 const route = useRoute();
+const scrollArea = ref(null);
+const isVisible = ref(true); // start visible so they aren't confused
+
+onMounted(() => {
+  scrollArea.value = document.getElementById("main-scroll-area");
+});
+
+const { y, directions } = useScroll(scrollArea);
+
+watch(() => directions.bottom, (val) => {
+  // User swiping upward (scrolling down to bottom) -> show nav
+  if (val) isVisible.value = true;
+});
+
+watch(() => directions.top, (val) => {
+  // User swiping downward (scrolling up to top) -> hide nav
+  if (val) isVisible.value = false;
+});
+
+watch(y, (val) => {
+  // Always show if near the top so they aren't trapped
+  if (val < 50) isVisible.value = true;
+});
 
 const navItems = [
   { label: "Disbursements", to: "/disbursements", icon: "wallet" },
@@ -13,7 +38,10 @@ function isActive(path) {
 </script>
 
 <template>
-  <nav class="fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 z-50 safe-bottom">
+  <nav 
+    class="fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 z-[40] safe-bottom transition-transform duration-300 ease-in-out"
+    :class="isVisible ? 'translate-y-0' : 'translate-y-full'"
+  >
     <div class="flex items-center justify-around h-16">
       <RouterLink
         v-for="item in navItems"

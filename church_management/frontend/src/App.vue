@@ -16,7 +16,7 @@ const isMobile = computed(() => width.value < 768);
 
     <!-- Main content area -->
     <main class="flex-1 flex flex-col overflow-hidden">
-      <div class="flex-1 overflow-y-auto" :class="isMobile ? 'pb-16' : ''">
+      <div id="main-scroll-area" class="flex-1 overflow-y-auto" :class="isMobile ? 'pb-16' : ''">
         <RouterView />
       </div>
     </main>

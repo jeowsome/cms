@@ -251,36 +251,38 @@ function onClaimed() {
       </div>
 
       <!-- Tabs + Content -->
-      <div v-if="weeks.length" class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+      <div v-if="weeks.length" class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
         <!-- Scrollable tab bar -->
-        <div class="border-b border-gray-100 overflow-x-auto scrollbar-hide">
-          <div class="flex min-w-max">
+        <div class="border-b border-gray-100 overflow-x-auto scrollbar-hide bg-gray-50/50">
+          <div class="flex w-full px-1 sm:px-2">
             <button
               v-for="tab in tabs"
               :key="tab.key"
               @click="activeTab = tab.key"
-              class="relative px-4 sm:px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 shrink-0"
+              class="relative flex-1 min-w-0 px-2 sm:px-4 py-3.5 sm:py-5 text-sm font-bold whitespace-nowrap transition-all border-b-2 outline-none group"
               :class="
                 activeTab === tab.key
-                  ? 'border-brand-500 text-brand-600'
-                  : 'border-transparent text-gray-400 hover:text-gray-600'
+                  ? 'border-brand-500 text-brand-600 bg-white/60'
+                  : 'border-transparent text-gray-400 hover:text-gray-600 hover:bg-gray-100/50'
               "
             >
-              <span class="sm:hidden">{{ tab.label }}</span>
-              <span class="hidden sm:inline">{{ tab.fullLabel }}</span>
-              <span
-                v-if="tab.countDisplay"
-                class="ml-1.5 text-[10px] px-1.5 py-0.5 rounded-full font-semibold"
-                :class="activeTab === tab.key ? 'bg-brand-100 text-brand-700' : 'bg-gray-100 text-gray-500'"
-              >
-                {{ tab.countDisplay }}
-              </span>
+              <div class="flex flex-col items-center gap-1.5 transition-transform active:scale-95">
+                <span class="sm:hidden text-[13px]">{{ tab.label }}</span>
+                <span class="hidden sm:inline">{{ tab.fullLabel }}</span>
+                <span
+                  v-if="tab.countDisplay"
+                  class="text-[9px] px-2 py-0.5 rounded-full font-black tracking-widest leading-none border"
+                  :class="activeTab === tab.key ? 'bg-brand-50 text-brand-700 border-brand-100' : 'bg-gray-100 text-gray-500 border-gray-200 group-hover:border-gray-300'"
+                >
+                  {{ tab.countDisplay }}
+                </span>
+              </div>
             </button>
           </div>
         </div>
 
         <!-- Tab panels -->
-        <div class="p-3 sm:p-4">
+        <div class="p-4 sm:p-6 min-h-[400px]">
           <!-- Week tabs -->
           <template v-if="activeTab > 0">
             <WeekTab
