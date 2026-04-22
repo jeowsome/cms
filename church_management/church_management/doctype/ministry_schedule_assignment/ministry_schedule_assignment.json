@@ -1,0 +1,64 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2026-04-22 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "sunday_date",
+  "ministry",
+  "column_break_1",
+  "member",
+  "member_name"
+ ],
+ "fields": [
+  {
+   "fieldname": "sunday_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Sunday Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "ministry",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Ministry",
+   "options": "Ministry",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "member",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Member",
+   "options": "Church Member",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "member.firstname",
+   "fieldname": "member_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Member Name",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-04-22 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Church Management",
+ "name": "Ministry Schedule Assignment",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -14,7 +14,11 @@
   "address",
   "contact_number",
   "email_address",
-  "member_since"
+  "member_since",
+  "section_break_ministry",
+  "ministry",
+  "music_team_tag",
+  "music_role_preference"
  ],
  "fields": [
   {
@@ -67,6 +71,33 @@
    "fieldname": "member_since",
    "fieldtype": "Data",
    "label": "Member Since"
+  },
+  {
+   "fieldname": "section_break_ministry",
+   "fieldtype": "Section Break",
+   "label": "Ministry"
+  },
+  {
+   "fieldname": "ministry",
+   "fieldtype": "Table MultiSelect",
+   "label": "Ministry",
+   "options": "Church Member Ministry"
+  },
+  {
+   "depends_on": "eval: (doc.ministry || []).some(r => r.ministry === 'Music Team')",
+   "fieldname": "music_team_tag",
+   "fieldtype": "Table MultiSelect",
+   "label": "Music Team Tag",
+   "options": "Church Member Music Tag"
+  },
+  {
+   "depends_on": "eval: (doc.music_team_tag || []).length > 0",
+   "fieldname": "music_role_preference",
+   "fieldtype": "Table",
+   "label": "Music Role Preference",
+   "options": "Music Role Preference",
+   "cannot_add_rows": 1,
+   "cannot_delete_rows": 1
   }
  ],
  "index_web_pages_for_search": 1,

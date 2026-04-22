@@ -67,7 +67,9 @@ app_license = "MIT"
 # after_install = "church_management.install.after_install"
 after_migrate = [
     "church_management.setup_accounting.execute",
-    "church_management.populate_purpose.execute"
+    "church_management.populate_purpose.execute",
+    "church_management.populate_ministry.execute",
+    "church_management.populate_music_team_tag.execute"
 ]
 
 # Uninstallation

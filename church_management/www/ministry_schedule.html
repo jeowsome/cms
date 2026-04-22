@@ -1,0 +1,257 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<style>
+  /* Tailwind CDN — production apps should use a build step, but this matches the existing financial_statement pattern */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+
+  :root {
+    --brand-50: #f0f9ff; --brand-100: #e0f2fe; --brand-200: #bae6fd;
+    --brand-500: #0ea5e9; --brand-600: #0284c7; --brand-700: #0369a1;
+    --brand-800: #075985; --brand-900: #0c4a6e;
+    --ink-50: #f8fafc; --ink-100: #f1f5f9; --ink-200: #e2e8f0;
+    --ink-300: #cbd5e1; --ink-400: #94a3b8; --ink-500: #64748b;
+    --ink-600: #475569; --ink-700: #334155; --ink-800: #1e293b; --ink-900: #0f172a;
+  }
+
+  .ms-page { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+  .ms-page * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* Hide Frappe navbar/footer for a clean public page */
+  .page-header, .page-header-wrapper { display: none !important; }
+
+  /* Overline — the JBC CMS signature */
+  .overline {
+    font-size: 10px; font-weight: 900; text-transform: uppercase;
+    letter-spacing: 0.2em; color: var(--ink-400);
+  }
+
+  /* Sunday card */
+  .sunday-card {
+    background: #fff; border-radius: 16px;
+    border: 1px solid rgba(226, 232, 240, 0.6);
+    box-shadow: 0 1px 3px rgba(60, 50, 30, 0.08);
+    overflow: hidden;
+  }
+
+  /* Member chip */
+  .member-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 2px 10px 2px 4px; border-radius: 9999px;
+    font-size: 11px; font-weight: 600;
+  }
+  .member-chip .avatar {
+    width: 20px; height: 20px; border-radius: 9999px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 700; background: #fff;
+  }
+
+  /* Ministry row */
+  .ministry-row { display: flex; align-items: flex-start; gap: 12px; }
+  .ministry-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 2px;
+  }
+
+  /* Month picker */
+  .month-select {
+    padding: 6px 12px; font-size: 13px; font-weight: 500;
+    border: 1px solid var(--ink-200); border-radius: 8px;
+    background: #fff; color: var(--ink-700); cursor: pointer;
+    outline: none;
+  }
+  .month-select:focus { border-color: var(--brand-500); box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.15); }
+
+  /* Legend dot */
+  .legend-dot { width: 10px; height: 10px; border-radius: 9999px; flex-shrink: 0; }
+
+  /* Responsive grid */
+  .sunday-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 20px; padding: 0 32px 40px;
+  }
+  @media (max-width: 768px) {
+    .sunday-grid { grid-template-columns: 1fr; padding: 0 16px 32px; }
+    .ms-header { padding: 32px 16px 24px !important; }
+    .ms-header h1 { font-size: 32px !important; }
+    .ms-footer { padding: 20px 16px !important; }
+  }
+
+  /* Color utility classes */
+  .bg-amber-50 { background: #fffbeb; } .text-amber-800 { color: #92400e; } .bg-amber-500 { background: #f59e0b; } .ring-amber-200 { box-shadow: inset 0 0 0 1px #fde68a; }
+  .bg-rose-50 { background: #fff1f2; } .text-rose-800 { color: #9f1239; } .bg-rose-500 { background: #f43f5e; } .ring-rose-200 { box-shadow: inset 0 0 0 1px #fecdd3; }
+  .bg-sky-50 { background: #f0f9ff; } .text-sky-800 { color: #075985; } .bg-sky-500 { background: #0ea5e9; } .ring-sky-200 { box-shadow: inset 0 0 0 1px #bae6fd; }
+  .bg-emerald-50 { background: #ecfdf5; } .text-emerald-800 { color: #065f46; } .bg-emerald-500 { background: #10b981; } .ring-emerald-200 { box-shadow: inset 0 0 0 1px #a7f3d0; }
+  .bg-violet-50 { background: #f5f3ff; } .text-violet-800 { color: #5b21b6; } .bg-violet-500 { background: #8b5cf6; } .ring-violet-200 { box-shadow: inset 0 0 0 1px #ddd6fe; }
+  .bg-indigo-50 { background: #eef2ff; } .text-indigo-800 { color: #3730a3; } .bg-indigo-500 { background: #6366f1; } .ring-indigo-200 { box-shadow: inset 0 0 0 1px #c7d2fe; }
+  .bg-pink-50 { background: #fdf2f8; } .text-pink-800 { color: #9d174d; } .bg-pink-500 { background: #ec4899; } .ring-pink-200 { box-shadow: inset 0 0 0 1px #fbcfe8; }
+  .bg-teal-50 { background: #f0fdfa; } .text-teal-800 { color: #115e59; } .bg-teal-500 { background: #14b8a6; } .ring-teal-200 { box-shadow: inset 0 0 0 1px #99f6e4; }
+  .bg-orange-50 { background: #fff7ed; } .text-orange-800 { color: #9a3412; } .bg-orange-500 { background: #f97316; } .ring-orange-200 { box-shadow: inset 0 0 0 1px #fed7aa; }
+  .bg-cyan-50 { background: #ecfeff; } .text-cyan-800 { color: #155e75; } .bg-cyan-500 { background: #06b6d4; } .ring-cyan-200 { box-shadow: inset 0 0 0 1px #a5f3fc; }
+</style>
+
+<div class="ms-page" style="min-height: 100vh; background: linear-gradient(180deg, #fbf8f1 0%, #f6f1e6 100%);">
+
+  <!-- Hero Header -->
+  <header class="ms-header" style="padding: 40px 32px 32px; text-align: center;">
+    <div style="display: inline-flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+      <span style="width: 32px; height: 1px; background: var(--ink-400);"></span>
+      <span class="overline">Jezreel Baptist Church &middot; Pasig</span>
+      <span style="width: 32px; height: 1px; background: var(--ink-400);"></span>
+    </div>
+
+    <h1 style="font-weight: 700; font-size: 48px; color: var(--ink-900); letter-spacing: -0.02em; margin-top: 0;">
+      Ministry Schedule
+    </h1>
+
+    {% if schedule %}
+    <div style="color: var(--brand-700); font-weight: 500; font-size: 18px; margin-top: 4px;">
+      {{ schedule.month }} {{ schedule.year }}
+    </div>
+    {% endif %}
+
+    <p style="margin-top: 16px; max-width: 560px; margin-left: auto; margin-right: auto; font-style: italic; color: var(--ink-600); font-size: 14px; line-height: 1.6;">
+      "Each of you should use whatever gift you have received to serve others, as faithful stewards of God's grace in its various forms."
+      <span style="display: block; font-size: 11px; font-style: normal; color: var(--ink-400); margin-top: 4px;">1 Peter 4:10</span>
+    </p>
+
+    {% if available_months | length > 1 %}
+    <div style="margin-top: 20px;">
+      <form method="GET" style="display: inline-flex; gap: 8px; align-items: center;">
+        <select name="month" class="month-select" onchange="this.form.submit()">
+          {% for m in available_months %}
+          <option value="{{ m.month }}" {% if schedule and m.month == schedule.month and m.year == schedule.year %}selected{% endif %}>
+            {{ m.month }} {{ m.year }}
+          </option>
+          {% endfor %}
+        </select>
+        <input type="hidden" name="year" value="">
+        <noscript><button type="submit" class="month-select" style="background: var(--brand-600); color: #fff; border-color: var(--brand-600);">Go</button></noscript>
+      </form>
+    </div>
+    <script>
+      // Sync hidden year field from the selected option
+      document.querySelector('.month-select').addEventListener('change', function() {
+        var opt = this.options[this.selectedIndex];
+        var text = opt.textContent.trim().split(' ');
+        document.querySelector('input[name=year]').value = text[text.length - 1];
+        document.querySelector('input[name=month]').value = text.slice(0, -1).join(' ');
+      });
+    </script>
+    {% endif %}
+  </header>
+
+  {% if schedule %}
+  <!-- Sunday Cards Grid -->
+  <div class="sunday-grid">
+    {% for sunday in schedule.sundays %}
+    <article class="sunday-card">
+      <!-- Date block + sermon info -->
+      <div style="padding: 20px 24px; display: flex; align-items: flex-start; gap: 20px; border-bottom: 1px solid var(--ink-100);">
+        <div style="width: 80px; flex-shrink: 0; text-align: center; padding-top: 4px;">
+          <div class="overline" style="color: var(--brand-700);">{{ sunday.month_short }}</div>
+          <div style="font-weight: 700; font-size: 48px; line-height: 1; color: var(--ink-900); margin-top: 4px; font-variant-numeric: tabular-nums;">
+            {{ sunday.day }}
+          </div>
+          <div style="font-size: 11px; font-weight: 500; color: var(--ink-500); margin-top: 4px;">
+            {{ sunday.weekday }}
+          </div>
+        </div>
+        <div style="flex: 1; min-width: 0; padding-top: 4px;">
+          {% if sunday.sermon_title %}
+          <div class="overline">Sermon</div>
+          <h2 style="font-weight: 700; font-size: 20px; color: var(--ink-900); margin-top: 2px; line-height: 1.2;">
+            {{ sunday.sermon_title }}
+          </h2>
+          {% endif %}
+          {% if sunday.sermon_passage %}
+          <div style="font-size: 12px; font-family: monospace; color: var(--ink-500); margin-top: 4px;">
+            {{ sunday.sermon_passage }}
+          </div>
+          {% endif %}
+          {% if sunday.theme %}
+          <span style="display: inline-block; margin-top: 8px; padding: 2px 8px; border-radius: 9999px; background: var(--ink-100); font-size: 10px; font-weight: 600; color: var(--ink-600); text-transform: uppercase; letter-spacing: 0.05em;">
+            {{ sunday.theme }}
+          </span>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Ministry assignments -->
+      <div style="padding: 16px 24px; display: flex; flex-direction: column; gap: 12px;">
+        {% set sunday_date_str = sunday.date | string %}
+        {% for ministry in schedule.ministries %}
+          {% set colors = schedule.ministry_colors.get(ministry, {}) %}
+          {% set members = schedule.assignments.get(sunday_date_str, {}).get(ministry, []) %}
+          {% if members %}
+          <div class="ministry-row">
+            <div class="ministry-icon {{ colors.get('icon_bg', 'bg-sky-50') }}" style="color: inherit;">
+              <svg style="width: 16px; height: 16px;" class="{{ colors.get('text', '') }}" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/>
+              </svg>
+            </div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="display: flex; align-items: baseline; gap: 8px;">
+                <div class="overline">{{ ministry }}</div>
+                <div style="font-size: 10px; color: var(--ink-300); font-variant-numeric: tabular-nums;">&middot; {{ members | length }}</div>
+              </div>
+              <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;">
+                {% for m in members %}
+                <div class="member-chip {{ colors.get('bg', 'bg-sky-50') }} {{ colors.get('ring', '') }}">
+                  <div class="avatar {{ colors.get('text', 'text-sky-800') }}">{{ m.initials }}</div>
+                  <span class="{{ colors.get('text', 'text-sky-800') }}">{{ m.name }}</span>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        {% endfor %}
+
+        {# Show message if no assignments for this Sunday #}
+        {% set sunday_assignments = schedule.assignments.get(sunday_date_str, {}) %}
+        {% if not sunday_assignments %}
+        <div style="font-size: 11px; font-style: italic; color: var(--ink-400); text-align: center; padding: 8px 0;">
+          Schedule to be announced
+        </div>
+        {% endif %}
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+
+  <!-- Legend / Footer -->
+  <footer class="ms-footer" style="border-top: 1px solid rgba(226, 232, 240, 0.6); padding: 24px 32px; background: rgba(255, 255, 255, 0.4);">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; font-size: 11px; color: var(--ink-600);">
+      <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+        {% for ministry in schedule.ministries %}
+          {% set colors = schedule.ministry_colors.get(ministry, {}) %}
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <div class="legend-dot {{ colors.get('dot', 'bg-sky-500') }}"></div>
+            <span>{{ ministry }}</span>
+          </div>
+        {% endfor %}
+      </div>
+      <div style="font-style: italic; color: var(--ink-400);">
+        {% if schedule.published_on %}
+        Updated {{ frappe.utils.format_datetime(schedule.published_on, "MMM d, YYYY") }}
+        {% endif %}
+      </div>
+    </div>
+  </footer>
+
+  {% else %}
+  <!-- Empty state -->
+  <div style="text-align: center; padding: 80px 32px;">
+    <svg style="width: 48px; height: 48px; color: var(--ink-300); margin: 0 auto 16px;" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
+    </svg>
+    <h2 style="font-weight: 700; font-size: 20px; color: var(--ink-900);">No schedule published yet</h2>
+    <p style="font-size: 14px; color: var(--ink-500); margin-top: 8px;">
+      The ministry schedule for the upcoming month will be posted here once finalized.
+    </p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

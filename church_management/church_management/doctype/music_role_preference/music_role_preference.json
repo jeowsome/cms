@@ -1,0 +1,46 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2026-03-28 10:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "music_team_tag",
+  "skill_level"
+ ],
+ "fields": [
+  {
+   "fieldname": "music_team_tag",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Music Team Tag",
+   "options": "Music Team Tag",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "default": "1",
+   "description": "1 is the lowest, 5 is the highest",
+   "fieldname": "skill_level",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Skill Level",
+   "options": "1\n2\n3\n4\n5",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-03-28 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Church Management",
+ "name": "Music Role Preference",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
