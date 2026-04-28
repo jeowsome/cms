@@ -2,41 +2,51 @@ import frappe
 from frappe.utils import getdate, formatdate
 import calendar
 
+_MONTH_INDEX = {name: i for i, name in enumerate(calendar.month_name) if name}
+
 
 def get_context(context):
 	context.no_cache = 1
 	context.show_sidebar = False
 
-	selected_month = frappe.form_dict.get("month", "")
-	selected_year = frappe.form_dict.get("year", "")
+	selected_name = frappe.form_dict.get("schedule", "")
 
-	# Get published schedules for the month picker
+	# Get published schedules for the month picker, sorted most recent first
 	published = frappe.get_all(
 		"Ministry Schedule",
 		filters={"status": "Published"},
 		fields=["name", "month", "year", "published_on"],
-		order_by="year desc, published_on desc",
 	)
+	published.sort(key=lambda p: (p.year, _MONTH_INDEX.get(p.month, 0)), reverse=True)
 
 	available_months = [{"name": p.name, "month": p.month, "year": p.year} for p in published]
 
 	# Determine which schedule to show
 	schedule = None
-	if selected_month and selected_year:
-		matches = [p for p in published if p.month == selected_month and str(p.year) == str(selected_year)]
-		if matches:
-			schedule = frappe.get_doc("Ministry Schedule", matches[0].name)
-	elif published:
-		schedule = frappe.get_doc("Ministry Schedule", published[0].name)
+	if selected_name:
+		match = next((p for p in published if p.name == selected_name), None)
+		if match:
+			schedule = frappe.get_doc("Ministry Schedule", match.name)
+
+	if not schedule and published:
+		# Default to the published schedule nearest to today; on ties prefer current/future over past
+		today = getdate()
+		today_ym = today.year * 12 + today.month
+
+		def distance_key(p):
+			ym = p.year * 12 + _MONTH_INDEX.get(p.month, 0)
+			diff = ym - today_ym
+			return (abs(diff), 0 if diff >= 0 else 1)
+
+		nearest = min(published, key=distance_key)
+		schedule = frappe.get_doc("Ministry Schedule", nearest.name)
 
 	# Build structured data for template
 	schedule_data = None
 	if schedule:
-		# Collect sunday info
-		sundays = []
-		for s in sorted(schedule.sundays, key=lambda x: str(x.sunday_date)):
+		def _service_row(s, service_type):
 			d = getdate(s.sunday_date)
-			sundays.append({
+			return {
 				"date": s.sunday_date,
 				"day": d.day,
 				"weekday": d.strftime("%A"),
@@ -44,29 +54,65 @@ def get_context(context):
 				"theme": s.theme or "",
 				"sermon_title": s.sermon_title or "",
 				"sermon_passage": s.sermon_passage or "",
-			})
+				"type": service_type,
+			}
 
-		# Build assignments grouped by sunday_date -> ministry -> [members]
+		sundays = [_service_row(s, "Sunday")
+			for s in sorted(schedule.sundays, key=lambda x: str(x.sunday_date))]
+		wednesdays = [_service_row(s, "Wednesday")
+			for s in sorted(getattr(schedule, "wednesdays", []) or [], key=lambda x: str(x.sunday_date))]
+
+		# Batch-fetch full names for linked members. member_name on the assignment
+		# row is only firstname (fetch_from supports a single field path), so it's
+		# unreliable as a display name — resolve the Church Member record instead.
+		linked_ids = {a.member for a in schedule.assignments if a.member}
+		member_names = {}
+		if linked_ids:
+			for r in frappe.get_all(
+				"Church Member",
+				filters={"name": ["in", list(linked_ids)]},
+				fields=["name", "firstname", "lastname"],
+			):
+				member_names[r.name] = f"{r.firstname or ''} {r.lastname or ''}".strip()
+
+		# Build assignments grouped by sunday_date -> ministry -> {all/morning/evening: [members]}
 		assignments_map = {}
 		for a in schedule.assignments:
 			sd = str(a.sunday_date)
 			if sd not in assignments_map:
 				assignments_map[sd] = {}
 			if a.ministry not in assignments_map[sd]:
-				assignments_map[sd][a.ministry] = []
+				assignments_map[sd][a.ministry] = {"all": [], "morning": [], "evening": []}
 
-			member = frappe.db.get_value(
-				"Church Member", a.member,
-				["firstname", "lastname"],
-				as_dict=True,
-			)
-			name = f"{member.firstname} {member.lastname}" if member else a.member
-			initials = "".join([p[0].upper() for p in name.split()[:2]])
-			assignments_map[sd][a.ministry].append({
-				"member": a.member,
+			# Linked member → always use the full Member record name.
+			# Guest (no member link) → use the typed member_name as-is.
+			if a.member and member_names.get(a.member):
+				name = member_names[a.member]
+			else:
+				name = (a.member_name or "").strip() or a.member or "Unknown"
+
+			initials = "".join([p[0].upper() for p in name.split()[:2]]) or "?"
+			entry = {
+				"member": a.member or "",
 				"name": name,
 				"initials": initials,
-			})
+				"is_guest": not bool(a.member),
+			}
+			slot = (a.service_time or "").lower()
+			if slot not in ("morning", "evening"):
+				slot = "all"
+			assignments_map[sd][a.ministry][slot].append(entry)
+
+		# Collapse: if Morning + Evening have the same single person, treat as "all"
+		# so the public page shows one name (indicates assignment for both services).
+		for sd, ministries in assignments_map.items():
+			for ministry, slots in ministries.items():
+				m_names = sorted(p["name"] for p in slots["morning"])
+				e_names = sorted(p["name"] for p in slots["evening"])
+				if m_names and m_names == e_names:
+					slots["all"].extend(slots["morning"])
+					slots["morning"] = []
+					slots["evening"] = []
 
 		# Get distinct ministries used in assignments
 		all_ministries = sorted(set(
@@ -76,12 +122,28 @@ def get_context(context):
 		# Ministry color mapping
 		ministry_colors = _get_ministry_colors(all_ministries)
 
+		# Combine Sundays + Wednesdays into chronological week buckets.
+		# Group by ISO week so a Wednesday and the following Sunday share a "Week N".
+		all_services = sorted(sundays + wednesdays, key=lambda s: str(s["date"]))
+		weeks = []
+		current_iso = None
+		for service in all_services:
+			# Attach this service's per-ministry assignments
+			service["assignments_by_ministry"] = assignments_map.get(str(service["date"]), {})
+			iso_week = getdate(service["date"]).isocalendar()[1]
+			if iso_week != current_iso:
+				current_iso = iso_week
+				weeks.append({"number": len(weeks) + 1, "services": []})
+			weeks[-1]["services"].append(service)
+
 		schedule_data = {
 			"name": schedule.name,
 			"month": schedule.month,
 			"year": schedule.year,
 			"published_on": schedule.published_on,
 			"sundays": sundays,
+			"wednesdays": wednesdays,
+			"weeks": weeks,
 			"assignments": assignments_map,
 			"ministries": all_ministries,
 			"ministry_colors": ministry_colors,
@@ -89,8 +151,7 @@ def get_context(context):
 
 	context.schedule = schedule_data
 	context.available_months = available_months
-	context.selected_month = selected_month
-	context.selected_year = selected_year
+	context.selected_name = selected_name
 
 
 def _get_ministry_colors(ministries):

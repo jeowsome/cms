@@ -17,8 +17,38 @@
   .ms-page { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
   .ms-page * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* Hide Frappe navbar/footer for a clean public page */
-  .page-header, .page-header-wrapper { display: none !important; }
+  /* Paint the whole viewport with the cream gradient so the design doesn't
+     sit inside a white/grey Frappe wrapper */
+  html, body {
+    background: linear-gradient(180deg, #fbf8f1 0%, #f6f1e6 100%) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide Frappe navbar, page-header, footer, and neutralize any wrapper background */
+  .navbar, .web-footer, .page-header, .page-header-wrapper,
+  .web-footer-section, footer.web-footer { display: none !important; }
+
+  /* Neutralize Frappe's default web template containers (they have white/grey bg + max-width) */
+  .web-page-container,
+  .page_content,
+  .page-content,
+  main.page_content,
+  main#page-main,
+  .main-section,
+  .page-container,
+  .container,
+  .container-fluid,
+  body > .web-page-content,
+  body > main {
+    background: transparent !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Let the hero/grid stretch edge-to-edge */
+  .ms-page { width: 100%; }
 
   /* Overline — the JBC CMS signature */
   .overline {
@@ -66,16 +96,98 @@
   /* Legend dot */
   .legend-dot { width: 10px; height: 10px; border-radius: 9999px; flex-shrink: 0; }
 
-  /* Responsive grid */
-  .sunday-grid {
-    display: grid; grid-template-columns: repeat(2, 1fr);
-    gap: 20px; padding: 0 32px 40px;
+  /* Per-week section */
+  .week-section { padding: 24px 32px; }
+  .week-section + .week-section {
+    border-top: 1px solid rgba(226, 232, 240, 0.5);
+  }
+  .week-title {
+    font-weight: 700; font-size: 22px; color: var(--ink-900);
+    letter-spacing: 0.04em; text-transform: uppercase;
+    margin-bottom: 20px; text-align: center;
+  }
+  .service-card {
+    background: #fff; border-radius: 16px;
+    border: 1px solid rgba(226, 232, 240, 0.6);
+    box-shadow: 0 1px 3px rgba(60, 50, 30, 0.08);
+    overflow: hidden; margin-bottom: 16px;
+  }
+  .service-header {
+    display: flex; gap: 16px; align-items: center;
+    padding: 16px 20px; border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+    background: rgba(248, 250, 252, 0.6);
+  }
+  .service-type-pill {
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.12em; padding: 3px 10px; border-radius: 9999px;
+  }
+  .service-type-sunday { background: var(--brand-100); color: var(--brand-800); }
+  .service-type-wednesday { background: #f5f3ff; color: #5b21b6; }
+  .ministry-row-public {
+    display: grid; grid-template-columns: minmax(180px, 220px) 1fr;
+    gap: 16px; padding: 12px 20px; align-items: center;
+  }
+  .ministry-row-public + .ministry-row-public { border-top: 1px solid rgba(241, 245, 249, 0.8); }
+  .ministry-row-label {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 700; color: var(--ink-700);
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .ministry-row-members {
+    font-size: 16px; font-weight: 600; color: var(--ink-800); line-height: 1.5;
+  }
+  .ministry-row-members > div + div { margin-top: 2px; }
+  .service-time-tag {
+    display: inline-block; font-size: 9px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    padding: 2px 7px; border-radius: 9999px; vertical-align: middle;
+    margin-right: 4px;
+  }
+  .service-time-morning { background: #fef3c7; color: #92400e; }
+  .service-time-evening { background: #e0e7ff; color: #3730a3; }
+
+  /* Filter bar */
+  .filter-bar {
+    padding: 16px 32px;
+    background: rgba(255, 255, 255, 0.5);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+    display: flex; flex-wrap: wrap; gap: 16px;
+    align-items: center;
+  }
+  .filter-group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .filter-label {
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.12em; color: var(--ink-500); margin-right: 6px;
+  }
+  .filter-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 12px; border-radius: 9999px; cursor: pointer;
+    font-size: 12px; font-weight: 600; color: var(--ink-700);
+    background: #fff; border: 1px solid var(--ink-200);
+    transition: all 0.15s;
+  }
+  .filter-chip:hover { border-color: var(--brand-500); }
+  .filter-chip.active {
+    background: var(--brand-600); color: #fff; border-color: var(--brand-600);
+  }
+  .filter-chip .legend-dot { width: 8px; height: 8px; }
+  .hidden-by-filter { display: none !important; }
+  .sermon-summary {
+    padding: 24px 32px 8px;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+  }
+  .sermon-summary-card {
+    background: rgba(255,255,255,0.7); border-radius: 12px;
+    padding: 14px 18px; border: 1px solid rgba(226,232,240,0.5);
   }
   @media (max-width: 768px) {
-    .sunday-grid { grid-template-columns: 1fr; padding: 0 16px 32px; }
+    .week-section { padding: 20px 16px; }
+    .sermon-summary { grid-template-columns: 1fr; padding: 20px 16px 8px; }
     .ms-header { padding: 32px 16px 24px !important; }
     .ms-header h1 { font-size: 32px !important; }
     .ms-footer { padding: 20px 16px !important; }
+    .filter-bar { padding: 12px 16px; }
+    .ministry-row-public { grid-template-columns: 1fr; gap: 4px; padding: 10px 16px; }
   }
 
   /* Color utility classes */
@@ -119,107 +231,210 @@
     {% if available_months | length > 1 %}
     <div style="margin-top: 20px;">
       <form method="GET" style="display: inline-flex; gap: 8px; align-items: center;">
-        <select name="month" class="month-select" onchange="this.form.submit()">
+        <select name="schedule" class="month-select" onchange="this.form.submit()">
           {% for m in available_months %}
-          <option value="{{ m.month }}" {% if schedule and m.month == schedule.month and m.year == schedule.year %}selected{% endif %}>
+          <option value="{{ m.name }}" {% if schedule and m.name == schedule.name %}selected{% endif %}>
             {{ m.month }} {{ m.year }}
           </option>
           {% endfor %}
         </select>
-        <input type="hidden" name="year" value="">
         <noscript><button type="submit" class="month-select" style="background: var(--brand-600); color: #fff; border-color: var(--brand-600);">Go</button></noscript>
       </form>
     </div>
-    <script>
-      // Sync hidden year field from the selected option
-      document.querySelector('.month-select').addEventListener('change', function() {
-        var opt = this.options[this.selectedIndex];
-        var text = opt.textContent.trim().split(' ');
-        document.querySelector('input[name=year]').value = text[text.length - 1];
-        document.querySelector('input[name=month]').value = text.slice(0, -1).join(' ');
-      });
-    </script>
     {% endif %}
   </header>
 
   {% if schedule %}
-  <!-- Sunday Cards Grid -->
-  <div class="sunday-grid">
+
+  {# Optional: sermon overview row — one card per Sunday showing date + sermon info, so sermon details appear once (not repeated per ministry). #}
+  {% set has_any_sermon = false %}
+  {% for sunday in schedule.sundays %}
+    {% if sunday.sermon_title or sunday.sermon_passage or sunday.theme %}{% set has_any_sermon = true %}{% endif %}
+  {% endfor %}
+  {% if has_any_sermon %}
+  <div class="sermon-summary">
     {% for sunday in schedule.sundays %}
-    <article class="sunday-card">
-      <!-- Date block + sermon info -->
-      <div style="padding: 20px 24px; display: flex; align-items: flex-start; gap: 20px; border-bottom: 1px solid var(--ink-100);">
-        <div style="width: 80px; flex-shrink: 0; text-align: center; padding-top: 4px;">
-          <div class="overline" style="color: var(--brand-700);">{{ sunday.month_short }}</div>
-          <div style="font-weight: 700; font-size: 48px; line-height: 1; color: var(--ink-900); margin-top: 4px; font-variant-numeric: tabular-nums;">
-            {{ sunday.day }}
+      {% if sunday.sermon_title or sunday.sermon_passage or sunday.theme %}
+      <div class="sermon-summary-card">
+        <div style="display: flex; gap: 14px; align-items: center;">
+          <div style="text-align: center; width: 54px;">
+            <div class="overline" style="color: var(--brand-700); font-size: 9px;">{{ sunday.month_short }}</div>
+            <div style="font-weight: 700; font-size: 26px; line-height: 1; color: var(--ink-900); font-variant-numeric: tabular-nums;">{{ sunday.day }}</div>
           </div>
-          <div style="font-size: 11px; font-weight: 500; color: var(--ink-500); margin-top: 4px;">
-            {{ sunday.weekday }}
+          <div style="flex: 1; min-width: 0;">
+            {% if sunday.sermon_title %}
+            <div style="font-weight: 700; font-size: 14px; color: var(--ink-900); line-height: 1.3;">{{ sunday.sermon_title }}</div>
+            {% endif %}
+            {% if sunday.sermon_passage %}
+            <div style="font-size: 11px; font-family: monospace; color: var(--ink-500); margin-top: 2px;">{{ sunday.sermon_passage }}</div>
+            {% endif %}
+            {% if sunday.theme %}
+            <span style="display: inline-block; margin-top: 4px; padding: 1px 7px; border-radius: 9999px; background: var(--ink-100); font-size: 9px; font-weight: 600; color: var(--ink-600); text-transform: uppercase; letter-spacing: 0.05em;">{{ sunday.theme }}</span>
+            {% endif %}
           </div>
-        </div>
-        <div style="flex: 1; min-width: 0; padding-top: 4px;">
-          {% if sunday.sermon_title %}
-          <div class="overline">Sermon</div>
-          <h2 style="font-weight: 700; font-size: 20px; color: var(--ink-900); margin-top: 2px; line-height: 1.2;">
-            {{ sunday.sermon_title }}
-          </h2>
-          {% endif %}
-          {% if sunday.sermon_passage %}
-          <div style="font-size: 12px; font-family: monospace; color: var(--ink-500); margin-top: 4px;">
-            {{ sunday.sermon_passage }}
-          </div>
-          {% endif %}
-          {% if sunday.theme %}
-          <span style="display: inline-block; margin-top: 8px; padding: 2px 8px; border-radius: 9999px; background: var(--ink-100); font-size: 10px; font-weight: 600; color: var(--ink-600); text-transform: uppercase; letter-spacing: 0.05em;">
-            {{ sunday.theme }}
-          </span>
-          {% endif %}
         </div>
       </div>
-
-      <!-- Ministry assignments -->
-      <div style="padding: 16px 24px; display: flex; flex-direction: column; gap: 12px;">
-        {% set sunday_date_str = sunday.date | string %}
-        {% for ministry in schedule.ministries %}
-          {% set colors = schedule.ministry_colors.get(ministry, {}) %}
-          {% set members = schedule.assignments.get(sunday_date_str, {}).get(ministry, []) %}
-          {% if members %}
-          <div class="ministry-row">
-            <div class="ministry-icon {{ colors.get('icon_bg', 'bg-sky-50') }}" style="color: inherit;">
-              <svg style="width: 16px; height: 16px;" class="{{ colors.get('text', '') }}" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/>
-              </svg>
-            </div>
-            <div style="flex: 1; min-width: 0;">
-              <div style="display: flex; align-items: baseline; gap: 8px;">
-                <div class="overline">{{ ministry }}</div>
-                <div style="font-size: 10px; color: var(--ink-300); font-variant-numeric: tabular-nums;">&middot; {{ members | length }}</div>
-              </div>
-              <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;">
-                {% for m in members %}
-                <div class="member-chip {{ colors.get('bg', 'bg-sky-50') }} {{ colors.get('ring', '') }}">
-                  <div class="avatar {{ colors.get('text', 'text-sky-800') }}">{{ m.initials }}</div>
-                  <span class="{{ colors.get('text', 'text-sky-800') }}">{{ m.name }}</span>
-                </div>
-                {% endfor %}
-              </div>
-            </div>
-          </div>
-          {% endif %}
-        {% endfor %}
-
-        {# Show message if no assignments for this Sunday #}
-        {% set sunday_assignments = schedule.assignments.get(sunday_date_str, {}) %}
-        {% if not sunday_assignments %}
-        <div style="font-size: 11px; font-style: italic; color: var(--ink-400); text-align: center; padding: 8px 0;">
-          Schedule to be announced
-        </div>
-        {% endif %}
-      </div>
-    </article>
+      {% endif %}
     {% endfor %}
   </div>
+  {% endif %}
+
+  {# Filter bar — week selector + ministry chips. Filtering is client-side via JS. #}
+  {% if schedule.weeks and schedule.ministries %}
+  <div class="filter-bar" id="ms-filter-bar">
+    <div class="filter-group">
+      <span class="filter-label">Week</span>
+      <button type="button" class="filter-chip active" data-week-filter="all">All</button>
+      {% for w in schedule.weeks %}
+      <button type="button" class="filter-chip" data-week-filter="{{ w.number }}">Week {{ w.number }}</button>
+      {% endfor %}
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Ministry</span>
+      <button type="button" class="filter-chip active" data-ministry-filter="__all__">All</button>
+      {% for ministry in schedule.ministries %}
+        {% set colors = schedule.ministry_colors.get(ministry, {}) %}
+        <button type="button" class="filter-chip" data-ministry-filter="{{ ministry }}">
+          <span class="legend-dot {{ colors.get('dot', 'bg-sky-500') }}"></span>
+          {{ ministry }}
+        </button>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {# Per-week sections: each week shows its services (Sun/Wed) chronologically,
+     with all ministry assignments grouped under each service. #}
+  {% for week in schedule.weeks %}
+  <section class="week-section" data-week="{{ week.number }}">
+    <h2 class="week-title">Week {{ week.number }}</h2>
+
+    {% for service in week.services %}
+    <article class="service-card" data-service-type="{{ service.type }}">
+      <div class="service-header">
+        <div style="text-align: center; width: 64px; flex-shrink: 0;">
+          <div class="overline" style="color: var(--brand-700);">{{ service.month_short }}</div>
+          <div style="font-weight: 700; font-size: 32px; line-height: 1; color: var(--ink-900); margin-top: 2px; font-variant-numeric: tabular-nums;">{{ service.day }}</div>
+        </div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px;">
+            <span class="service-type-pill {% if service.type == 'Sunday' %}service-type-sunday{% else %}service-type-wednesday{% endif %}">
+              {% if service.type == 'Sunday' %}Sunday Service{% else %}Wednesday Prayer Meeting{% endif %}
+            </span>
+            <span style="font-size: 12px; color: var(--ink-500);">{{ service.weekday }}</span>
+          </div>
+          {% if service.sermon_title %}
+          <div style="font-weight: 700; font-size: 14px; color: var(--ink-900);">{{ service.sermon_title }}</div>
+          {% endif %}
+          {% if service.sermon_passage %}
+          <div style="font-size: 11px; font-family: monospace; color: var(--ink-500);">{{ service.sermon_passage }}</div>
+          {% endif %}
+        </div>
+      </div>
+
+      {% set ns = namespace(has_any=false) %}
+      {% for ministry in schedule.ministries %}
+        {% set slots = service.assignments_by_ministry.get(ministry, {}) %}
+        {% set all_members = slots.get('all', []) if slots else [] %}
+        {% set morning_members = slots.get('morning', []) if slots else [] %}
+        {% set evening_members = slots.get('evening', []) if slots else [] %}
+        {% if all_members or morning_members or evening_members %}
+          {% set ns.has_any = true %}
+          {% set colors = schedule.ministry_colors.get(ministry, {}) %}
+          <div class="ministry-row-public" data-ministry="{{ ministry }}">
+            <div class="ministry-row-label">
+              <span class="legend-dot {{ colors.get('dot', 'bg-sky-500') }}"></span>
+              {{ ministry }}
+            </div>
+            <div class="ministry-row-members">
+              {% if all_members %}
+                <div>{% for m in all_members %}{{ m.name }}{% if not loop.last %} <span style="color: var(--ink-400); font-weight: 400;">&amp;</span> {% endif %}{% endfor %}</div>
+              {% endif %}
+              {% if morning_members %}
+                <div><span class="service-time-tag service-time-morning">Morning</span> {% for m in morning_members %}{{ m.name }}{% if not loop.last %} <span style="color: var(--ink-400); font-weight: 400;">&amp;</span> {% endif %}{% endfor %}</div>
+              {% endif %}
+              {% if evening_members %}
+                <div><span class="service-time-tag service-time-evening">Evening</span> {% for m in evening_members %}{{ m.name }}{% if not loop.last %} <span style="color: var(--ink-400); font-weight: 400;">&amp;</span> {% endif %}{% endfor %}</div>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+      {% if not ns.has_any %}
+      <div style="padding: 16px 20px; font-size: 13px; font-style: italic; color: var(--ink-400);">No assignments yet.</div>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </section>
+  {% endfor %}
+
+  <script>
+    (function() {
+      var bar = document.getElementById('ms-filter-bar');
+      if (!bar) return;
+      var activeWeek = 'all';
+      var activeMinistries = new Set(['__all__']);
+
+      function apply() {
+        var weekSections = document.querySelectorAll('.week-section');
+        weekSections.forEach(function(sec) {
+          var weekNum = sec.getAttribute('data-week');
+          var weekMatch = (activeWeek === 'all' || activeWeek === weekNum);
+
+          // Per-row ministry filter
+          var rows = sec.querySelectorAll('.ministry-row-public');
+          var anyVisibleRow = false;
+          rows.forEach(function(row) {
+            var m = row.getAttribute('data-ministry');
+            var visible = activeMinistries.has('__all__') || activeMinistries.has(m);
+            row.classList.toggle('hidden-by-filter', !visible);
+            if (visible) anyVisibleRow = true;
+          });
+
+          // Per-service-card visibility — hide if no rows visible under it
+          var cards = sec.querySelectorAll('.service-card');
+          var anyVisibleCard = false;
+          cards.forEach(function(card) {
+            var visibleRows = card.querySelectorAll('.ministry-row-public:not(.hidden-by-filter)');
+            var hasContent = visibleRows.length > 0;
+            card.classList.toggle('hidden-by-filter', !hasContent);
+            if (hasContent) anyVisibleCard = true;
+          });
+
+          sec.classList.toggle('hidden-by-filter', !(weekMatch && anyVisibleCard));
+        });
+      }
+
+      bar.addEventListener('click', function(e) {
+        var btn = e.target.closest('.filter-chip');
+        if (!btn) return;
+
+        if (btn.hasAttribute('data-week-filter')) {
+          activeWeek = btn.getAttribute('data-week-filter');
+          bar.querySelectorAll('[data-week-filter]').forEach(function(b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+        } else if (btn.hasAttribute('data-ministry-filter')) {
+          var val = btn.getAttribute('data-ministry-filter');
+          if (val === '__all__') {
+            activeMinistries = new Set(['__all__']);
+          } else {
+            activeMinistries.delete('__all__');
+            if (activeMinistries.has(val)) {
+              activeMinistries.delete(val);
+            } else {
+              activeMinistries.add(val);
+            }
+            if (activeMinistries.size === 0) activeMinistries = new Set(['__all__']);
+          }
+          bar.querySelectorAll('[data-ministry-filter]').forEach(function(b) {
+            var v = b.getAttribute('data-ministry-filter');
+            b.classList.toggle('active', activeMinistries.has(v));
+          });
+        }
+        apply();
+      });
+    })();
+  </script>
 
   <!-- Legend / Footer -->
   <footer class="ms-footer" style="border-top: 1px solid rgba(226, 232, 240, 0.6); padding: 24px 32px; background: rgba(255, 255, 255, 0.4);">

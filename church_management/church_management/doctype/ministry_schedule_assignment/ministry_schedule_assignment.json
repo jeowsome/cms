@@ -7,9 +7,11 @@
  "field_order": [
   "sunday_date",
   "ministry",
+  "service_time",
   "column_break_1",
   "member",
-  "member_name"
+  "member_name",
+  "conflict_acknowledged"
  ],
  "fields": [
   {
@@ -28,6 +30,14 @@
    "reqd": 1
   },
   {
+   "fieldname": "service_time",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Service Time",
+   "options": "\nMorning\nEvening",
+   "description": "Leave blank for ministries that serve all day. Use Morning/Evening for Worship Leader (Sunday morning vs. evening service)."
+  },
+  {
    "fieldname": "column_break_1",
    "fieldtype": "Column Break"
   },
@@ -37,21 +47,29 @@
    "in_list_view": 1,
    "label": "Member",
    "options": "Church Member",
-   "reqd": 1
+   "description": "Optional. Leave blank for guests without a church record."
   },
   {
    "fetch_from": "member.firstname",
    "fieldname": "member_name",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Member Name",
-   "read_only": 1
+   "label": "Name",
+   "reqd": 1,
+   "description": "Auto-filled when a member is linked. Type a name freely for guests."
+  },
+  {
+   "default": "0",
+   "fieldname": "conflict_acknowledged",
+   "fieldtype": "Check",
+   "label": "Conflict Acknowledged",
+   "description": "When checked, this assignment is excluded from conflict detection."
   }
  ],
  "index_web_pages_for_search": 0,
  "istable": 1,
  "links": [],
- "modified": "2026-04-22 10:00:00.000000",
+ "modified": "2026-04-23 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "Church Management",
  "name": "Ministry Schedule Assignment",

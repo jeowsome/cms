@@ -12,6 +12,8 @@
   "published_on",
   "section_break_sundays",
   "sundays",
+  "section_break_wednesdays",
+  "wednesdays",
   "section_break_assignments",
   "assignments"
  ],
@@ -60,6 +62,17 @@
    "fieldname": "sundays",
    "fieldtype": "Table",
    "label": "Sundays",
+   "options": "Sunday Service Info"
+  },
+  {
+   "fieldname": "section_break_wednesdays",
+   "fieldtype": "Section Break",
+   "label": "Wednesday Prayer Meetings"
+  },
+  {
+   "fieldname": "wednesdays",
+   "fieldtype": "Table",
+   "label": "Wednesdays",
    "options": "Sunday Service Info"
   },
   {
