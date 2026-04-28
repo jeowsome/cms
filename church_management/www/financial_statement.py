@@ -196,7 +196,7 @@ def get_context(context):
     context.update(res)
     return context
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def download_disbursements_excel(year):
     from frappe.utils.xlsxutils import make_xlsx
     disbursements = frappe.get_all('Disbursement', filters={'year_recorded': year, 'docstatus': ['<', 2]}, fields=['name', 'month_recorded'])
