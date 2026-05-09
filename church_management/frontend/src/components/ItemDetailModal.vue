@@ -16,7 +16,7 @@ const emit = defineEmits(["close", "claim", "updated"]);
 const isOpen = computed(() => !!props.item);
 const isClaimed = computed(() => props.item?.status === "Claimed");
 
-const editForm = ref({ worker: "", purpose: "", source: "", is_planned: 0 });
+const editForm = ref({ worker: "", purpose: "", source: "", is_planned: 0, amount: 0 });
 const isSaving = ref(false);
 const isDeleting = ref(false);
 
@@ -48,6 +48,7 @@ watch(
         purpose: val.purpose || "",
         source: val.source || "",
         is_planned: val.is_planned ? 1 : 0,
+        amount: val.amount || 0,
       };
     }
   }
@@ -158,6 +159,9 @@ async function saveItem() {
                   <span class="w-1.5 h-1.5 rounded-full" :class="isClaimed ? 'bg-green-400' : 'bg-amber-400'" />
                   {{ isClaimed ? "Claimed" : "Unclaimed" }}
                 </span>
+                <span v-if="item?.amount_edited" class="text-xs text-gray-400 line-through">
+                  <CurrencyDisplay :value="item?.original_amount" size="xs" />
+                </span>
                 <CurrencyDisplay :value="item?.amount" />
               </div>
             </div>
@@ -196,6 +200,25 @@ async function saveItem() {
                     <option value="">Select Source</option>
                     <option v-for="a in accounts" :key="a.name" :value="a.name">{{ a.account_name || a.name }}</option>
                   </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+                    Amount
+                    <span v-if="item?.amount_edited" class="ml-1 text-[10px] text-amber-600 normal-case font-bold">edited</span>
+                  </label>
+                  <input
+                    v-model.number="editForm.amount"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    class="block w-full text-sm border-gray-200 rounded-lg shadow-sm focus:border-brand-500 focus:ring-brand-500 bg-white px-3 py-2"
+                  />
+                  <p v-if="item?.amount_edited" class="mt-1 text-[11px] text-gray-500">
+                    Original:
+                    <span class="line-through ml-1">
+                      <CurrencyDisplay :value="item.original_amount" size="xs" />
+                    </span>
+                  </p>
                 </div>
                 <div v-if="item?.is_planned !== undefined">
                   <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Is Planned</label>

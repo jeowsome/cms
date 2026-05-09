@@ -13,7 +13,9 @@
   "column_break_rfto",
   "department",
   "default_receiver",
-  "is_planned"
+  "is_planned",
+  "original_amount",
+  "amount_edited"
  ],
  "fields": [
   {
@@ -70,6 +72,19 @@
    "fieldname": "is_planned",
    "fieldtype": "Check",
    "label": "Is Planned"
+  },
+  {
+   "fieldname": "original_amount",
+   "fieldtype": "Currency",
+   "label": "Original Amount",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "amount_edited",
+   "fieldtype": "Check",
+   "label": "Amount Edited",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,

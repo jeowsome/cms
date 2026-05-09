@@ -26,24 +26,28 @@ const {
   enabled: () => !isNew.value,
 });
 
-// Collect ALL items across all weeks + monthly
+function isClaimed(i) {
+  return i.status === "Claimed" || (!!i.received_by && !!i.received_date);
+}
+
+// Collect items only from weeks that actually exist in the month, so the summary
+// matches the per-tab counts (April has only 4 Sundays — week_5 child rows are ghosts).
 const allItems = computed(() => {
-  if (!disbursement.value) return [];
-  const d = disbursement.value;
+  const ws = weeks.value;
   const result = [];
-  for (let i = 1; i <= 5; i++) {
-    for (const row of d[`disbursement_item_week_${i}`] || []) result.push(row);
-    for (const row of d[`expense_item_week_${i}`] || []) result.push(row);
+  for (const w of ws) {
+    for (const row of w.items) result.push(row);
+    for (const row of w.expenses) result.push(row);
   }
-  for (const row of d.monthly_disbursement_items || []) result.push(row);
-  for (const row of d.monthly_expense_items || []) result.push(row);
+  for (const row of monthlyItems.value) result.push(row);
+  for (const row of monthlyExpenses.value) result.push(row);
   return result;
 });
 
 // Summary stats
 const totalClaimed = computed(() =>
   allItems.value
-    .filter((i) => i.status === "Claimed")
+    .filter(isClaimed)
     .reduce((sum, i) => sum + (i.amount || 0), 0)
 );
 
@@ -54,36 +58,73 @@ const totalPlanned = computed(() =>
 );
 
 const totalCount = computed(() => allItems.value.length);
-const claimedCount = computed(() => allItems.value.filter((i) => i.status === "Claimed").length);
+const claimedCount = computed(() => allItems.value.filter(isClaimed).length);
 const unclaimedCount = computed(() => totalCount.value - claimedCount.value);
+
+const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+function sundaysOfMonth(year, monthIdx) {
+  const result = [];
+  const daysInMonth = new Date(year, monthIdx + 1, 0).getDate();
+  for (let i = 1; i <= daysInMonth; i++) {
+    const dt = new Date(year, monthIdx, i);
+    if (dt.getDay() === 0) result.push(dt);
+  }
+  return result;
+}
+
+const today = new Date();
+today.setHours(0, 0, 0, 0);
 
 const weeks = computed(() => {
   if (!disbursement.value) return [];
   const d = disbursement.value;
-  
-  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  const monthIdx = monthNames.indexOf(d.month_recorded);
-  let numberOfWeeks = 5;
-  if (monthIdx !== -1 && d.year_recorded) {
-    const year = parseInt(d.year_recorded);
-    const daysInMonth = new Date(year, monthIdx + 1, 0).getDate();
-    let sundays = 0;
-    for (let i = 1; i <= daysInMonth; i++) {
-        if (new Date(year, monthIdx, i).getDay() === 0) sundays++;
-    }
-    numberOfWeeks = Math.min(sundays, 5);
-  }
 
-  const result = [];
-  for (let i = 1; i <= numberOfWeeks; i++) {
-    result.push({
-      num: i,
-      items: d[`disbursement_item_week_${i}`] || [],
-      expenses: d[`expense_item_week_${i}`] || [],
-    });
-  }
-  return result;
+  const monthIdx = monthNames.indexOf(d.month_recorded);
+  if (monthIdx === -1 || !d.year_recorded) return [];
+  const year = parseInt(d.year_recorded);
+  const sundays = sundaysOfMonth(year, monthIdx).slice(0, 5);
+
+  const isPastMonth =
+    year < today.getFullYear() ||
+    (year === today.getFullYear() && monthIdx < today.getMonth());
+
+  return sundays.map((sunday, idx) => {
+    const num = idx + 1;
+    const items = d[`disbursement_item_week_${num}`] || [];
+    const expenses = d[`expense_item_week_${num}`] || [];
+    const hasUnclaimed = [...items, ...expenses].some((i) => !isClaimed(i));
+    const overdue = isPastMonth && hasUnclaimed;
+    return { num, items, expenses, sunday, overdue };
+  });
 });
+
+const isPastMonth = computed(() => {
+  if (!disbursement.value) return false;
+  const monthIdx = monthNames.indexOf(disbursement.value.month_recorded);
+  if (monthIdx === -1 || !disbursement.value.year_recorded) return false;
+  const year = parseInt(disbursement.value.year_recorded);
+  return (
+    year < today.getFullYear() ||
+    (year === today.getFullYear() && monthIdx < today.getMonth())
+  );
+});
+
+function fmtSunday(dt) {
+  if (!dt) return "";
+  return dt.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+function fmtSundayLong(dt) {
+  if (!dt) return "";
+  return dt.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+}
+function isoDate(dt) {
+  if (!dt) return "";
+  const y = dt.getFullYear();
+  const m = String(dt.getMonth() + 1).padStart(2, "0");
+  const d = String(dt.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
 
 const monthlyItems = computed(() => disbursement.value?.monthly_disbursement_items || []);
 const monthlyExpenses = computed(() => disbursement.value?.monthly_expense_items || []);
@@ -92,9 +133,9 @@ const tabs = computed(() => {
   const t = weeks.value.map((w) => {
     const all = [...w.items, ...w.expenses];
     const totalCount = all.length;
-    const claimedCount = all.filter(i => i.status === "Claimed").length;
+    const claimedCount = all.filter(isClaimed).length;
     const unclaimedCount = totalCount - claimedCount;
-    const unclaimedAmount = all.filter(i => i.status !== "Claimed").reduce((sum, i) => sum + (i.amount || 0), 0);
+    const unclaimedAmount = all.filter(i => !isClaimed(i)).reduce((sum, i) => sum + (i.amount || 0), 0);
     
     let display = null;
     if (totalCount > 0) {
@@ -109,15 +150,17 @@ const tabs = computed(() => {
       key: w.num,
       label: `W${w.num}`,
       fullLabel: `Week ${w.num}`,
+      sundayShort: fmtSunday(w.sunday),
       countDisplay: display,
+      overdue: w.overdue,
     };
   });
   
   const mAll = [...monthlyItems.value, ...monthlyExpenses.value];
   const mTotal = mAll.length;
-  const mClaimed = mAll.filter(i => i.status === "Claimed").length;
+  const mClaimed = mAll.filter(isClaimed).length;
   const mUnclaimedCount = mTotal - mClaimed;
-  const mUnclaimedAmount = mAll.filter(i => i.status !== "Claimed").reduce((sum, i) => sum + (i.amount || 0), 0);
+  const mUnclaimedAmount = mAll.filter(i => !isClaimed(i)).reduce((sum, i) => sum + (i.amount || 0), 0);
 
   let mDisplay = null;
   if (mTotal > 0) {
@@ -132,7 +175,9 @@ const tabs = computed(() => {
     key: 0,
     label: "Monthly",
     fullLabel: "Monthly",
+    sundayShort: "",
     countDisplay: mDisplay,
+    overdue: isPastMonth.value && mUnclaimedCount > 0,
   });
   return t;
 });
@@ -259,20 +304,32 @@ function onClaimed() {
               v-for="tab in tabs"
               :key="tab.key"
               @click="activeTab = tab.key"
-              class="relative flex-1 min-w-0 px-2 sm:px-4 py-3.5 sm:py-5 text-sm font-bold whitespace-nowrap transition-all border-b-2 outline-none group"
-              :class="
+              class="relative flex-1 min-w-0 px-2 sm:px-4 py-3 sm:py-4 text-sm font-bold whitespace-nowrap transition-all border-b-2 outline-none group"
+              :class="[
                 activeTab === tab.key
                   ? 'border-brand-500 text-brand-600 bg-white/60'
-                  : 'border-transparent text-gray-400 hover:text-gray-600 hover:bg-gray-100/50'
-              "
+                  : 'border-transparent text-gray-400 hover:text-gray-600 hover:bg-gray-100/50',
+                tab.overdue ? 'overdue-blink-tab' : ''
+              ]"
             >
-              <div class="flex flex-col items-center gap-1.5 transition-transform active:scale-95">
-                <span class="sm:hidden text-[13px]">{{ tab.label }}</span>
-                <span class="hidden sm:inline">{{ tab.fullLabel }}</span>
+              <div class="flex flex-col items-center gap-1 transition-transform active:scale-95">
+                <div class="flex items-baseline gap-1">
+                  <span class="sm:hidden text-[13px]">{{ tab.label }}</span>
+                  <span class="hidden sm:inline">{{ tab.fullLabel }}</span>
+                </div>
+                <span
+                  v-if="tab.sundayShort"
+                  class="text-[10px] font-semibold leading-none"
+                  :class="tab.overdue ? 'text-red-600' : (activeTab === tab.key ? 'text-brand-500' : 'text-gray-400')"
+                >
+                  {{ tab.sundayShort }}
+                </span>
                 <span
                   v-if="tab.countDisplay"
                   class="text-[9px] px-2 py-0.5 rounded-full font-black tracking-widest leading-none border"
-                  :class="activeTab === tab.key ? 'bg-brand-50 text-brand-700 border-brand-100' : 'bg-gray-100 text-gray-500 border-gray-200 group-hover:border-gray-300'"
+                  :class="tab.overdue
+                    ? 'bg-red-50 text-red-700 border-red-200'
+                    : (activeTab === tab.key ? 'bg-brand-50 text-brand-700 border-brand-100' : 'bg-gray-100 text-gray-500 border-gray-200 group-hover:border-gray-300')"
                 >
                   {{ tab.countDisplay }}
                 </span>
@@ -292,6 +349,9 @@ function onClaimed() {
               :items="week.items"
               :expenses="week.expenses"
               :week-num="week.num"
+              :sunday-iso="isoDate(week.sunday)"
+              :sunday-label="fmtSundayLong(week.sunday)"
+              :overdue="week.overdue"
               :disbursement-name="route.params.name"
               @claimed="onClaimed"
             />
@@ -304,6 +364,7 @@ function onClaimed() {
             :expenses="monthlyExpenses"
             :week-num="0"
             label="Monthly"
+            :overdue="isPastMonth"
             :disbursement-name="route.params.name"
             @claimed="onClaimed"
           />

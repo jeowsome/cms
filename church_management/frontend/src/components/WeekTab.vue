@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import CurrencyDisplay from "@/components/CurrencyDisplay.vue";
 import AppButton from "@/components/AppButton.vue";
 import AddExpenseModal from "@/components/AddExpenseModal.vue";
@@ -13,22 +13,26 @@ const props = defineProps({
   expenses: { type: Array, default: () => [] },
   label: { type: String, default: "" },
   disbursementName: { type: String, default: "" },
+  sundayIso: { type: String, default: "" },
+  sundayLabel: { type: String, default: "" },
+  overdue: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(["claimed"]);
 
 const detailItem = ref(null);
 const claimItem = ref(null);
+const claimItems = ref(null); // for bulk
 const isAddingExpense = ref(false);
 const isAddingAllowance = ref(false);
 const showFabOptions = ref(false);
+const selectedNames = ref(new Set());
 
 const sectionTitle = (suffix) => {
   const prefix = props.label || `Week ${props.weekNum}`;
   return `${prefix} — ${suffix}`;
 };
 
-// Sort: unclaimed first, then claimed
 function sorted(arr) {
   return [...arr].sort((a, b) => {
     if (a.status === "Unclaimed" && b.status !== "Unclaimed") return -1;
@@ -40,30 +44,80 @@ function sorted(arr) {
 const sortedItems = computed(() => sorted(props.items));
 const sortedExpenses = computed(() => sorted(props.expenses));
 
-function openDetail(item) {
-  detailItem.value = item;
+const allUnclaimed = computed(() =>
+  [...props.items, ...props.expenses].filter((i) => i.status !== "Claimed")
+);
+const selectedCount = computed(() => selectedNames.value.size);
+const selectedRows = computed(() =>
+  allUnclaimed.value.filter((i) => selectedNames.value.has(i.name))
+);
+
+watch(
+  () => props.disbursementName + ":" + props.weekNum,
+  () => selectedNames.value = new Set()
+);
+
+function toggleSelect(item, ev) {
+  ev?.stopPropagation();
+  const next = new Set(selectedNames.value);
+  if (next.has(item.name)) next.delete(item.name);
+  else next.add(item.name);
+  selectedNames.value = next;
 }
 
-function openClaim(item, event) {
-  event?.stopPropagation();
-  claimItem.value = item;
+function isOverdueRow(item) {
+  const claimed =
+    item.status === "Claimed" || (!!item.received_by && !!item.received_date);
+  return props.overdue && !claimed;
 }
 
+function openDetail(item) { detailItem.value = item; }
+function openClaim(item, event) { event?.stopPropagation(); claimItem.value = item; }
 function openClaimFromDetail(item) {
   detailItem.value = null;
-  setTimeout(() => {
-    claimItem.value = item;
-  }, 200);
+  setTimeout(() => { claimItem.value = item; }, 200);
 }
-
+function openBulkClaim() {
+  if (!selectedRows.value.length) return;
+  claimItems.value = selectedRows.value;
+}
 function onClaimed() {
   claimItem.value = null;
+  claimItems.value = null;
+  selectedNames.value = new Set();
   emit("claimed");
 }
 </script>
 
 <template>
   <div class="space-y-5">
+    <!-- Sunday header + bulk toolbar -->
+    <div v-if="sundayLabel || selectedCount" class="flex items-center justify-between gap-3 -mt-1 mb-1">
+      <div v-if="sundayLabel" class="flex items-center gap-2">
+        <span
+          class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full"
+          :class="overdue ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-brand-50 text-brand-700 border border-brand-100'"
+        >
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3M3 11h18M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+          {{ sundayLabel }}
+          <span v-if="overdue" class="ml-1 text-[10px] font-black">· OVERDUE</span>
+        </span>
+      </div>
+      <div v-if="selectedCount" class="flex items-center gap-2">
+        <span class="text-[11px] font-semibold text-gray-500">{{ selectedCount }} selected</span>
+        <button
+          @click="selectedNames = new Set()"
+          class="text-[11px] font-semibold text-gray-500 hover:text-gray-700 px-2 py-1 rounded"
+        >Clear</button>
+        <button
+          @click="openBulkClaim"
+          class="text-[11px] font-bold text-white bg-brand-600 hover:bg-brand-700 px-3 py-1.5 rounded-lg uppercase tracking-wider"
+        >Claim {{ selectedCount }}</button>
+      </div>
+    </div>
+
     <!-- Disbursement Items -->
     <div>
       <div class="flex items-center justify-between group mb-2.5">
@@ -75,7 +129,7 @@ function onClaimed() {
           class="flex items-center gap-1 text-[10px] font-bold text-brand-600 uppercase tracking-wider bg-brand-50 hover:bg-brand-100 px-2.5 py-1 rounded transition-all sm:opacity-0 sm:group-hover:opacity-100"
         >
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-          Add 
+          Add
         </button>
       </div>
 
@@ -88,10 +142,21 @@ function onClaimed() {
         <div
           v-for="item in sortedItems"
           :key="item.name"
-          class="bg-white border border-gray-100 rounded-xl p-3.5 shadow-sm active:bg-gray-50 active:scale-[0.98] transition-all cursor-pointer"
+          class="bg-white border rounded-xl p-3.5 shadow-sm active:bg-gray-50 active:scale-[0.98] transition-all cursor-pointer relative"
+          :class="[
+            selectedNames.has(item.name) ? 'border-brand-400 ring-2 ring-brand-200' : 'border-gray-100',
+            isOverdueRow(item) ? 'overdue-blink' : ''
+          ]"
           @click="openDetail(item)"
         >
-          <div class="flex items-start justify-between">
+          <div class="flex items-start gap-3">
+            <input
+              v-if="item.status !== 'Claimed'"
+              type="checkbox"
+              :checked="selectedNames.has(item.name)"
+              @click.stop="toggleSelect(item, $event)"
+              class="mt-1 w-4 h-4 accent-brand-600 cursor-pointer"
+            />
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-2">
                 <p class="text-sm font-bold text-gray-900 truncate">{{ item.worker || "—" }}</p>
@@ -107,8 +172,13 @@ function onClaimed() {
                 <p class="text-[10px] text-gray-400 font-mono">{{ item.source || "No source" }}</p>
               </div>
             </div>
-            <div class="flex flex-col items-end gap-2 shrink-0 ml-3">
-              <CurrencyDisplay :value="item.amount" size="sm" weight="bold" />
+            <div class="flex flex-col items-end gap-2 shrink-0 ml-1">
+              <div class="flex flex-col items-end leading-none">
+                <span v-if="item.amount_edited" class="text-[10px] text-gray-400 line-through">
+                  <CurrencyDisplay :value="item.original_amount" size="xs" />
+                </span>
+                <CurrencyDisplay :value="item.amount" size="sm" weight="bold" />
+              </div>
               <button
                 v-if="item.status !== 'Claimed'"
                 class="px-3 py-1.5 text-[10px] font-bold text-brand-600 bg-brand-50 rounded-lg active:bg-brand-100 transition-colors uppercase tracking-wider border border-brand-100"
@@ -126,10 +196,11 @@ function onClaimed() {
         <table class="min-w-full text-sm">
           <thead>
             <tr class="text-left text-[10px] text-gray-400 font-black uppercase tracking-widest border-b border-gray-100/80 bg-gray-50/50">
-              <th class="py-3 pl-5 pr-4 rounded-tl-xl w-[25%]">Worker</th>
-              <th class="py-3 pr-4 w-[25%]">Purpose</th>
+              <th class="py-3 pl-4 pr-2 rounded-tl-xl w-8"></th>
+              <th class="py-3 pr-4 w-[22%]">Worker</th>
+              <th class="py-3 pr-4 w-[22%]">Purpose</th>
               <th class="py-3 pr-4 w-[15%]">Source</th>
-              <th class="py-3 pr-4 text-right w-[15%]">Amount</th>
+              <th class="py-3 pr-4 text-right w-[18%]">Amount</th>
               <th class="py-3 text-center w-[10%]">Status</th>
               <th class="py-3 rounded-tr-xl w-16"></th>
             </tr>
@@ -139,13 +210,31 @@ function onClaimed() {
               v-for="item in sortedItems"
               :key="item.name"
               class="group text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer"
+              :class="[
+                selectedNames.has(item.name) ? 'bg-brand-50/40' : '',
+                isOverdueRow(item) ? 'overdue-blink' : ''
+              ]"
               @click="openDetail(item)"
             >
-              <td class="py-3.5 pl-5 pr-4 font-bold text-gray-900">{{ item.worker || "—" }}</td>
+              <td class="py-3.5 pl-4 pr-2">
+                <input
+                  v-if="item.status !== 'Claimed'"
+                  type="checkbox"
+                  :checked="selectedNames.has(item.name)"
+                  @click.stop="toggleSelect(item, $event)"
+                  class="w-4 h-4 accent-brand-600 cursor-pointer"
+                />
+              </td>
+              <td class="py-3.5 pr-4 font-bold text-gray-900">{{ item.worker || "—" }}</td>
               <td class="py-3.5 pr-4 font-medium">{{ item.purpose || "—" }}</td>
               <td class="py-3.5 pr-4 text-[11px] text-gray-400 font-mono">{{ item.source || "—" }}</td>
               <td class="py-3.5 pr-4 text-right">
-                <CurrencyDisplay :value="item.amount" />
+                <div class="flex flex-col items-end leading-tight">
+                  <span v-if="item.amount_edited" class="text-[11px] text-gray-400 line-through">
+                    <CurrencyDisplay :value="item.original_amount" size="xs" />
+                  </span>
+                  <CurrencyDisplay :value="item.amount" />
+                </div>
               </td>
               <td class="py-2.5 text-center">
                 <svg v-if="item.status === 'Claimed'" class="w-5 h-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -178,7 +267,7 @@ function onClaimed() {
           class="flex items-center gap-1 text-[10px] font-bold text-brand-600 uppercase tracking-wider bg-brand-50 hover:bg-brand-100 px-2.5 py-1 rounded transition-all sm:opacity-0 sm:group-hover:opacity-100"
         >
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-          Add 
+          Add
         </button>
       </div>
 
@@ -191,10 +280,21 @@ function onClaimed() {
         <div
           v-for="item in sortedExpenses"
           :key="item.name"
-          class="bg-white border border-gray-100 rounded-xl p-3.5 shadow-sm active:bg-gray-50 active:scale-[0.98] transition-all cursor-pointer"
+          class="bg-white border rounded-xl p-3.5 shadow-sm active:bg-gray-50 active:scale-[0.98] transition-all cursor-pointer"
+          :class="[
+            selectedNames.has(item.name) ? 'border-brand-400 ring-2 ring-brand-200' : 'border-gray-100',
+            isOverdueRow(item) ? 'overdue-blink' : ''
+          ]"
           @click="openDetail(item)"
         >
-          <div class="flex items-start justify-between">
+          <div class="flex items-start gap-3">
+            <input
+              v-if="item.status !== 'Claimed'"
+              type="checkbox"
+              :checked="selectedNames.has(item.name)"
+              @click.stop="toggleSelect(item, $event)"
+              class="mt-1 w-4 h-4 accent-brand-600 cursor-pointer"
+            />
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-2">
                 <p class="text-sm font-bold text-gray-900 truncate">{{ item.description || "—" }}</p>
@@ -210,8 +310,13 @@ function onClaimed() {
                 <p class="text-[10px] text-gray-400 font-mono">{{ item.source || "No source" }}</p>
               </div>
             </div>
-            <div class="flex flex-col items-end gap-2 shrink-0 ml-3">
-              <CurrencyDisplay :value="item.amount" size="sm" weight="bold" />
+            <div class="flex flex-col items-end gap-2 shrink-0 ml-1">
+              <div class="flex flex-col items-end leading-none">
+                <span v-if="item.amount_edited" class="text-[10px] text-gray-400 line-through">
+                  <CurrencyDisplay :value="item.original_amount" size="xs" />
+                </span>
+                <CurrencyDisplay :value="item.amount" size="sm" weight="bold" />
+              </div>
               <button
                 v-if="item.status !== 'Claimed'"
                 class="px-3 py-1.5 text-[10px] font-bold text-brand-600 bg-brand-50 rounded-lg active:bg-brand-100 transition-colors uppercase tracking-wider border border-brand-100"
@@ -229,10 +334,11 @@ function onClaimed() {
         <table class="min-w-full text-sm">
           <thead>
             <tr class="text-left text-[10px] text-gray-400 font-black uppercase tracking-widest border-b border-gray-100/80 bg-gray-50/50">
-              <th class="py-3 pl-5 pr-4 rounded-tl-xl w-[25%]">Description</th>
-              <th class="py-3 pr-4 w-[25%]">Purpose</th>
+              <th class="py-3 pl-4 pr-2 rounded-tl-xl w-8"></th>
+              <th class="py-3 pr-4 w-[22%]">Description</th>
+              <th class="py-3 pr-4 w-[22%]">Purpose</th>
               <th class="py-3 pr-4 w-[15%]">Source</th>
-              <th class="py-3 pr-4 text-right w-[15%]">Amount</th>
+              <th class="py-3 pr-4 text-right w-[18%]">Amount</th>
               <th class="py-3 text-center w-[10%]">Status</th>
               <th class="py-3 rounded-tr-xl w-16"></th>
             </tr>
@@ -242,13 +348,31 @@ function onClaimed() {
                v-for="item in sortedExpenses"
               :key="item.name"
               class="group text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer"
+              :class="[
+                selectedNames.has(item.name) ? 'bg-brand-50/40' : '',
+                isOverdueRow(item) ? 'overdue-blink' : ''
+              ]"
               @click="openDetail(item)"
             >
-              <td class="py-3.5 pl-5 pr-4 font-bold text-gray-900">{{ item.description || "—" }}</td>
+              <td class="py-3.5 pl-4 pr-2">
+                <input
+                  v-if="item.status !== 'Claimed'"
+                  type="checkbox"
+                  :checked="selectedNames.has(item.name)"
+                  @click.stop="toggleSelect(item, $event)"
+                  class="w-4 h-4 accent-brand-600 cursor-pointer"
+                />
+              </td>
+              <td class="py-3.5 pr-4 font-bold text-gray-900">{{ item.description || "—" }}</td>
               <td class="py-3.5 pr-4 font-medium">{{ item.purpose || "—" }}</td>
               <td class="py-3.5 pr-4 text-[11px] text-gray-400 font-mono">{{ item.source || "—" }}</td>
               <td class="py-3.5 pr-4 text-right">
-                <CurrencyDisplay :value="item.amount" />
+                <div class="flex flex-col items-end leading-tight">
+                  <span v-if="item.amount_edited" class="text-[11px] text-gray-400 line-through">
+                    <CurrencyDisplay :value="item.original_amount" size="xs" />
+                  </span>
+                  <CurrencyDisplay :value="item.amount" />
+                </div>
               </td>
               <td class="py-2.5 text-center">
                 <svg v-if="item.status === 'Claimed'" class="w-5 h-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -312,12 +436,14 @@ function onClaimed() {
       @updated="emit('claimed')"
     />
 
-    <!-- Claim Modal -->
+    <!-- Claim Modal (single or bulk) -->
     <ClaimModal
       :item="claimItem"
+      :items="claimItems"
       :disbursement-name="disbursementName"
       :week-num="weekNum"
-      @close="claimItem = null"
+      :default-date="sundayIso"
+      @close="claimItem = null; claimItems = null"
       @claimed="onClaimed"
     />
 
