@@ -7,7 +7,8 @@
  "engine": "InnoDB",
  "field_order": [
   "music_team_tag",
-  "skill_level"
+  "skill_level",
+  "preferred"
  ],
  "fields": [
   {
@@ -28,6 +29,14 @@
    "label": "Skill Level",
    "options": "1\n2\n3\n4\n5",
    "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "preferred",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Preferred",
+   "description": "Mark this as the member's preferred role."
   }
  ],
  "index_web_pages_for_search": 1,

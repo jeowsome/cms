@@ -1,12 +1,13 @@
 ## Current Task
-Vue 3 frontend scaffolded and building successfully. Ready to implement Disbursement UI features.
+Music team UI ported from `frontend/ui_kits/music-team/` into Vue 3 SPA, wired to Frappe doctypes with socket.io realtime.
 
 ## Key Decisions
-- Tailwind v3 (not v4) due to Node 18 compatibility on server
-- Hash-mode Vue Router (`/church_management#/disbursements`) to avoid server-side route conflicts
-- API endpoints in `church_management/api/` grouped by feature (disbursement.py, collection.py, settings.py)
+- New doctypes: `Member Unavailability`, `Schedule Decline`, `Music Team Notification` (+ recipient child)
+- Added `music_role` (Link → Music Team Tag) on `Ministry Schedule Assignment`; added `preferred` Check on `Music Role Preference`
+- Realtime via Frappe `publish_realtime` → `socket.io-client`; `useRealtime(event, handler)` composable in `composables/useRealtime.js`
+- All music-team API endpoints in `church_management/api/music_team.py`; routes under `/music/*` in hash router
 
 ## Next Steps
-- Test the SPA at `/church_management` with bench running
-- Implement full Disbursement form editing (create/save/submit)
-- Add Reka UI components (Dialog, Select, Popover) for interactive form elements
+- Test 5 pages live at `/church_management#/music/lineup` (and roles, unavail, me, notify)
+- Port the JBC desk worship-leader role/permissions if needed
+- Wire `MusicMember` to the logged-in user's linked Church Member instead of dropdown

@@ -1,0 +1,119 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2026-05-09 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "schedule",
+  "sunday_date",
+  "service_time",
+  "music_role",
+  "column_break_1",
+  "member",
+  "member_name",
+  "status",
+  "section_break_1",
+  "reason",
+  "declined_at"
+ ],
+ "fields": [
+  {
+   "fieldname": "schedule",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Ministry Schedule",
+   "options": "Ministry Schedule"
+  },
+  {
+   "fieldname": "sunday_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Service Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "service_time",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Service",
+   "options": "\nMorning\nEvening"
+  },
+  {
+   "fieldname": "music_role",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Role",
+   "options": "Music Team Tag"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "member",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Member",
+   "options": "Church Member",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "member.firstname",
+   "fieldname": "member_name",
+   "fieldtype": "Data",
+   "label": "Name",
+   "read_only": 1
+  },
+  {
+   "default": "open",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "open\nfilled\ncancelled"
+  },
+  {
+   "fieldname": "section_break_1",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "reason",
+   "fieldtype": "Small Text",
+   "label": "Reason"
+  },
+  {
+   "fieldname": "declined_at",
+   "fieldtype": "Datetime",
+   "label": "Declined At",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-05-09 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Church Management",
+ "name": "Schedule Decline",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "declined_at",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

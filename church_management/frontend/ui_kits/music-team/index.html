@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JBC CMS — Music Team</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          brand: { 50:'#f0f9ff',100:'#e0f2fe',200:'#bae6fd',300:'#7dd3fc',400:'#38bdf8',500:'#0ea5e9',600:'#0284c7',700:'#0369a1',800:'#075985',900:'#0c4a6e' },
+          ink:   { 50:'#f9fafb',100:'#f3f4f6',200:'#e5e7eb',300:'#d1d5db',400:'#9ca3af',500:'#6b7280',600:'#4b5563',700:'#374151',800:'#1f2937',900:'#111827' },
+          rose:  { 50:'#fff1f2',100:'#ffe4e6',200:'#fecdd3',500:'#f43f5e',600:'#e11d48',700:'#be123c',800:'#9f1239' }
+        },
+        fontFamily: { sans: ['Inter','system-ui','sans-serif'], mono: ['JetBrains Mono','monospace'], display: ['"Fraunces"','Georgia','serif'] }
+      }
+    }
+  }
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', system-ui, sans-serif; background: #f0eee9; }
+  .tabular { font-variant-numeric: tabular-nums; }
+  .no-scrollbar::-webkit-scrollbar { display:none; }
+  .no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
+  @keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
+  @keyframes pop { from { opacity:0; transform: scale(.96) } to { opacity:1; transform: scale(1) } }
+  @keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgba(225,29,72,0.5) } 70% { box-shadow: 0 0 0 6px rgba(225,29,72,0) } 100% { box-shadow: 0 0 0 0 rgba(225,29,72,0) } }
+  .anim-fadein { animation: fadeIn 180ms ease-out; }
+  .anim-pop { animation: pop 180ms ease-out; }
+  .pulse-ring { animation: pulse-ring 1.6s ease-out infinite; }
+</style>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="data.jsx"></script>
+  <script type="text/babel" src="lineup.jsx"></script>
+  <script type="text/babel" src="roles.jsx"></script>
+  <script type="text/babel" src="unavail.jsx"></script>
+  <script type="text/babel" src="member-view.jsx"></script>
+  <script type="text/babel" src="notify.jsx"></script>
+  <script type="text/babel" src="App.jsx"></script>
+</body>
+</html>

@@ -8,6 +8,7 @@
   "sunday_date",
   "ministry",
   "service_time",
+  "music_role",
   "column_break_1",
   "member",
   "member_name",
@@ -36,6 +37,13 @@
    "label": "Service Time",
    "options": "\nMorning\nEvening",
    "description": "Leave blank for ministries that serve all day. Use Morning/Evening for Worship Leader (Sunday morning vs. evening service)."
+  },
+  {
+   "fieldname": "music_role",
+   "fieldtype": "Link",
+   "label": "Music Role",
+   "options": "Music Team Tag",
+   "description": "For Music Team assignments only. Identifies the role slot."
   },
   {
    "fieldname": "column_break_1",
