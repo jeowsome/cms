@@ -1,10 +1,11 @@
+{% extends "templates/web.html" %}
+
 {% block head_include %}
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>JBC Church Management</title>
+<title>Music Team Registration · JBC</title>
 <link rel="stylesheet" href="/assets/church_management/dist/assets/main.css?v={{ frappe.utils.now() }}" />
 <style>
-    /* Strip all Frappe chrome for full SPA takeover */
     html, body { margin: 0; padding: 0; overflow: hidden; height: 100%; }
     .web-footer, .navbar, .page-header, .page-header-wrapper,
     .website-footer, footer, .banner, .hero { display: none !important; }
@@ -15,7 +16,6 @@
         min-height: 100vh !important;
     }
     .page-content { padding: 0 !important; }
-    /* Prevent Frappe's body scroll */
     body > .container { display: contents !important; }
 </style>
 {% endblock %}
@@ -24,6 +24,10 @@
 <div id="app"></div>
 <script>
     window.csrfToken = "{{ csrf_token }}";
+    // Force the SPA to load the registration route on first paint.
+    if (!location.hash || location.hash === "#/") {
+        location.hash = "#/register";
+    }
 </script>
 <script type="module" src="/assets/church_management/dist/assets/index.js?v={{ frappe.utils.now() }}"></script>
 {% endblock %}

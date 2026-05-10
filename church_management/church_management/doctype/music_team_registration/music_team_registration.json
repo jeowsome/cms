@@ -1,0 +1,184 @@
+{
+ "actions": [],
+ "autoname": "format:MTR-{#####}",
+ "creation": "2026-05-10 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "status",
+  "submitted_on",
+  "column_break_meta",
+  "reviewed_on",
+  "reviewed_by",
+  "section_break_personal",
+  "first_name",
+  "last_name",
+  "gender",
+  "column_break_personal",
+  "email",
+  "contact_number",
+  "section_break_extra",
+  "birthday",
+  "member_since",
+  "column_break_extra",
+  "envelope_number",
+  "matched_church_member",
+  "section_break_skills",
+  "skills",
+  "section_break_review",
+  "linked_music_member",
+  "rejection_reason"
+ ],
+ "fields": [
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Pending\nAccepted\nRejected",
+   "reqd": 1
+  },
+  {
+   "fieldname": "submitted_on",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Submitted On",
+   "read_only": 1
+  },
+  {"fieldname": "column_break_meta", "fieldtype": "Column Break"},
+  {
+   "fieldname": "reviewed_on",
+   "fieldtype": "Datetime",
+   "label": "Reviewed On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reviewed_by",
+   "fieldtype": "Link",
+   "label": "Reviewed By",
+   "options": "User",
+   "read_only": 1
+  },
+  {"fieldname": "section_break_personal", "fieldtype": "Section Break", "label": "Personal Details"},
+  {
+   "fieldname": "first_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "First Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "last_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Last Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "gender",
+   "fieldtype": "Select",
+   "label": "Gender",
+   "options": "\nMale\nFemale",
+   "reqd": 1
+  },
+  {"fieldname": "column_break_personal", "fieldtype": "Column Break"},
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Email",
+   "options": "Email",
+   "reqd": 1
+  },
+  {
+   "fieldname": "contact_number",
+   "fieldtype": "Data",
+   "label": "Contact Number",
+   "reqd": 1
+  },
+  {"fieldname": "section_break_extra", "fieldtype": "Section Break"},
+  {
+   "fieldname": "birthday",
+   "fieldtype": "Date",
+   "label": "Birthday",
+   "reqd": 1
+  },
+  {
+   "fieldname": "member_since",
+   "fieldtype": "Data",
+   "label": "Member Since"
+  },
+  {"fieldname": "column_break_extra", "fieldtype": "Column Break"},
+  {
+   "fieldname": "envelope_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Envelope Number"
+  },
+  {
+   "fieldname": "matched_church_member",
+   "fieldtype": "Link",
+   "label": "Matched Church Member",
+   "options": "Church Member"
+  },
+  {"fieldname": "section_break_skills", "fieldtype": "Section Break", "label": "Skills"},
+  {
+   "fieldname": "skills",
+   "fieldtype": "Table",
+   "label": "Skills",
+   "options": "Church Member Music Tag"
+  },
+  {"fieldname": "section_break_review", "fieldtype": "Section Break", "label": "Review"},
+  {
+   "fieldname": "linked_music_member",
+   "fieldtype": "Link",
+   "label": "Linked Church Member",
+   "options": "Church Member",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rejection_reason",
+   "fieldtype": "Small Text",
+   "label": "Rejection Reason",
+   "depends_on": "eval:doc.status=='Rejected'"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-05-10 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Church Management",
+ "name": "Music Team Registration",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Music Team Leader",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "submitted_on",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

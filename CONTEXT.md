@@ -1,13 +1,12 @@
 ## Current Task
-Music team UI ported from `frontend/ui_kits/music-team/` into Vue 3 SPA, wired to Frappe doctypes with socket.io realtime.
+Music team registration + login + leader queue + member profile shipped (Vue 3 SPA + Frappe). Public `/music_register`, role-aware `/login`, side-by-side envelope match verification with per-field apply check/cross icons.
 
 ## Key Decisions
-- New doctypes: `Member Unavailability`, `Schedule Decline`, `Music Team Notification` (+ recipient child)
-- Added `music_role` (Link → Music Team Tag) on `Ministry Schedule Assignment`; added `preferred` Check on `Music Role Preference`
-- Realtime via Frappe `publish_realtime` → `socket.io-client`; `useRealtime(event, handler)` composable in `composables/useRealtime.js`
-- All music-team API endpoints in `church_management/api/music_team.py`; routes under `/music/*` in hash router
+- New doctype `Music Team Registration` (Pending/Accepted/Rejected, soft envelope match)
+- Roles `Music Team Member` + `Music Team Leader` via `setup_music_roles.execute`; acceptance creates User + temp password, forces `/music/change-password` first login
+- Match panel syncs `first_name/last_name/email/contact_number/birthday` either direction via `apply_match_field`; envelope is verification-only
 
 ## Next Steps
-- Test 5 pages live at `/church_management#/music/lineup` (and roles, unavail, me, notify)
-- Port the JBC desk worship-leader role/permissions if needed
-- Wire `MusicMember` to the logged-in user's linked Church Member instead of dropdown
+- Cleanup music team member view — must differ from leader/admin view (slim profile-centric, no admin tools)
+- Build a dedicated Worship Leader view (separate from Music Team Leader's registrations queue)
+- Restrict music-team-only roles to music pages; hide and route-guard Disbursements + other non-music pages

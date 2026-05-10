@@ -1,25 +1,41 @@
 <script setup>
 import { ref, computed } from "vue";
-import { RouterLink, useRoute } from "vue-router";
+import { RouterLink, useRoute, useRouter } from "vue-router";
+import { useSessionStore } from "@/stores/session";
 
 const route = useRoute();
+const router = useRouter();
+const session = useSessionStore();
 const collapsed = ref(false);
 
-const navItems = [
-  { label: "Disbursements", to: "/disbursements", icon: "wallet" },
-  {
-    label: "Music Team",
-    icon: "music",
-    basePath: "/music",
-    children: [
-      { label: "Lineup", to: "/music/lineup" },
-      { label: "Roles", to: "/music/roles" },
-      { label: "Unavailability", to: "/music/unavail" },
-      { label: "My Schedule", to: "/music/me" },
-      { label: "Notify", to: "/music/notify" },
-    ],
-  },
-];
+const navItems = computed(() => {
+  // Music Team Member (without Leader/SystemManager) gets a slim profile-only view.
+  if (session.isMusicMember && !session.isLeader) {
+    return [
+      {
+        label: "Music Team", icon: "music", basePath: "/music",
+        children: [
+          { label: "My Profile", to: "/music/profile" },
+          { label: "My Schedule", to: "/music/me" },
+        ],
+      },
+    ];
+  }
+  const musicChildren = [
+    { label: "Lineup", to: "/music/lineup" },
+    { label: "Roles", to: "/music/roles" },
+    { label: "Unavailability", to: "/music/unavail" },
+    { label: "My Schedule", to: "/music/me" },
+    { label: "Notify", to: "/music/notify" },
+  ];
+  if (session.isLeader) musicChildren.unshift({ label: "Registrations", to: "/music/registrations" });
+  return [
+    { label: "Disbursements", to: "/disbursements", icon: "wallet" },
+    { label: "Music Team", icon: "music", basePath: "/music", children: musicChildren },
+  ];
+});
+
+async function logout() { await session.logout(); router.replace("/login"); }
 
 const expanded = ref({
   "Music Team": route.path.startsWith("/music"),
@@ -127,6 +143,12 @@ function toggle(label) {
         </div>
       </template>
     </nav>
+
+    <!-- Account footer -->
+    <div v-if="!collapsed" class="px-3 py-2 border-t border-gray-100 text-[11px] text-gray-500 truncate">
+      <div class="font-semibold text-gray-700 truncate">{{ session.user }}</div>
+      <button @click="logout" class="mt-1 text-rose-700 hover:underline font-semibold">Sign out</button>
+    </div>
 
     <!-- Collapse toggle -->
     <button

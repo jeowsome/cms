@@ -28,7 +28,7 @@ def _full_name(member):
 	return (first + " " + last).strip() or member
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def get_roles():
 	"""All Music Team Tag entries — used as the role catalogue."""
 	return frappe.get_all(
@@ -388,3 +388,458 @@ def my_assignments(member=None):
 	for r in rows:
 		r["sunday_date"] = str(r["sunday_date"])
 	return rows
+
+
+# =====================================================================
+# Registration + Profile + Auth endpoints
+# =====================================================================
+
+import secrets
+import string
+
+
+def _is_leader():
+	roles = frappe.get_roles()
+	return "Music Team Leader" in roles or "System Manager" in roles
+
+
+def _require_leader():
+	if not _is_leader():
+		frappe.throw("Only Music Team Leader can perform this action.", frappe.PermissionError)
+
+
+def _gen_temp_password(length=12):
+	alphabet = string.ascii_letters + string.digits
+	return "".join(secrets.choice(alphabet) for _ in range(length))
+
+
+@frappe.whitelist(allow_guest=True)
+def submit_registration(payload):
+	"""Public endpoint — accepts a registration submission and queues a confirmation email."""
+	if isinstance(payload, str):
+		payload = json.loads(payload)
+	required = ["email", "first_name", "last_name", "gender", "birthday", "contact_number"]
+	for f in required:
+		if not (payload.get(f) or "").strip() if isinstance(payload.get(f), str) else not payload.get(f):
+			frappe.throw(f"Missing required field: {f}")
+	skills = payload.get("skills") or []
+	if not skills:
+		frappe.throw("Please select at least one skill.")
+
+	# Reject duplicate pending registrations for the same email
+	existing = frappe.db.get_value(
+		"Music Team Registration",
+		{"email": payload["email"], "status": "Pending"},
+		"name",
+	)
+	if existing:
+		return {"ok": True, "name": existing, "duplicate": True}
+
+	doc = frappe.get_doc({
+		"doctype": "Music Team Registration",
+		"first_name": payload["first_name"].strip(),
+		"last_name": payload["last_name"].strip(),
+		"gender": payload["gender"],
+		"email": payload["email"].strip().lower(),
+		"contact_number": payload["contact_number"].strip(),
+		"birthday": payload["birthday"],
+		"member_since": (payload.get("member_since") or "").strip(),
+		"envelope_number": (payload.get("envelope_number") or "").strip(),
+		"status": "Pending",
+		"submitted_on": now_datetime(),
+	})
+	# Soft match by envelope first, fallback to email
+	doc.matched_church_member = (
+		frappe.db.get_value("Church Member", {"envelope_number": doc.envelope_number}, "name")
+		if doc.envelope_number else None
+	) or frappe.db.get_value("Church Member", {"email_address": doc.email}, "name")
+
+	for tag in skills:
+		doc.append("skills", {"music_team_tag": tag})
+	doc.insert(ignore_permissions=True)
+	frappe.db.commit()
+
+	try:
+		frappe.sendmail(
+			recipients=[doc.email],
+			subject="Music Team registration received",
+			template="music_registration_received",
+			args={"first_name": doc.first_name, "registration_id": doc.name},
+			now=True,
+		)
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), "Music registration receipt email failed")
+
+	_emit("registration_submitted", {"name": doc.name})
+	return {"ok": True, "name": doc.name}
+
+
+@frappe.whitelist()
+def list_registrations(status=None):
+	_require_leader()
+	filters = {}
+	if status:
+		filters["status"] = status
+	rows = frappe.get_all(
+		"Music Team Registration",
+		filters=filters,
+		fields=[
+			"name", "status", "submitted_on", "first_name", "last_name", "gender", "email",
+			"contact_number", "birthday", "member_since", "envelope_number",
+			"matched_church_member", "linked_music_member", "reviewed_on", "reviewed_by",
+			"rejection_reason",
+		],
+		order_by="submitted_on desc",
+		limit_page_length=500,
+	)
+	for r in rows:
+		r["submitted_on"] = str(r["submitted_on"]) if r.get("submitted_on") else None
+		r["reviewed_on"] = str(r["reviewed_on"]) if r.get("reviewed_on") else None
+		r["birthday"] = str(r["birthday"]) if r.get("birthday") else None
+		skills = frappe.get_all(
+			"Church Member Music Tag",
+			filters={"parent": r["name"], "parenttype": "Music Team Registration"},
+			fields=["music_team_tag"],
+		)
+		r["skills"] = [s["music_team_tag"] for s in skills]
+		# Re-compute soft match preview if absent
+		if r["envelope_number"] and not r["matched_church_member"]:
+			r["matched_church_member"] = frappe.db.get_value(
+				"Church Member", {"envelope_number": r["envelope_number"]}, "name"
+			)
+		if r["matched_church_member"]:
+			cm = frappe.db.get_value(
+				"Church Member",
+				r["matched_church_member"],
+				["firstname", "lastname", "email_address", "envelope_number", "contact_number", "birthday"],
+				as_dict=True,
+			)
+			if cm:
+				cm["birthday"] = str(cm["birthday"]) if cm.get("birthday") else None
+				r["matched_church_member_data"] = cm
+	return rows
+
+
+@frappe.whitelist()
+def update_registration(name, patch):
+	_require_leader()
+	if isinstance(patch, str):
+		patch = json.loads(patch)
+	doc = frappe.get_doc("Music Team Registration", name)
+	if doc.status != "Pending":
+		frappe.throw("Only pending registrations can be edited.")
+	editable = {
+		"first_name", "last_name", "gender", "email", "contact_number", "birthday",
+		"member_since", "envelope_number", "matched_church_member",
+	}
+	for k, v in (patch or {}).items():
+		if k in editable:
+			doc.set(k, v)
+	if "skills" in (patch or {}):
+		doc.set("skills", [])
+		for tag in patch["skills"] or []:
+			doc.append("skills", {"music_team_tag": tag})
+	doc.save(ignore_permissions=True)
+	frappe.db.commit()
+	_emit("registration_updated", {"name": doc.name})
+	return {"ok": True}
+
+
+@frappe.whitelist()
+def accept_registration(name):
+	_require_leader()
+	doc = frappe.get_doc("Music Team Registration", name)
+	if doc.status == "Accepted":
+		return {"ok": True, "already": True}
+
+	# Resolve / create Church Member
+	church_member = doc.matched_church_member
+	if not church_member:
+		# Last-chance match by envelope number
+		if doc.envelope_number:
+			church_member = frappe.db.get_value(
+				"Church Member", {"envelope_number": doc.envelope_number}, "name"
+			)
+	if not church_member:
+		frappe.throw("Cannot accept — no matched Church Member. Edit the registration to set one.")
+
+	# Update Church Member contact info if missing
+	cm = frappe.get_doc("Church Member", church_member)
+	updates = {}
+	if not cm.email_address:
+		updates["email_address"] = doc.email
+	if not cm.contact_number:
+		updates["contact_number"] = doc.contact_number
+	for k, v in updates.items():
+		setattr(cm, k, v)
+	# Sync skills onto Church Member's music_team_tag child
+	existing_tags = {t.music_team_tag for t in (cm.get("music_team_tag") or [])}
+	for s in doc.skills or []:
+		if s.music_team_tag not in existing_tags:
+			cm.append("music_team_tag", {"music_team_tag": s.music_team_tag})
+	# Ensure at least one Music Role Preference row so they appear on the roster
+	existing_prefs = {p.music_team_tag for p in (cm.get("music_role_preference") or [])}
+	for s in doc.skills or []:
+		if s.music_team_tag not in existing_prefs:
+			cm.append("music_role_preference", {
+				"music_team_tag": s.music_team_tag,
+				"skill_level": 3,
+				"preferred": 0,
+			})
+	cm.save(ignore_permissions=True)
+
+	# Create / update User
+	temp_password = _gen_temp_password()
+	if frappe.db.exists("User", doc.email):
+		user = frappe.get_doc("User", doc.email)
+	else:
+		user = frappe.get_doc({
+			"doctype": "User",
+			"email": doc.email,
+			"first_name": doc.first_name,
+			"last_name": doc.last_name,
+			"send_welcome_email": 0,
+			"user_type": "Website User",
+			"enabled": 1,
+		})
+	if {"role": "Music Team Member"} not in [{"role": r.role} for r in user.get("roles") or []]:
+		user.append("roles", {"role": "Music Team Member"})
+	user.flags.ignore_permissions = True
+	if user.is_new():
+		user.insert(ignore_permissions=True)
+	else:
+		user.save(ignore_permissions=True)
+
+	from frappe.utils.password import update_password
+	update_password(user.name, temp_password)
+	# Force password change on first login
+	frappe.db.set_value("User", user.name, "reset_password_key", "")
+
+	# Mark registration accepted + link
+	doc.status = "Accepted"
+	doc.linked_music_member = church_member
+	doc.reviewed_on = now_datetime()
+	doc.reviewed_by = frappe.session.user
+	doc.save(ignore_permissions=True)
+
+	# Cache flag drives the SPA's "force change password on next login" gate
+	frappe.cache().set_value(f"music_temp_pw:{user.name}", "1")
+
+	frappe.db.commit()
+
+	site_url = frappe.utils.get_url()
+	try:
+		frappe.sendmail(
+			recipients=[doc.email],
+			subject="You're in — Music Team account",
+			template="music_registration_accepted",
+			args={
+				"first_name": doc.first_name,
+				"email": doc.email,
+				"temp_password": temp_password,
+				"login_url": f"{site_url}/church_management#/login",
+			},
+			now=True,
+		)
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), "Music registration acceptance email failed")
+
+	_emit("registration_accepted", {"name": doc.name})
+	return {"ok": True, "user": user.name}
+
+
+REG_TO_CM_FIELDS = {
+	"email": "email_address",
+	"contact_number": "contact_number",
+	"birthday": "birthday",
+	"first_name": "firstname",
+	"last_name": "lastname",
+}
+
+
+@frappe.whitelist()
+def apply_match_field(name, field, source):
+	"""Sync a single field between the registration and the matched Church Member.
+	source = 'submitted' → push registration value to church member.
+	source = 'record'    → pull church member value into registration."""
+	_require_leader()
+	if field not in REG_TO_CM_FIELDS:
+		frappe.throw(f"Field '{field}' cannot be synced.")
+	doc = frappe.get_doc("Music Team Registration", name)
+	if not doc.matched_church_member:
+		frappe.throw("No matched Church Member set.")
+	cm = frappe.get_doc("Church Member", doc.matched_church_member)
+	cm_field = REG_TO_CM_FIELDS[field]
+	if source == "submitted":
+		setattr(cm, cm_field, getattr(doc, field))
+		cm.save(ignore_permissions=True)
+	elif source == "record":
+		setattr(doc, field, getattr(cm, cm_field))
+		doc.save(ignore_permissions=True)
+	else:
+		frappe.throw("source must be 'submitted' or 'record'.")
+	frappe.db.commit()
+	_emit("registration_updated", {"name": name})
+	return {"ok": True}
+
+
+@frappe.whitelist()
+def reject_registration(name, reason=None):
+	_require_leader()
+	doc = frappe.get_doc("Music Team Registration", name)
+	if doc.status == "Accepted":
+		frappe.throw("Already accepted — cannot reject.")
+	doc.status = "Rejected"
+	doc.rejection_reason = reason or ""
+	doc.reviewed_on = now_datetime()
+	doc.reviewed_by = frappe.session.user
+	doc.save(ignore_permissions=True)
+	frappe.db.commit()
+	_emit("registration_rejected", {"name": doc.name})
+	return {"ok": True}
+
+
+# ---------------------------------------------------------------------
+# Profile (logged-in Music Team Member)
+# ---------------------------------------------------------------------
+
+
+def _resolve_my_member():
+	user = frappe.session.user
+	if user == "Guest":
+		frappe.throw("Login required.", frappe.AuthenticationError)
+	# Linked Church Member (by email)
+	member = frappe.db.get_value("Church Member", {"email_address": user}, "name")
+	return user, member
+
+
+@frappe.whitelist()
+def get_my_music_profile():
+	user_name, member = _resolve_my_member()
+	user = frappe.get_doc("User", user_name)
+	temp_pw_pending = bool(frappe.cache().get_value(f"music_temp_pw:{user_name}"))
+	out = {
+		"user": user_name,
+		"first_name": user.first_name,
+		"last_name": user.last_name,
+		"profile_image": user.user_image,
+		"roles": [r.role for r in user.roles],
+		"church_member": member,
+		"temp_password_pending": temp_pw_pending,
+	}
+	if member:
+		cm = frappe.get_doc("Church Member", member)
+		prefs = [
+			{"music_team_tag": p.music_team_tag, "skill_level": p.skill_level, "preferred": p.preferred}
+			for p in (cm.music_role_preference or [])
+		]
+		out["envelope_number"] = cm.envelope_number
+		out["preferences"] = prefs
+		out["skills"] = [t.music_team_tag for t in (cm.music_team_tag or [])]
+	return out
+
+
+@frappe.whitelist()
+def update_my_music_profile(patch):
+	user_name, member = _resolve_my_member()
+	if isinstance(patch, str):
+		patch = json.loads(patch)
+	user = frappe.get_doc("User", user_name)
+	if "first_name" in patch:
+		user.first_name = patch["first_name"]
+	if "last_name" in patch:
+		user.last_name = patch["last_name"]
+	if "profile_image" in patch:
+		user.user_image = patch["profile_image"]
+	user.save(ignore_permissions=True)
+
+	if member and ("skills" in patch or "preferred" in patch):
+		cm = frappe.get_doc("Church Member", member)
+		if "skills" in patch:
+			cm.set("music_team_tag", [])
+			for tag in patch["skills"] or []:
+				cm.append("music_team_tag", {"music_team_tag": tag})
+			# Mirror into preferences if missing
+			existing = {p.music_team_tag for p in cm.music_role_preference or []}
+			for tag in patch["skills"] or []:
+				if tag not in existing:
+					cm.append("music_role_preference", {
+						"music_team_tag": tag, "skill_level": 3, "preferred": 0,
+					})
+		if "preferred" in patch:
+			for p in cm.music_role_preference or []:
+				p.preferred = 1 if p.music_team_tag == patch["preferred"] else 0
+		cm.save(ignore_permissions=True)
+	frappe.db.commit()
+	return {"ok": True}
+
+
+@frappe.whitelist()
+def change_password(current_password, new_password):
+	user_name = frappe.session.user
+	if user_name == "Guest":
+		frappe.throw("Login required.", frappe.AuthenticationError)
+	from frappe.utils.password import check_password, update_password
+	try:
+		check_password(user_name, current_password)
+	except frappe.AuthenticationError:
+		frappe.throw("Current password is incorrect.")
+	if not new_password or len(new_password) < 8:
+		frappe.throw("New password must be at least 8 characters.")
+	update_password(user_name, new_password)
+	frappe.cache().delete_value(f"music_temp_pw:{user_name}")
+	frappe.db.commit()
+	return {"ok": True}
+
+
+@frappe.whitelist(allow_guest=True)
+def request_password_reset(email):
+	"""Send a password-reset link if the user exists. Always returns ok to avoid user enumeration."""
+	if not email:
+		return {"ok": True}
+	email = email.strip().lower()
+	if frappe.db.exists("User", email):
+		try:
+			user = frappe.get_doc("User", email)
+			user.flags.ignore_permissions = True
+			key = user.reset_password()
+			# reset_password sends an email by default in newer Frappe; ensure mail goes out
+			frappe.db.commit()
+		except Exception:
+			frappe.log_error(frappe.get_traceback(), "Music password reset failed")
+	return {"ok": True}
+
+
+@frappe.whitelist(allow_guest=True)
+def login(email, password):
+	"""Login via the SPA. Returns role hints so the SPA can route correctly."""
+	from frappe.auth import LoginManager
+	try:
+		lm = LoginManager()
+		lm.authenticate(user=email, pwd=password)
+		lm.post_login()
+	except frappe.AuthenticationError:
+		frappe.throw("Invalid email or password.", frappe.AuthenticationError)
+	roles = frappe.get_roles(frappe.session.user)
+	temp_pw_pending = bool(frappe.cache().get_value(f"music_temp_pw:{frappe.session.user}"))
+	return {
+		"ok": True,
+		"user": frappe.session.user,
+		"roles": roles,
+		"temp_password_pending": temp_pw_pending,
+	}
+
+
+@frappe.whitelist(allow_guest=True)
+def logout():
+	frappe.local.login_manager.logout()
+	frappe.db.commit()
+	return {"ok": True}
+
+
+@frappe.whitelist(allow_guest=True)
+def whoami():
+	user = frappe.session.user
+	roles = frappe.get_roles(user) if user != "Guest" else []
+	temp_pw_pending = bool(frappe.cache().get_value(f"music_temp_pw:{user}")) if user != "Guest" else False
+	return {"user": user, "roles": roles, "temp_password_pending": temp_pw_pending}

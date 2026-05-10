@@ -2,7 +2,7 @@ import frappe
 
 
 def get_context(context):
-    # SPA handles its own auth-gating (login, register, forgot-password are public routes).
+    """Public, guest-allowed mount of the SPA at the /register hash route."""
     context.no_cache = 1
     context.show_sidebar = False
     try:

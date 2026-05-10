@@ -69,7 +69,8 @@ after_migrate = [
     "church_management.setup_accounting.execute",
     "church_management.populate_purpose.execute",
     "church_management.populate_ministry.execute",
-    "church_management.populate_music_team_tag.execute"
+    "church_management.populate_music_team_tag.execute",
+    "church_management.setup_music_roles.execute"
 ]
 
 # Uninstallation

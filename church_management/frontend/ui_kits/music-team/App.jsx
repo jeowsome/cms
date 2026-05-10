@@ -14,6 +14,10 @@ function App() {
         <DCArtboard id="member"      label="Member view · Mobile"            width={440} height={900}><MemberView /></DCArtboard>
         <DCArtboard id="notify"      label="Worship leader · Send to team"   width={1280} height={900}><Notify /></DCArtboard>
       </DCSection>
+      <DCSection id="onboarding" title="Onboarding" subtitle="How a new music team member joins the system">
+        <DCArtboard id="register"   label="Public registration form"        width={900}  height={1280}><Register /></DCArtboard>
+        <DCArtboard id="emails"     label="Email templates · Receipt + Verification" width={900} height={1700}><EmailTemplates /></DCArtboard>
+      </DCSection>
     </DesignCanvas>
   );
 }
