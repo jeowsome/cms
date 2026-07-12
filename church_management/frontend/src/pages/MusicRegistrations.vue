@@ -80,12 +80,15 @@ async function saveEdit() {
   }
 }
 
+const lastAcceptedEmail = ref("");
+
 async function accept() {
   if (!confirm(`Accept ${selected.value.first_name} ${selected.value.last_name}? This creates a user account and emails a temporary password.`)) return;
   acting.value = true;
   actionMsg.value = "";
   try {
     await call("church_management.api.music_team.accept_registration", { name: selected.value.name });
+    lastAcceptedEmail.value = selected.value.email;
     actionMsg.value = "Accepted. Acceptance email sent.";
     await load();
   } catch (e) {
@@ -398,7 +401,11 @@ async function logout() { await session.logout(); router.replace("/login"); }
 
             <div v-if="actionMsg" class="text-sm rounded-lg px-4 py-2"
               :class="actionMsg.toLowerCase().includes('accept') ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'">
-              {{ actionMsg }}
+              <div>{{ actionMsg }}</div>
+              <RouterLink v-if="actionMsg.toLowerCase().includes('accept')" to="/admin/roles"
+                class="inline-block mt-1 text-[11px] font-bold text-emerald-800 hover:underline">
+                Open role assignments to add Worship Leader / extra roles →
+              </RouterLink>
             </div>
 
             <!-- Actions -->

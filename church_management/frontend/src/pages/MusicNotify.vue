@@ -7,10 +7,11 @@ import MusicAvatar from "@/components/MusicAvatar.vue";
 
 const store = useMusicTeamStore();
 
+// Swap requests are handled by Music Swap Request — not via this notify
+// surface — so the `swap` type is intentionally omitted.
 const TYPES = [
   { id: "songs",    label: "Song list",       icon: "🎵" },
   { id: "practice", label: "Practice notice", icon: "📅" },
-  { id: "swap",     label: "Swap request",    icon: "🔄" },
   { id: "general",  label: "General memo",    icon: "📣" },
 ];
 
@@ -174,7 +175,7 @@ async function send() {
             <div v-for="n in store.notifications" :key="n.name"
                  class="px-5 py-3 flex items-start gap-3 hover:bg-ink-50/50">
               <span class="text-lg shrink-0">
-                {{ n.notification_type === 'songs' ? '🎵' : n.notification_type === 'practice' ? '📅' : n.notification_type === 'swap' ? '🔄' : '📣' }}
+                {{ n.notification_type === 'songs' ? '🎵' : n.notification_type === 'practice' ? '📅' : '📣' }}
               </span>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2">

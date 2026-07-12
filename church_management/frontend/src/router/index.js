@@ -9,20 +9,24 @@ const routes = [
   { path: "/forgot-password", name: "ForgotPassword", component: () => import("@/pages/ForgotPassword.vue"), meta: { public: true, chrome: false } },
   { path: "/register", name: "MusicRegister", component: () => import("@/pages/MusicRegister.vue"), meta: { public: true, chrome: false } },
 
-  // Disbursements (auth required)
-  { path: "/disbursements", name: "DisbursementList", component: () => import("@/pages/DisbursementList.vue"), meta: { requiresAuth: true } },
-  { path: "/disbursements/:name", name: "DisbursementForm", component: () => import("@/pages/DisbursementForm.vue"), props: true, meta: { requiresAuth: true } },
+  // Disbursements (Finance Team or Admin)
+  { path: "/disbursements", name: "DisbursementList", component: () => import("@/pages/DisbursementList.vue"), meta: { requiresAuth: true, requiresFinance: true } },
+  { path: "/disbursements/:name", name: "DisbursementForm", component: () => import("@/pages/DisbursementForm.vue"), props: true, meta: { requiresAuth: true, requiresFinance: true } },
 
-  // Music team
+  // Music team (any music role required)
   { path: "/music", redirect: "/music/lineup" },
-  { path: "/music/lineup", name: "MusicLineup", component: () => import("@/pages/MusicLineup.vue"), meta: { requiresAuth: true } },
-  { path: "/music/roles", name: "MusicRoles", component: () => import("@/pages/MusicRoles.vue"), meta: { requiresAuth: true } },
-  { path: "/music/unavail", name: "MusicUnavail", component: () => import("@/pages/MusicUnavail.vue"), meta: { requiresAuth: true } },
-  { path: "/music/me", name: "MusicMember", component: () => import("@/pages/MusicMember.vue"), meta: { requiresAuth: true } },
-  { path: "/music/notify", name: "MusicNotify", component: () => import("@/pages/MusicNotify.vue"), meta: { requiresAuth: true } },
-  { path: "/music/registrations", name: "MusicRegistrations", component: () => import("@/pages/MusicRegistrations.vue"), meta: { requiresAuth: true, requiresLeader: true } },
-  { path: "/music/profile", name: "MusicProfile", component: () => import("@/pages/MusicProfile.vue"), meta: { requiresAuth: true } },
+  { path: "/music/lineup", name: "MusicLineup", component: () => import("@/pages/MusicLineup.vue"), meta: { requiresAuth: true, requiresMusic: true, requiresWorshipLeader: true } },
+  { path: "/music/roles", name: "MusicRoles", component: () => import("@/pages/MusicRoles.vue"), meta: { requiresAuth: true, requiresMusic: true, requiresLeader: true } },
+  { path: "/music/unavail", name: "MusicUnavail", component: () => import("@/pages/MusicUnavail.vue"), meta: { requiresAuth: true, requiresMusic: true, requiresLeader: true } },
+  { path: "/music/me", name: "MusicMember", component: () => import("@/pages/MusicMember.vue"), meta: { requiresAuth: true, requiresMusic: true } },
+  { path: "/music/notify", name: "MusicNotify", component: () => import("@/pages/MusicNotify.vue"), meta: { requiresAuth: true, requiresMusic: true, requiresLeader: true } },
+  { path: "/music/registrations", name: "MusicRegistrations", component: () => import("@/pages/MusicRegistrations.vue"), meta: { requiresAuth: true, requiresMusic: true, requiresLeader: true } },
+  { path: "/music/worship", name: "MusicWorship", component: () => import("@/pages/MusicWorship.vue"), meta: { requiresAuth: true, requiresMusic: true, requiresWorshipLeader: true } },
+  { path: "/music/profile", name: "MusicProfile", component: () => import("@/pages/MusicProfile.vue"), meta: { requiresAuth: true, requiresMusic: true } },
   { path: "/music/change-password", name: "ChangePassword", component: () => import("@/pages/ChangePassword.vue"), meta: { requiresAuth: true, chrome: false } },
+
+  // Admin / access management — Music Team Leader or Admin only.
+  { path: "/admin/roles", name: "AdminRoles", component: () => import("@/pages/AdminRoles.vue"), meta: { requiresAuth: true, requiresLeader: true } },
 ];
 
 const router = createRouter({
@@ -56,6 +60,15 @@ router.beforeEach(async (to) => {
 
   if (to.meta.requiresAuth && session.isGuest) {
     return { name: "Login", query: { redirect: to.fullPath } };
+  }
+  if (to.meta.requiresFinance && !session.hasFinanceAccess) {
+    return session.landingRoute();
+  }
+  if (to.meta.requiresMusic && !session.hasMusicAccess) {
+    return session.landingRoute();
+  }
+  if (to.meta.requiresWorshipLeader && !session.isWorshipLeader) {
+    return session.landingRoute();
   }
   if (to.meta.requiresLeader && !session.isLeader) {
     return session.landingRoute();

@@ -1,9 +1,12 @@
 import frappe
 from frappe import _
 
+from church_management.api import permissions as perms
+
 
 @frappe.whitelist()
 def get_list(year=None):
+    perms.require_finance()
     """Get list of disbursements with summary fields."""
     filters = {"year_recorded": [">=", 2026]}
     if year:
@@ -58,6 +61,7 @@ def get_list(year=None):
 @frappe.whitelist()
 def get_detail(name):
     """Get full disbursement document with all child tables."""
+    perms.require_finance()
     frappe.has_permission("Disbursement", doc=name, throw=True)
     doc = frappe.get_doc("Disbursement", name)
     return doc.as_dict()
@@ -66,6 +70,7 @@ def get_detail(name):
 @frappe.whitelist()
 def get_summary(name):
     """Get disbursement summary broken down by purpose."""
+    perms.require_finance()
     frappe.has_permission("Disbursement", doc=name, throw=True)
 
     doc = frappe.get_doc("Disbursement", name)
@@ -101,6 +106,7 @@ def get_summary(name):
 @frappe.whitelist()
 def claim_item(disbursement_name, child_doctype, child_name, received_by, received_date, source=None, remarks=None):
     """Mark a disbursement item as claimed."""
+    perms.require_finance()
     if not source:
         frappe.throw(_("Source is mandatory when claiming an item"))
 
@@ -134,6 +140,7 @@ def claim_item(disbursement_name, child_doctype, child_name, received_by, receiv
 @frappe.whitelist()
 def claim_items_bulk(disbursement_name, child_names, received_by, received_date, source, remarks=None):
     """Mark multiple disbursement items as claimed in one save."""
+    perms.require_finance()
     import json as _json
     if isinstance(child_names, str):
         child_names = _json.loads(child_names)
@@ -169,6 +176,7 @@ def claim_items_bulk(disbursement_name, child_names, received_by, received_date,
 @frappe.whitelist()
 def get_workers():
     """Get list of active church workers for claim modal."""
+    perms.require_finance()
     return frappe.get_all(
         "Church Worker",
         filters={"active": 1},
@@ -180,10 +188,11 @@ def get_workers():
 @frappe.whitelist()
 def update_item(disbursement_name, child_doctype, child_name, updates):
     """Update editable fields on a sub-item."""
+    perms.require_finance()
     if isinstance(updates, str):
         import json
         updates = json.loads(updates)
-        
+
     frappe.has_permission("Disbursement", doc=disbursement_name, ptype="write", throw=True)
     doc = frappe.get_doc("Disbursement", disbursement_name)
 
@@ -223,10 +232,11 @@ def update_item(disbursement_name, child_doctype, child_name, updates):
 @frappe.whitelist()
 def add_item(disbursement_name, table_field, item_data):
     """Add a new item to a specific child table."""
+    perms.require_finance()
     if isinstance(item_data, str):
         import json
         item_data = json.loads(item_data)
-        
+
     frappe.has_permission("Disbursement", doc=disbursement_name, ptype="write", throw=True)
     doc = frappe.get_doc("Disbursement", disbursement_name)
     
@@ -240,6 +250,7 @@ def add_item(disbursement_name, table_field, item_data):
 @frappe.whitelist()
 def delete_item(disbursement_name, child_name):
     """Delete an item from a child table."""
+    perms.require_finance()
     frappe.has_permission("Disbursement", doc=disbursement_name, ptype="write", throw=True)
     doc = frappe.get_doc("Disbursement", disbursement_name)
     
@@ -268,21 +279,24 @@ def delete_item(disbursement_name, child_name):
 @frappe.whitelist()
 def get_purposes():
     """Get active disbursement purposes."""
+    perms.require_finance()
     return frappe.get_all("Disbursement Purpose", filters={"active": 1}, fields=["name"], order_by="name asc")
 
 @frappe.whitelist()
 def get_source_accounts():
     """Get Source Accounts (Bank/Cash)."""
+    perms.require_finance()
     return frappe.get_all(
-        "Account", 
-        filters={"is_group": 0, "account_type": ["in", ["Bank", "Cash"]]}, 
-        fields=["name", "account_name"], 
+        "Account",
+        filters={"is_group": 0, "account_type": ["in", ["Bank", "Cash"]]},
+        fields=["name", "account_name"],
         order_by="account_name asc"
     )
 
 @frappe.whitelist()
 def get_available_months():
     """Get months that don't have a disbursement yet for generating new ones."""
+    perms.require_finance()
     import calendar
 
     existing = frappe.get_all("Disbursement", pluck="name")

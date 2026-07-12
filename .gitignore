@@ -9,3 +9,4 @@ church_management/public/dist/
 church_management/frontend/node_modules/
 church_management/data/*.dual-graph/
 .dual-graph/
+.claude/settings.local.json

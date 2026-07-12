@@ -12,7 +12,9 @@
   "column_break_1",
   "member",
   "member_name",
-  "conflict_acknowledged"
+  "conflict_acknowledged",
+  "confirmed",
+  "confirmed_on"
  ],
  "fields": [
   {
@@ -72,6 +74,20 @@
    "fieldtype": "Check",
    "label": "Conflict Acknowledged",
    "description": "When checked, this assignment is excluded from conflict detection."
+  },
+  {
+   "default": "0",
+   "fieldname": "confirmed",
+   "fieldtype": "Check",
+   "label": "Confirmed",
+   "description": "Member explicitly confirmed availability for this slot."
+  },
+  {
+   "depends_on": "eval:doc.confirmed",
+   "fieldname": "confirmed_on",
+   "fieldtype": "Datetime",
+   "label": "Confirmed On",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 0,

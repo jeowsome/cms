@@ -18,12 +18,29 @@ const KIND_STYLES = {
 
 const form = reactive({ member: "", from_date: "", to_date: "", kind: "vacation", reason: "" });
 
-onMounted(() => Promise.all([store.loadCatalog(), store.loadUnavailability(), store.loadDeclines()]));
+onMounted(() => Promise.all([
+  store.loadCatalog(), store.loadUnavailability(), store.loadDeclines(), store.loadSwapRequests(),
+]));
 useRealtime("music_team_event", (msg) => {
   if (msg.action.startsWith("unavailability_") || msg.action.startsWith("decline_")) {
     store.loadUnavailability(); store.loadDeclines();
   }
+  if (msg.action.startsWith("swap_")) {
+    store.loadSwapRequests();
+  }
 });
+
+function fmtSwapDate(iso) {
+  if (!iso) return "";
+  return new Date(iso).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+}
+async function leaderRespondSwap(name, response) {
+  await store.respondSwap(name, response);
+}
+async function leaderCancelSwap(name) {
+  if (!window.confirm("Cancel this swap request on behalf of the member?")) return;
+  await store.cancelSwap(name);
+}
 
 const byMember = computed(() => {
   const out = {};
@@ -77,8 +94,11 @@ async function submit() {
     </MusicHeader>
 
     <div class="border-b border-ink-100 px-6 flex items-center gap-1 bg-white sticky top-[73px] z-[5]">
-      <button v-for="t in [{id:'windows',label:'Unavailability windows', count: store.unavailability.length},
-                            {id:'declines',label:'Decline log', count: store.declines.length}]"
+      <button v-for="t in [
+                {id:'windows',label:'Unavailability windows', count: store.unavailability.length},
+                {id:'declines',label:'Decline log', count: store.declines.length},
+                {id:'swaps',label:'Swap requests', count: store.swapRequests.length},
+              ]"
               :key="t.id" @click="tab = t.id"
               class="px-4 py-3 text-xs font-semibold border-b-2 transition-colors flex items-center gap-2"
               :class="tab === t.id ? 'text-rose-700 border-rose-500' : 'text-ink-500 border-transparent hover:text-ink-700'">
@@ -124,7 +144,7 @@ async function submit() {
     </div>
 
     <!-- Declines -->
-    <div v-else class="p-6">
+    <div v-else-if="tab === 'declines'" class="p-6">
       <table class="w-full bg-white border border-ink-100 rounded-xl overflow-hidden">
         <thead>
           <tr class="bg-ink-50/50 border-b border-ink-100 text-[10px] font-black text-ink-400 uppercase tracking-widest">
@@ -170,6 +190,83 @@ async function submit() {
           </tr>
           <tr v-if="!store.declines.length">
             <td colspan="6" class="text-center text-ink-400 py-8 text-sm">No declines yet.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Swap requests -->
+    <div v-else-if="tab === 'swaps'" class="p-6">
+      <div v-if="!store.swapRequests.length" class="text-center text-ink-400 py-12 text-sm">
+        No swap requests.
+      </div>
+      <table v-else class="w-full bg-white border border-ink-100 rounded-xl overflow-hidden">
+        <thead>
+          <tr class="bg-ink-50/50 border-b border-ink-100 text-[10px] font-black text-ink-400 uppercase tracking-widest">
+            <th class="px-4 py-3 text-left">Sunday / Service</th>
+            <th class="px-4 py-3 text-left">Role</th>
+            <th class="px-4 py-3 text-left">From</th>
+            <th class="px-4 py-3 text-left">To</th>
+            <th class="px-4 py-3 text-left">Reason</th>
+            <th class="px-4 py-3 text-left">Status</th>
+            <th class="px-4 py-3 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-ink-100">
+          <tr v-for="r in store.swapRequests" :key="r.name" class="hover:bg-ink-50/30">
+            <td class="px-4 py-3 text-xs text-ink-700">
+              <div class="font-semibold">{{ fmtSwapDate(r.sunday_date) }}</div>
+              <div class="text-[10px] text-ink-400 uppercase tracking-wider">{{ r.service_time }}</div>
+            </td>
+            <td class="px-4 py-3">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-ink-700 bg-ink-100 px-2 py-1 rounded">{{ r.music_role }}</span>
+            </td>
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-2">
+                <MusicAvatar :id="r.from_member" :name="r.from_member_name" :size="24" />
+                <span class="text-xs font-semibold text-ink-900 truncate">{{ r.from_member_name }}</span>
+              </div>
+            </td>
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-2">
+                <MusicAvatar :id="r.to_member" :name="r.to_member_name" :size="24" />
+                <span class="text-xs font-semibold text-ink-900 truncate">{{ r.to_member_name }}</span>
+              </div>
+            </td>
+            <td class="px-4 py-3 text-xs text-ink-700 italic max-w-xs truncate">
+              <span v-if="r.reason">"{{ r.reason }}"</span>
+              <span v-else class="text-ink-400 not-italic">—</span>
+            </td>
+            <td class="px-4 py-3">
+              <span v-if="r.status === 'pending'"
+                    class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 text-[10px] font-semibold ring-1 ring-amber-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 pulse-ring" />Pending
+              </span>
+              <span v-else-if="r.status === 'applied'"
+                    class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-semibold ring-1 ring-emerald-200">
+                ✓ Applied
+              </span>
+              <span v-else-if="r.status === 'rejected'"
+                    class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 text-[10px] font-semibold ring-1 ring-rose-200">
+                Rejected
+              </span>
+              <span v-else
+                    class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-ink-100 text-ink-500 text-[10px] font-semibold">
+                {{ r.status }}
+              </span>
+            </td>
+            <td class="px-4 py-3 text-right">
+              <div v-if="r.status === 'pending'" class="flex justify-end gap-1">
+                <button @click="leaderRespondSwap(r.name, 'accept')"
+                        class="px-2 py-1 text-[10px] font-bold bg-emerald-600 text-white rounded hover:bg-emerald-700"
+                        title="Force-accept on behalf of the receiving member">Accept</button>
+                <button @click="leaderRespondSwap(r.name, 'reject')"
+                        class="px-2 py-1 text-[10px] font-bold bg-rose-100 text-rose-700 rounded hover:bg-rose-200">Reject</button>
+                <button @click="leaderCancelSwap(r.name)"
+                        class="px-2 py-1 text-[10px] font-bold bg-ink-100 text-ink-700 rounded hover:bg-ink-200">Cancel</button>
+              </div>
+              <span v-else class="text-[10px] text-ink-400">{{ r.responded_by || '—' }}</span>
+            </td>
           </tr>
         </tbody>
       </table>

@@ -9,7 +9,13 @@
   "theme",
   "column_break_1",
   "sermon_title",
-  "sermon_passage"
+  "sermon_passage",
+  "section_break_worship",
+  "songs",
+  "worship_leader_notes",
+  "column_break_worship",
+  "practice_datetime",
+  "practice_location"
  ],
  "fields": [
   {
@@ -40,6 +46,36 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Sermon Passage"
+  },
+  {
+   "fieldname": "section_break_worship",
+   "fieldtype": "Section Break",
+   "label": "Worship Plan"
+  },
+  {
+   "fieldname": "songs",
+   "fieldtype": "Long Text",
+   "label": "Songs",
+   "description": "One song per line. Worship Leader maintains this list."
+  },
+  {
+   "fieldname": "worship_leader_notes",
+   "fieldtype": "Long Text",
+   "label": "Worship Leader Notes"
+  },
+  {
+   "fieldname": "column_break_worship",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "practice_datetime",
+   "fieldtype": "Datetime",
+   "label": "Practice Date/Time"
+  },
+  {
+   "fieldname": "practice_location",
+   "fieldtype": "Data",
+   "label": "Practice Location"
   }
  ],
  "index_web_pages_for_search": 0,

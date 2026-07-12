@@ -33,6 +33,7 @@ export const useMusicTeamStore = defineStore("musicTeam", () => {
   const unavailability = ref([]);
   const declines = ref([]);
   const notifications = ref([]);
+  const swapRequests = ref([]);
   const scheduleStatus = ref(null);
 
   const monthIndex = computed(() => MONTHS.indexOf(month.value));
@@ -119,6 +120,22 @@ export const useMusicTeamStore = defineStore("musicTeam", () => {
       "church_management.api.music_team.list_notifications", { limit: 20 }
     ) || [];
   }
+
+  async function loadSwapRequests(status) {
+    // Leader/admin: server returns all rows; member-only: server force-scopes to own.
+    swapRequests.value = await call(
+      "church_management.api.music_team.list_swap_requests",
+      { status: status || "" }
+    ) || [];
+  }
+  async function respondSwap(name, response) {
+    await call("church_management.api.music_team.respond_swap", { name, response });
+    await Promise.all([loadSwapRequests(), loadLineup()]);
+  }
+  async function cancelSwap(name) {
+    await call("church_management.api.music_team.cancel_swap", { name });
+    await loadSwapRequests();
+  }
   async function sendNotification(payload) {
     await call("church_management.api.music_team.send_notification", {
       ...payload,
@@ -137,12 +154,13 @@ export const useMusicTeamStore = defineStore("musicTeam", () => {
   return {
     month, year, MONTHS,
     roles, members, lineup, sundays, wednesdays, openDeclines,
-    unavailability, declines, notifications, scheduleStatus,
+    unavailability, declines, notifications, swapRequests, scheduleStatus,
     computedSundays, memberById, roleByName,
     loadCatalog, loadLineup, setSlot, publishSchedule, setMemberRoles,
     loadUnavailability, addUnavailability,
     loadDeclines, resolveDecline,
     loadNotifications, sendNotification,
+    loadSwapRequests, respondSwap, cancelSwap,
     isUnavailable,
   };
 });

@@ -9,30 +9,47 @@ const session = useSessionStore();
 const collapsed = ref(false);
 
 const navItems = computed(() => {
-  // Music Team Member (without Leader/SystemManager) gets a slim profile-only view.
-  if (session.isMusicMember && !session.isLeader) {
-    return [
-      {
-        label: "Music Team", icon: "music", basePath: "/music",
-        children: [
-          { label: "My Profile", to: "/music/profile" },
-          { label: "My Schedule", to: "/music/me" },
-        ],
-      },
-    ];
+  const items = [];
+
+  // Disbursements — Finance Team and Admin only.
+  if (session.hasFinanceAccess) {
+    items.push({ label: "Disbursements", to: "/disbursements", icon: "wallet" });
   }
-  const musicChildren = [
-    { label: "Lineup", to: "/music/lineup" },
-    { label: "Roles", to: "/music/roles" },
-    { label: "Unavailability", to: "/music/unavail" },
-    { label: "My Schedule", to: "/music/me" },
-    { label: "Notify", to: "/music/notify" },
-  ];
-  if (session.isLeader) musicChildren.unshift({ label: "Registrations", to: "/music/registrations" });
-  return [
-    { label: "Disbursements", to: "/disbursements", icon: "wallet" },
-    { label: "Music Team", icon: "music", basePath: "/music", children: musicChildren },
-  ];
+
+  // Role assignments — Music Team Leader and Admin only.
+  if (session.isLeader) {
+    items.push({ label: "Role Assignments", to: "/admin/roles", icon: "shield" });
+  }
+
+  // Music Team area — only for users with at least one music role (or admin).
+  if (!session.hasMusicAccess) return items;
+
+  // Slim member-only nav: profile + own schedule + swap requests.
+  if (session.isMemberOnly) {
+    items.push({
+      label: "Music Team", icon: "music", basePath: "/music",
+      children: [
+        { label: "My Profile", to: "/music/profile" },
+        { label: "My Schedule", to: "/music/me" },
+      ],
+    });
+    return items;
+  }
+
+  // Leader / worship leader / admin: full music tooling. Each child link is
+  // surfaced only to roles that can actually use it (mirrors router meta).
+  const musicChildren = [];
+  if (session.isLeader) musicChildren.push({ label: "Registrations", to: "/music/registrations" });
+  if (session.isWorshipLeader) musicChildren.push({ label: "Worship Plan", to: "/music/worship" });
+  if (session.isWorshipLeader) musicChildren.push({ label: "Lineup", to: "/music/lineup" });
+  if (session.isLeader) musicChildren.push({ label: "Roles", to: "/music/roles" });
+  if (session.isLeader) musicChildren.push({ label: "Unavailability", to: "/music/unavail" });
+  musicChildren.push({ label: "My Schedule", to: "/music/me" });
+  musicChildren.push({ label: "My Profile", to: "/music/profile" });
+  if (session.isLeader) musicChildren.push({ label: "Notify", to: "/music/notify" });
+  items.push({ label: "Music Team", icon: "music", basePath: "/music", children: musicChildren });
+
+  return items;
 });
 
 async function logout() { await session.logout(); router.replace("/login"); }
@@ -86,6 +103,11 @@ function toggle(label) {
               v-if="item.icon === 'wallet'"
               stroke-linecap="round" stroke-linejoin="round"
               d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3"
+            />
+            <path
+              v-else-if="item.icon === 'shield'"
+              stroke-linecap="round" stroke-linejoin="round"
+              d="M9 12.75 11.25 15 15 9.75M21 12c0 5.25-4.5 9-9 9s-9-3.75-9-9c0-1.286.27-2.508.756-3.61.5-1.13 1.95-1.39 3.034-.799C8.107 8.222 9.946 9 12 9c2.054 0 3.893-.778 5.21-2.41 1.084-.59 2.534-.33 3.034.8C20.73 9.49 21 10.713 21 12Z"
             />
           </svg>
           <span v-if="!collapsed" class="truncate">{{ item.label }}</span>

@@ -1,0 +1,171 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "format:SWAP-{YY}-{MM}-{#####}",
+ "creation": "2026-05-10 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "schedule",
+  "sunday_date",
+  "service_time",
+  "music_role",
+  "column_break_1",
+  "from_member",
+  "from_member_name",
+  "to_member",
+  "to_member_name",
+  "section_break_meta",
+  "reason",
+  "status",
+  "column_break_2",
+  "requested_on",
+  "responded_on",
+  "responded_by"
+ ],
+ "fields": [
+  {
+   "fieldname": "schedule",
+   "fieldtype": "Link",
+   "label": "Schedule",
+   "options": "Ministry Schedule"
+  },
+  {
+   "fieldname": "sunday_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Sunday Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "service_time",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Service Time",
+   "options": "\nMorning\nEvening",
+   "reqd": 1
+  },
+  {
+   "fieldname": "music_role",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Music Role",
+   "options": "Music Team Tag",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "from_member",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "From Member",
+   "options": "Church Member",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "from_member.firstname",
+   "fieldname": "from_member_name",
+   "fieldtype": "Data",
+   "label": "From Name"
+  },
+  {
+   "fieldname": "to_member",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Proposed Replacement",
+   "options": "Church Member",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "to_member.firstname",
+   "fieldname": "to_member_name",
+   "fieldtype": "Data",
+   "label": "Replacement Name"
+  },
+  {
+   "fieldname": "section_break_meta",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "reason",
+   "fieldtype": "Long Text",
+   "label": "Reason"
+  },
+  {
+   "default": "pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "pending\naccepted\nrejected\ncancelled\napplied",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "requested_on",
+   "fieldtype": "Datetime",
+   "label": "Requested On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "responded_on",
+   "fieldtype": "Datetime",
+   "label": "Responded On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "responded_by",
+   "fieldtype": "Data",
+   "label": "Responded By",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-05-10 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Church Management",
+ "name": "Music Swap Request",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "role": "Music Team Member",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Worship Leader"
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "Music Team Leader",
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

@@ -8,6 +8,8 @@ from frappe.utils import getdate, now_datetime
 import json
 from datetime import timedelta
 
+from church_management.api import permissions as perms
+
 
 MUSIC_MINISTRY = "Music Team"
 
@@ -41,6 +43,7 @@ def get_roles():
 @frappe.whitelist()
 def get_members():
 	"""Music team roster — anyone with at least one music_role_preference row."""
+	perms.require_music_access()
 	rows = frappe.db.sql(
 		"""
 		SELECT DISTINCT cm.name, cm.firstname, cm.lastname, cm.email_address, cm.contact_number
@@ -72,6 +75,8 @@ def get_members():
 def set_member_roles(member, roles, preferred=None):
 	"""Replace a member's music role preferences. `roles` is a list of tag names
 	(or list of {tag, skill_level} dicts). `preferred` is the tag to flag as preferred."""
+	# Members can edit their own role preferences; leader can edit anyone's.
+	_require_self_or_leader(member)
 	if isinstance(roles, str):
 		roles = json.loads(roles)
 	doc = frappe.get_doc("Church Member", member)
@@ -96,6 +101,7 @@ def set_member_roles(member, roles, preferred=None):
 def get_lineup(month, year):
 	"""Return all music-team assignments for a given Ministry Schedule, grouped by
 	{date: {service_time: {role: assignment}}}."""
+	perms.require_music_access()
 	year = int(year)
 	sched = frappe.db.get_value(
 		"Ministry Schedule", {"month": month, "year": year}, "name"
@@ -149,6 +155,8 @@ def get_lineup(month, year):
 @frappe.whitelist()
 def set_assignment(month, year, sunday_date, service_time, music_role, member, member_name=None):
 	"""Create or update one music-team assignment row. Pass empty member to clear."""
+	# Worship Leader can rearrange the lineup; Music Team Leader and Admin pass through.
+	perms.require_worship_leader()
 	year = int(year)
 	sched_name = frappe.db.get_value(
 		"Ministry Schedule", {"month": month, "year": year}, "name"
@@ -207,6 +215,7 @@ def set_assignment(month, year, sunday_date, service_time, music_role, member, m
 
 @frappe.whitelist()
 def publish_schedule(month, year):
+	perms.require_music_leader()
 	year = int(year)
 	sched_name = frappe.db.get_value("Ministry Schedule", {"month": month, "year": year}, "name")
 	if not sched_name:
@@ -221,6 +230,7 @@ def publish_schedule(month, year):
 
 @frappe.whitelist()
 def list_unavailability(from_date=None, to_date=None):
+	perms.require_music_access()
 	filters = {}
 	if from_date and to_date:
 		filters = [["to_date", ">=", from_date], ["from_date", "<=", to_date]]
@@ -238,6 +248,8 @@ def list_unavailability(from_date=None, to_date=None):
 
 @frappe.whitelist()
 def create_unavailability(member, from_date, to_date, kind="vacation", reason=""):
+	# Member can declare their own dates; leader can declare for anyone.
+	_require_self_or_leader(member)
 	doc = frappe.new_doc("Member Unavailability")
 	doc.member = member
 	doc.member_name = _full_name(member)
@@ -252,6 +264,8 @@ def create_unavailability(member, from_date, to_date, kind="vacation", reason=""
 
 @frappe.whitelist()
 def delete_unavailability(name):
+	owner_member = frappe.db.get_value("Member Unavailability", name, "member")
+	_require_self_or_leader(owner_member)
 	frappe.delete_doc("Member Unavailability", name)
 	_emit("unavailability_removed", {"name": name})
 	return {"ok": True}
@@ -259,6 +273,7 @@ def delete_unavailability(name):
 
 @frappe.whitelist()
 def list_declines(status=None, limit=50):
+	perms.require_music_leader()
 	filters = {}
 	if status:
 		filters["status"] = status
@@ -277,6 +292,8 @@ def list_declines(status=None, limit=50):
 
 @frappe.whitelist()
 def decline_assignment(sunday_date, service_time, music_role, member, reason=""):
+	# A member can only decline their own assignment; leader can decline on behalf.
+	_require_self_or_leader(member)
 	svc = "Morning" if (service_time or "").lower() in ("am", "morning") else "Evening"
 	sched_name = None
 	row = frappe.db.get_value(
@@ -312,6 +329,7 @@ def decline_assignment(sunday_date, service_time, music_role, member, reason="")
 
 @frappe.whitelist()
 def resolve_decline(name, status="filled"):
+	perms.require_music_leader()
 	doc = frappe.get_doc("Schedule Decline", name)
 	doc.status = status
 	doc.save()
@@ -321,6 +339,7 @@ def resolve_decline(name, status="filled"):
 
 @frappe.whitelist()
 def send_notification(notification_type, title, body, sunday_date=None, service_time=None, send_sms=0, recipients=None):
+	perms.require_music_leader()
 	if isinstance(recipients, str):
 		recipients = json.loads(recipients)
 
@@ -346,6 +365,7 @@ def send_notification(notification_type, title, body, sunday_date=None, service_
 
 @frappe.whitelist()
 def list_notifications(limit=20):
+	perms.require_music_access()
 	rows = frappe.get_all(
 		"Music Team Notification",
 		fields=["name", "title", "notification_type", "sunday_date", "service_time", "body", "sender", "sent_at"],
@@ -374,9 +394,14 @@ def my_assignments(member=None):
 	rows = frappe.db.sql(
 		"""
 		SELECT a.name as row_name, a.sunday_date, a.service_time, a.music_role, a.member,
-		       a.member_name, ms.month, ms.year, ms.status, ms.name as schedule
+		       a.member_name, a.confirmed, a.confirmed_on,
+		       ms.month, ms.year, ms.status, ms.name as schedule,
+		       ssi.theme, ssi.sermon_title, ssi.songs,
+		       ssi.practice_datetime, ssi.practice_location, ssi.worship_leader_notes
 		FROM `tabMinistry Schedule Assignment` a
 		JOIN `tabMinistry Schedule` ms ON a.parent = ms.name
+		LEFT JOIN `tabSunday Service Info` ssi
+		       ON ssi.parent = ms.name AND ssi.sunday_date = a.sunday_date
 		WHERE a.member = %(m)s
 		  AND a.music_role IS NOT NULL AND a.music_role != ''
 		  AND a.sunday_date >= %(t)s
@@ -387,6 +412,8 @@ def my_assignments(member=None):
 	)
 	for r in rows:
 		r["sunday_date"] = str(r["sunday_date"])
+		r["confirmed_on"] = str(r["confirmed_on"]) if r.get("confirmed_on") else None
+		r["practice_datetime"] = str(r["practice_datetime"]) if r.get("practice_datetime") else None
 	return rows
 
 
@@ -399,13 +426,30 @@ import string
 
 
 def _is_leader():
-	roles = frappe.get_roles()
-	return "Music Team Leader" in roles or "System Manager" in roles
+	return perms.is_music_leader()
 
 
 def _require_leader():
-	if not _is_leader():
-		frappe.throw("Only Music Team Leader can perform this action.", frappe.PermissionError)
+	perms.require_music_leader()
+
+
+def _own_member():
+	"""Return the Church Member linked to the logged-in user, or None."""
+	user = frappe.session.user
+	if user == "Guest":
+		return None
+	return frappe.db.get_value("Church Member", {"email_address": user}, "name")
+
+
+def _require_self_or_leader(member):
+	"""Allow if `member` is the session user's own Church Member, otherwise require
+	music-leader privileges."""
+	if perms.is_music_leader():
+		return
+	own = _own_member()
+	if own and own == member:
+		return
+	frappe.throw("You can only act on your own assignments.", frappe.PermissionError)
 
 
 def _gen_temp_password(length=12):
@@ -592,6 +636,17 @@ def accept_registration(name):
 	temp_password = _gen_temp_password()
 	if frappe.db.exists("User", doc.email):
 		user = frappe.get_doc("User", doc.email)
+		# Refuse if the existing Frappe user already holds roles beyond the
+		# auto-assigned baseline. Prevents a registration from silently bolting
+		# `Music Team Member` onto an admin/staff account — those cases need a
+		# human to decide whether to merge or use a different email.
+		baseline_roles = {"All", "Guest"}
+		extra_roles = {r.role for r in (user.get("roles") or [])} - baseline_roles
+		if extra_roles:
+			frappe.throw(
+				f"A Frappe user with email {doc.email} already exists and holds other roles "
+				f"({', '.join(sorted(extra_roles))}). Resolve manually before accepting."
+			)
 	else:
 		user = frappe.get_doc({
 			"doctype": "User",
@@ -802,8 +857,7 @@ def request_password_reset(email):
 		try:
 			user = frappe.get_doc("User", email)
 			user.flags.ignore_permissions = True
-			key = user.reset_password()
-			# reset_password sends an email by default in newer Frappe; ensure mail goes out
+			user.reset_password(send_email=True)
 			frappe.db.commit()
 		except Exception:
 			frappe.log_error(frappe.get_traceback(), "Music password reset failed")
@@ -842,4 +896,376 @@ def whoami():
 	user = frappe.session.user
 	roles = frappe.get_roles(user) if user != "Guest" else []
 	temp_pw_pending = bool(frappe.cache().get_value(f"music_temp_pw:{user}")) if user != "Guest" else False
-	return {"user": user, "roles": roles, "temp_password_pending": temp_pw_pending}
+	out = {"user": user, "roles": roles, "temp_password_pending": temp_pw_pending}
+	out.update(perms.role_flags(user))
+	# Linked church member, if any — useful for member-scoped views to avoid
+	# a separate round-trip.
+	if user != "Guest":
+		out["church_member"] = frappe.db.get_value(
+			"Church Member", {"email_address": user}, "name"
+		)
+	else:
+		out["church_member"] = None
+	return out
+
+
+# =====================================================================
+# Member self-actions: confirm + swap requests
+# =====================================================================
+
+
+@frappe.whitelist()
+def confirm_assignment(row_name):
+	"""Member explicitly confirms availability for an assignment slot."""
+	row = frappe.db.get_value(
+		"Ministry Schedule Assignment", row_name,
+		["name", "parent", "member", "sunday_date", "service_time", "music_role"],
+		as_dict=True,
+	)
+	if not row:
+		frappe.throw("Assignment not found.")
+	_require_self_or_leader(row.member)
+	frappe.db.set_value("Ministry Schedule Assignment", row_name, {
+		"confirmed": 1,
+		"confirmed_on": now_datetime(),
+	})
+	# Also resolve any open decline by the same member for the same slot.
+	open_dec = frappe.get_all(
+		"Schedule Decline",
+		filters={
+			"sunday_date": row.sunday_date, "service_time": row.service_time,
+			"music_role": row.music_role, "member": row.member, "status": "open",
+		},
+		pluck="name",
+	)
+	for d in open_dec:
+		frappe.db.set_value("Schedule Decline", d, "status", "withdrawn")
+	frappe.db.commit()
+	_emit("assignment_confirmed", {
+		"row_name": row_name, "member": row.member,
+		"sunday_date": str(row.sunday_date), "service_time": row.service_time,
+		"music_role": row.music_role,
+	})
+	return {"ok": True}
+
+
+@frappe.whitelist()
+def request_swap(sunday_date, service_time, music_role, from_member, to_member, reason=""):
+	"""Member proposes a swap with another team member for one assignment slot.
+	Creates a Music Swap Request in `pending` status; the receiving member must
+	accept before the assignment is reassigned."""
+	_require_self_or_leader(from_member)
+	if not to_member or to_member == from_member:
+		frappe.throw("Pick a different team member to swap with.")
+
+	svc = "Morning" if (service_time or "").lower() in ("am", "morning") else "Evening"
+	# Find the originating assignment row
+	row = frappe.db.get_value(
+		"Ministry Schedule Assignment",
+		{
+			"sunday_date": sunday_date, "service_time": svc,
+			"music_role": music_role, "member": from_member,
+		},
+		["name", "parent"], as_dict=True,
+	)
+	sched = row.parent if row else None
+
+	# Reject duplicate pending requests
+	dup = frappe.db.get_value(
+		"Music Swap Request",
+		{
+			"sunday_date": sunday_date, "service_time": svc, "music_role": music_role,
+			"from_member": from_member, "to_member": to_member, "status": "pending",
+		},
+		"name",
+	)
+	if dup:
+		return {"ok": True, "name": dup, "duplicate": True}
+
+	doc = frappe.new_doc("Music Swap Request")
+	doc.schedule = sched
+	doc.sunday_date = sunday_date
+	doc.service_time = svc
+	doc.music_role = music_role
+	doc.from_member = from_member
+	doc.from_member_name = _full_name(from_member)
+	doc.to_member = to_member
+	doc.to_member_name = _full_name(to_member)
+	doc.reason = reason or ""
+	doc.status = "pending"
+	doc.requested_on = now_datetime()
+	doc.insert(ignore_permissions=True)
+	frappe.db.commit()
+
+	# Notify the receiving member (best-effort email)
+	to_email = frappe.db.get_value("Church Member", to_member, "email_address")
+	if to_email:
+		try:
+			frappe.sendmail(
+				recipients=[to_email],
+				subject=f"Swap request — {svc} service, {sunday_date}",
+				message=(
+					f"<p>{doc.from_member_name} would like to swap their <b>{music_role}</b> slot "
+					f"on {sunday_date} ({svc}) with you.</p>"
+					f"<p><b>Reason:</b> {doc.reason or '(none given)'}</p>"
+					f"<p>Open the Music Team app to accept or decline.</p>"
+				),
+				now=True,
+			)
+		except Exception:
+			frappe.log_error(frappe.get_traceback(), "Music swap request email failed")
+
+	_emit("swap_requested", {
+		"name": doc.name, "sunday_date": str(sunday_date), "service_time": svc,
+		"music_role": music_role, "from_member": from_member, "to_member": to_member,
+	})
+	return {"ok": True, "name": doc.name}
+
+
+@frappe.whitelist()
+def respond_swap(name, response):
+	"""Receiving member (or leader) accepts/rejects a swap. On accept, the
+	originating Ministry Schedule Assignment row is reassigned to the receiver."""
+	if response not in ("accept", "reject"):
+		frappe.throw("response must be 'accept' or 'reject'.")
+	doc = frappe.get_doc("Music Swap Request", name)
+	if doc.status != "pending":
+		frappe.throw(f"Swap request is already {doc.status}.")
+	# The proposed replacement is the only one (besides leader/admin) who can respond.
+	if not perms.is_music_leader():
+		own = _own_member()
+		if not own or own != doc.to_member:
+			frappe.throw("Only the proposed replacement can respond.", frappe.PermissionError)
+
+	doc.responded_on = now_datetime()
+	doc.responded_by = frappe.session.user
+
+	if response == "reject":
+		doc.status = "rejected"
+		doc.save(ignore_permissions=True)
+		frappe.db.commit()
+		_emit("swap_rejected", {"name": doc.name})
+		return {"ok": True}
+
+	# Accept: reassign the slot
+	row = frappe.db.get_value(
+		"Ministry Schedule Assignment",
+		{
+			"sunday_date": doc.sunday_date, "service_time": doc.service_time,
+			"music_role": doc.music_role, "member": doc.from_member,
+		},
+		"name",
+	)
+	if row:
+		# Update the assignment in-place, reset confirmed flag for the new owner.
+		frappe.db.set_value("Ministry Schedule Assignment", row, {
+			"member": doc.to_member,
+			"member_name": doc.to_member_name or _full_name(doc.to_member),
+			"confirmed": 0,
+			"confirmed_on": None,
+		})
+	doc.status = "applied"
+	doc.save(ignore_permissions=True)
+	frappe.db.commit()
+	_emit("swap_accepted", {
+		"name": doc.name, "row": row,
+		"from_member": doc.from_member, "to_member": doc.to_member,
+	})
+	return {"ok": True, "row": row}
+
+
+@frappe.whitelist()
+def cancel_swap(name):
+	"""Originating member (or leader) cancels their pending swap request."""
+	doc = frappe.get_doc("Music Swap Request", name)
+	if doc.status != "pending":
+		frappe.throw(f"Cannot cancel — already {doc.status}.")
+	_require_self_or_leader(doc.from_member)
+	doc.status = "cancelled"
+	doc.responded_on = now_datetime()
+	doc.responded_by = frappe.session.user
+	doc.save(ignore_permissions=True)
+	frappe.db.commit()
+	_emit("swap_cancelled", {"name": doc.name})
+	return {"ok": True}
+
+
+@frappe.whitelist()
+def list_swap_requests(member=None, status=None, direction=None, limit=50):
+	"""Return swap requests visible to the caller.
+	  - leader/admin: all
+	  - member: their own (sent + received)
+	`direction` ∈ {sent, received} optional filter for the member view.
+	"""
+	perms.require_music_access()
+	is_leader = perms.is_music_leader()
+	own = _own_member()
+	if not is_leader:
+		# Force-scope to own member
+		if not own:
+			return []
+		member = own
+
+	filters = []
+	if status:
+		filters.append(["status", "=", status])
+	if member:
+		if direction == "sent":
+			filters.append(["from_member", "=", member])
+		elif direction == "received":
+			filters.append(["to_member", "=", member])
+		else:
+			# both directions
+			rows_a = frappe.get_all(
+				"Music Swap Request",
+				filters=filters + [["from_member", "=", member]],
+				fields=["name", "schedule", "sunday_date", "service_time", "music_role",
+					"from_member", "from_member_name", "to_member", "to_member_name",
+					"reason", "status", "requested_on", "responded_on", "responded_by"],
+				order_by="requested_on desc", limit_page_length=int(limit),
+			)
+			rows_b = frappe.get_all(
+				"Music Swap Request",
+				filters=filters + [["to_member", "=", member]],
+				fields=["name", "schedule", "sunday_date", "service_time", "music_role",
+					"from_member", "from_member_name", "to_member", "to_member_name",
+					"reason", "status", "requested_on", "responded_on", "responded_by"],
+				order_by="requested_on desc", limit_page_length=int(limit),
+			)
+			seen, merged = set(), []
+			for r in rows_a + rows_b:
+				if r["name"] in seen:
+					continue
+				seen.add(r["name"])
+				r["sunday_date"] = str(r["sunday_date"]) if r.get("sunday_date") else None
+				r["requested_on"] = str(r["requested_on"]) if r.get("requested_on") else None
+				r["responded_on"] = str(r["responded_on"]) if r.get("responded_on") else None
+				r["direction"] = "sent" if r["from_member"] == member else "received"
+				merged.append(r)
+			merged.sort(key=lambda x: x["requested_on"] or "", reverse=True)
+			return merged
+
+	rows = frappe.get_all(
+		"Music Swap Request",
+		filters=filters,
+		fields=["name", "schedule", "sunday_date", "service_time", "music_role",
+			"from_member", "from_member_name", "to_member", "to_member_name",
+			"reason", "status", "requested_on", "responded_on", "responded_by"],
+		order_by="requested_on desc", limit_page_length=int(limit),
+	)
+	for r in rows:
+		r["sunday_date"] = str(r["sunday_date"]) if r.get("sunday_date") else None
+		r["requested_on"] = str(r["requested_on"]) if r.get("requested_on") else None
+		r["responded_on"] = str(r["responded_on"]) if r.get("responded_on") else None
+	return rows
+
+
+@frappe.whitelist()
+def list_swap_candidates(sunday_date, service_time, music_role, exclude_member=None):
+	"""Members eligible to take over a slot — same role + not already assigned that
+	service + not on declared unavailability."""
+	perms.require_music_access()
+	svc = "Morning" if (service_time or "").lower() in ("am", "morning") else "Evening"
+
+	# Members with this role
+	pool = frappe.db.sql(
+		"""
+		SELECT DISTINCT cm.name, cm.firstname, cm.lastname, cm.email_address
+		FROM `tabChurch Member` cm
+		JOIN `tabMusic Role Preference` mrp ON mrp.parent = cm.name
+		WHERE mrp.music_team_tag = %(role)s
+		""",
+		{"role": music_role},
+		as_dict=True,
+	)
+	# Exclude the requester
+	pool = [m for m in pool if m["name"] != exclude_member]
+	# Exclude members already assigned to that service+date
+	busy_members = set(frappe.get_all(
+		"Ministry Schedule Assignment",
+		filters={"sunday_date": sunday_date, "service_time": svc},
+		pluck="member",
+	))
+	# Exclude members with declared unavailability covering the date
+	unavailable_members = set(frappe.db.sql_list(
+		"""
+		SELECT DISTINCT member FROM `tabMember Unavailability`
+		WHERE %(d)s BETWEEN from_date AND to_date
+		""",
+		{"d": sunday_date},
+	))
+
+	out = []
+	for m in pool:
+		if m["name"] in busy_members or m["name"] in unavailable_members:
+			continue
+		m["full_name"] = ((m["firstname"] or "") + " " + (m["lastname"] or "")).strip()
+		out.append(m)
+	return out
+
+
+# =====================================================================
+# Worship Leader: songs + practice plan
+# =====================================================================
+
+
+@frappe.whitelist()
+def get_worship_plan(month, year):
+	"""Return per-Sunday worship plan (songs, practice time/location, notes)."""
+	perms.require_music_access()
+	year = int(year)
+	sched_name = frappe.db.get_value(
+		"Ministry Schedule", {"month": month, "year": year}, "name"
+	)
+	if not sched_name:
+		return {"schedule": None, "sundays": []}
+	doc = frappe.get_doc("Ministry Schedule", sched_name)
+	out = []
+	for s in (doc.sundays or []):
+		out.append({
+			"row_name": s.name,
+			"sunday_date": str(s.sunday_date),
+			"theme": s.theme or "",
+			"sermon_title": s.sermon_title or "",
+			"sermon_passage": s.sermon_passage or "",
+			"songs": s.get("songs") or "",
+			"worship_leader_notes": s.get("worship_leader_notes") or "",
+			"practice_datetime": str(s.get("practice_datetime")) if s.get("practice_datetime") else None,
+			"practice_location": s.get("practice_location") or "",
+		})
+	return {
+		"schedule": {"name": doc.name, "month": doc.month, "year": doc.year, "status": doc.status},
+		"sundays": out,
+	}
+
+
+@frappe.whitelist()
+def set_worship_plan(month, year, sunday_date, songs=None, practice_datetime=None, practice_location=None, worship_leader_notes=None):
+	"""Worship Leader sets songs / practice / notes for one Sunday in a schedule."""
+	perms.require_worship_leader()
+	year = int(year)
+	sched_name = frappe.db.get_value("Ministry Schedule", {"month": month, "year": year}, "name")
+	if not sched_name:
+		frappe.throw("Schedule does not exist for that month/year yet.")
+	doc = frappe.get_doc("Ministry Schedule", sched_name)
+	target = None
+	for s in (doc.sundays or []):
+		if str(s.sunday_date) == str(sunday_date):
+			target = s
+			break
+	if not target:
+		frappe.throw(f"Sunday {sunday_date} not found in this schedule.")
+	if songs is not None:
+		target.songs = songs
+	if practice_datetime is not None:
+		target.practice_datetime = practice_datetime or None
+	if practice_location is not None:
+		target.practice_location = practice_location
+	if worship_leader_notes is not None:
+		target.worship_leader_notes = worship_leader_notes
+	doc.save(ignore_permissions=True)
+	frappe.db.commit()
+	_emit("worship_plan_updated", {
+		"schedule": sched_name, "sunday_date": str(sunday_date),
+	})
+	return {"ok": True}

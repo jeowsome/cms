@@ -1,11 +1,13 @@
 <script setup>
 import { onMounted, ref, computed } from "vue";
 import { useMusicTeamStore } from "@/stores/musicTeam";
+import { useSessionStore } from "@/stores/session";
 import { useRealtime } from "@/composables/useRealtime";
 import MusicHeader from "@/components/MusicHeader.vue";
 import MusicAvatar from "@/components/MusicAvatar.vue";
 
 const store = useMusicTeamStore();
+const session = useSessionStore();
 const SERVICES = [
   { id: "am", label: "Morning", time: "9:00 AM", short: "AM", st: "Morning" },
   { id: "pm", label: "Evening", time: "6:00 PM", short: "PM", st: "Evening" },
@@ -135,7 +137,7 @@ async function pick(memberId, memberName) {
             :class="store.scheduleStatus === 'Published' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'">
         {{ store.scheduleStatus }}
       </span>
-      <button @click="publish" class="px-3.5 py-1.5 text-xs font-semibold bg-rose-600 text-white rounded-lg hover:bg-rose-700 shadow-sm flex items-center gap-1.5">
+      <button v-if="session.isLeader" @click="publish" class="px-3.5 py-1.5 text-xs font-semibold bg-rose-600 text-white rounded-lg hover:bg-rose-700 shadow-sm flex items-center gap-1.5">
         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
         Publish &amp; notify
       </button>

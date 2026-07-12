@@ -1,9 +1,11 @@
 <script setup>
 import { RouterLink, useRoute } from "vue-router";
 import { useScroll } from "@vueuse/core";
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch, computed } from "vue";
+import { useSessionStore } from "@/stores/session";
 
 const route = useRoute();
+const session = useSessionStore();
 const scrollArea = ref(null);
 const isVisible = ref(true); // start visible so they aren't confused
 
@@ -28,9 +30,27 @@ watch(y, (val) => {
   if (val < 50) isVisible.value = true;
 });
 
-const navItems = [
-  { label: "Disbursements", to: "/disbursements", icon: "wallet" },
-];
+const navItems = computed(() => {
+  const items = [];
+
+  // Member-only mobile nav: schedule + profile.
+  if (session.isMemberOnly) {
+    items.push({ label: "Schedule", to: "/music/me", icon: "calendar" });
+    items.push({ label: "Profile", to: "/music/profile", icon: "user" });
+    return items;
+  }
+
+  if (session.hasFinanceAccess) {
+    items.push({ label: "Disbursements", to: "/disbursements", icon: "wallet" });
+  }
+  if (session.hasMusicAccess) {
+    items.push({ label: "Music", to: "/music/lineup", icon: "music" });
+    if (session.isWorshipLeader) {
+      items.push({ label: "Worship", to: "/music/worship", icon: "songs" });
+    }
+  }
+  return items;
+});
 
 function isActive(path) {
   return route.path.startsWith(path);
@@ -38,7 +58,8 @@ function isActive(path) {
 </script>
 
 <template>
-  <nav 
+  <nav
+    v-if="navItems.length"
     class="fixed bottom-0 inset-x-0 bg-white border-t border-gray-200 z-[40] safe-bottom transition-transform duration-300 ease-in-out"
     :class="isVisible ? 'translate-y-0' : 'translate-y-full'"
   >
@@ -59,6 +80,21 @@ function isActive(path) {
             v-if="item.icon === 'wallet'"
             stroke-linecap="round" stroke-linejoin="round"
             d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3"
+          />
+          <path
+            v-else-if="item.icon === 'music' || item.icon === 'songs'"
+            stroke-linecap="round" stroke-linejoin="round"
+            d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 1 1-.99-3.467l2.31-.66a2.25 2.25 0 0 0 1.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 0 1-.99-3.467l2.31-.66A2.25 2.25 0 0 0 9 15.553z"
+          />
+          <path
+            v-else-if="item.icon === 'calendar'"
+            stroke-linecap="round" stroke-linejoin="round"
+            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"
+          />
+          <path
+            v-else-if="item.icon === 'user'"
+            stroke-linecap="round" stroke-linejoin="round"
+            d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 20.25a7.5 7.5 0 0 1 15 0v.75a.75.75 0 0 1-.75.75H5.25a.75.75 0 0 1-.75-.75v-.75Z"
           />
         </svg>
         <span class="text-[10px] font-medium leading-none">{{ item.label }}</span>
