@@ -13,7 +13,11 @@ const route = useRoute();
 const router = useRouter();
 const activeTab = ref(1);
 const summaryOpen = ref(true);
-const isNew = computed(() => route.params.name === "new");
+
+// Creation now happens via the template modal on the list page.
+if (route.params.name === "new") {
+  router.replace({ name: "DisbursementList" });
+}
 
 const {
   data: disbursement,
@@ -23,7 +27,7 @@ const {
 } = useQuery({
   key: () => ["disbursement", route.params.name],
   query: () => call("church_management.api.disbursement.get_detail", { name: route.params.name }),
-  enabled: () => !isNew.value,
+  enabled: () => route.params.name !== "new",
 });
 
 function isClaimed(i) {
@@ -129,58 +133,71 @@ function isoDate(dt) {
 const monthlyItems = computed(() => disbursement.value?.monthly_disbursement_items || []);
 const monthlyExpenses = computed(() => disbursement.value?.monthly_expense_items || []);
 
+function tabStats(rows) {
+  const total = rows.length;
+  const claimed = rows.filter(isClaimed).length;
+  const unclaimedAmount = rows
+    .filter((i) => !isClaimed(i))
+    .reduce((sum, i) => sum + (i.amount || 0), 0);
+  return { total, claimed, unclaimed: total - claimed, unclaimedAmount };
+}
+
 const tabs = computed(() => {
   const t = weeks.value.map((w) => {
-    const all = [...w.items, ...w.expenses];
-    const totalCount = all.length;
-    const claimedCount = all.filter(isClaimed).length;
-    const unclaimedCount = totalCount - claimedCount;
-    const unclaimedAmount = all.filter(i => !isClaimed(i)).reduce((sum, i) => sum + (i.amount || 0), 0);
-    
-    let display = null;
-    if (totalCount > 0) {
-      if (unclaimedAmount > 0) {
-        display = `${unclaimedCount}/${claimedCount}`;
-      } else {
-        display = `${totalCount}`;
-      }
-    }
-
+    const stats = tabStats([...w.items, ...w.expenses]);
     return {
       key: w.num,
       label: `W${w.num}`,
       fullLabel: `Week ${w.num}`,
       sundayShort: fmtSunday(w.sunday),
-      countDisplay: display,
       overdue: w.overdue,
+      ...stats,
+      countDisplay: stats.total ? `${stats.claimed}/${stats.total}` : null,
     };
   });
-  
-  const mAll = [...monthlyItems.value, ...monthlyExpenses.value];
-  const mTotal = mAll.length;
-  const mClaimed = mAll.filter(isClaimed).length;
-  const mUnclaimedCount = mTotal - mClaimed;
-  const mUnclaimedAmount = mAll.filter(i => !isClaimed(i)).reduce((sum, i) => sum + (i.amount || 0), 0);
 
-  let mDisplay = null;
-  if (mTotal > 0) {
-    if (mUnclaimedAmount > 0) {
-      mDisplay = `${mUnclaimedCount}/${mClaimed}`;
-    } else {
-      mDisplay = `${mTotal}`;
-    }
-  }
-
+  const mStats = tabStats([...monthlyItems.value, ...monthlyExpenses.value]);
   t.push({
     key: 0,
     label: "Monthly",
     fullLabel: "Monthly",
     sundayShort: "",
-    countDisplay: mDisplay,
-    overdue: isPastMonth.value && mUnclaimedCount > 0,
+    overdue: isPastMonth.value && mStats.unclaimed > 0,
+    ...mStats,
+    countDisplay: mStats.total ? `${mStats.claimed}/${mStats.total}` : null,
   });
   return t;
 });
+
+const peso = new Intl.NumberFormat("en-PH", {
+  style: "currency",
+  currency: "PHP",
+  minimumFractionDigits: 2,
+});
+
+function tabTitle(tab) {
+  const where = tab.sundayShort ? `${tab.fullLabel} (${tab.sundayShort})` : tab.fullLabel;
+  if (!tab.total) return `${where}: no items`;
+  if (!tab.unclaimed) return `${where}: all ${tab.total} items claimed`;
+  return (
+    `${where}: ${tab.claimed} of ${tab.total} items claimed — ` +
+    `${tab.unclaimed} unclaimed worth ${peso.format(tab.unclaimedAmount)}` +
+    (tab.overdue ? " · OVERDUE" : "")
+  );
+}
+
+function tabTipL1(tab) {
+  if (!tab.total) return "No items";
+  return `${tab.claimed} of ${tab.total} items claimed`;
+}
+function tabTipL2(tab) {
+  if (!tab.total) return "";
+  if (!tab.unclaimed) return "Nothing left to claim";
+  return (
+    `${tab.unclaimed} unclaimed · ${peso.format(tab.unclaimedAmount)}` +
+    (tab.overdue ? " · overdue" : "")
+  );
+}
 
 const status = computed(() => {
   if (!disbursement.value) return "Draft";
@@ -197,12 +214,12 @@ function onClaimed() {
   <div class="px-4 sm:px-6 py-4 sm:py-6 max-w-5xl mx-auto w-full">
     <!-- Header -->
     <PageHeader
-      :title="isNew ? 'New Disbursement' : route.params.name"
-      :subtitle="isNew ? 'Create monthly disbursement' : `${disbursement?.month_recorded || ''} ${disbursement?.year_recorded || ''}`"
+      :title="route.params.name"
+      :subtitle="`${disbursement?.month_recorded || ''} ${disbursement?.year_recorded || ''}`"
     >
       <template #actions>
         <div class="flex items-center gap-2">
-          <StatusBadge v-if="!isNew && disbursement" :status="status" />
+          <StatusBadge v-if="disbursement" :status="status" />
           <AppButton variant="ghost" size="sm" @click="router.push({ name: 'DisbursementList' })">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
@@ -228,7 +245,7 @@ function onClaimed() {
     </div>
 
     <!-- Content -->
-    <template v-else-if="disbursement || isNew">
+    <template v-else-if="disbursement">
       <!-- Collapsible Summary Section -->
       <div v-if="disbursement" class="mb-5">
         <button
@@ -291,6 +308,46 @@ function onClaimed() {
                 </span>
               </div>
             </div>
+
+            <!-- Document meta: remaining doc-level fields from the Disbursement doctype -->
+            <div class="px-4 pb-4 pt-1">
+              <dl class="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3 text-sm border-t border-gray-100 pt-3">
+                <div class="min-w-0">
+                  <dt class="text-[10px] font-medium text-gray-400 uppercase tracking-wider">Template</dt>
+                  <dd class="mt-0.5 font-medium text-gray-800 truncate" :title="disbursement.disbursement_template || ''">
+                    {{ disbursement.disbursement_template || "—" }}
+                  </dd>
+                </div>
+                <div class="min-w-0">
+                  <dt class="text-[10px] font-medium text-gray-400 uppercase tracking-wider">Company</dt>
+                  <dd class="mt-0.5 font-medium text-gray-800 truncate" :title="disbursement.company || ''">
+                    {{ disbursement.company || "—" }}
+                  </dd>
+                </div>
+                <div class="min-w-0">
+                  <dt class="text-[10px] font-medium text-gray-400 uppercase tracking-wider">Journal Entry</dt>
+                  <dd class="mt-0.5 truncate">
+                    <a
+                      v-if="disbursement.journal_entry"
+                      :href="`/app/journal-entry/${encodeURIComponent(disbursement.journal_entry)}`"
+                      target="_blank"
+                      rel="noopener"
+                      class="font-medium text-brand-600 hover:text-brand-700 hover:underline"
+                    >
+                      {{ disbursement.journal_entry }}
+                    </a>
+                    <span v-else class="font-medium text-gray-400">Not posted</span>
+                  </dd>
+                </div>
+                <div class="min-w-0">
+                  <dt class="text-[10px] font-medium text-gray-400 uppercase tracking-wider">Recorded Total</dt>
+                  <dd class="mt-0.5 font-medium text-gray-800">
+                    {{ disbursement.total_disbursed || 0 }} items ·
+                    <CurrencyDisplay :value="disbursement.total_amount_disbursed || 0" />
+                  </dd>
+                </div>
+              </dl>
+            </div>
           </div>
         </Transition>
       </div>
@@ -298,18 +355,19 @@ function onClaimed() {
       <!-- Tabs + Content -->
       <div v-if="weeks.length" class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
         <!-- Scrollable tab bar -->
-        <div class="border-b border-gray-100 overflow-x-auto scrollbar-hide bg-gray-50/50">
+        <div class="border-b border-gray-100 overflow-x-auto sm:overflow-visible scrollbar-hide bg-gray-50/50">
           <div class="flex w-full px-1 sm:px-2">
             <button
               v-for="tab in tabs"
               :key="tab.key"
               @click="activeTab = tab.key"
+              :aria-label="tabTitle(tab)"
               class="relative flex-1 min-w-0 px-2 sm:px-4 py-3 sm:py-4 text-sm font-bold whitespace-nowrap transition-all border-b-2 outline-none group"
               :class="[
                 activeTab === tab.key
                   ? 'border-brand-500 text-brand-600 bg-white/60'
                   : 'border-transparent text-gray-400 hover:text-gray-600 hover:bg-gray-100/50',
-                tab.overdue ? 'overdue-blink-tab' : ''
+                tab.overdue ? 'bg-red-50/40' : ''
               ]"
             >
               <div class="flex flex-col items-center gap-1 transition-transform active:scale-95">
@@ -327,13 +385,31 @@ function onClaimed() {
                 <span
                   v-if="tab.countDisplay"
                   class="text-[9px] px-2 py-0.5 rounded-full font-black tracking-widest leading-none border"
-                  :class="tab.overdue
-                    ? 'bg-red-50 text-red-700 border-red-200'
-                    : (activeTab === tab.key ? 'bg-brand-50 text-brand-700 border-brand-100' : 'bg-gray-100 text-gray-500 border-gray-200 group-hover:border-gray-300')"
+                  :class="[
+                    tab.unclaimed === 0
+                      ? 'bg-green-50 text-green-700 border-green-200'
+                      : tab.overdue
+                        ? 'bg-red-50 text-red-700 border-red-200 overdue-blink-tab'
+                        : (activeTab === tab.key ? 'bg-brand-50 text-brand-700 border-brand-100' : 'bg-gray-100 text-gray-500 border-gray-200 group-hover:border-gray-300')
+                  ]"
                 >
-                  {{ tab.countDisplay }}
+                  {{ tab.countDisplay }}<span class="hidden sm:inline">&nbsp;claimed</span>
                 </span>
               </div>
+
+              <!-- Hover tooltip (desktop only — touch devices have no hover) -->
+              <span
+                class="pointer-events-none absolute left-1/2 -translate-x-1/2 top-[calc(100%+6px)] z-30 hidden sm:flex flex-col items-center gap-0.5 whitespace-nowrap rounded-lg bg-gray-900/95 px-3 py-2 shadow-xl normal-case tracking-normal opacity-0 invisible group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 transition-all duration-150"
+                role="presentation"
+              >
+                <span class="text-[11px] font-bold text-white leading-tight">{{ tabTipL1(tab) }}</span>
+                <span
+                  v-if="tabTipL2(tab)"
+                  class="text-[10px] font-medium leading-tight"
+                  :class="tab.overdue && tab.unclaimed ? 'text-red-300' : 'text-gray-300'"
+                >{{ tabTipL2(tab) }}</span>
+                <span class="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 bg-gray-900/95" />
+              </span>
             </button>
           </div>
         </div>

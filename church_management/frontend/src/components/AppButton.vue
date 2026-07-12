@@ -15,6 +15,7 @@ const classes = computed(() => {
   const variants = {
     primary: "bg-brand-600 text-white hover:bg-brand-700 focus:ring-brand-500 shadow-sm",
     secondary: "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 focus:ring-brand-500",
+    outline: "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-brand-500",
     danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm",
     ghost: "text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus:ring-gray-500",
   };

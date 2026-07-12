@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useQuery } from "@pinia/colada";
 import { call } from "@/composables/useFrappeApi";
@@ -7,17 +8,27 @@ import DataTable from "@/components/DataTable.vue";
 import StatusBadge from "@/components/StatusBadge.vue";
 import CurrencyDisplay from "@/components/CurrencyDisplay.vue";
 import AppButton from "@/components/AppButton.vue";
+import CreateDisbursementModal from "@/components/CreateDisbursementModal.vue";
 
 const router = useRouter();
+const showCreate = ref(false);
 
 const {
   data: disbursements,
   isPending: loading,
   error,
+  refetch,
 } = useQuery({
   key: ["disbursements"],
   query: () => call("church_management.api.disbursement.get_list"),
 });
+
+function onCreated(names) {
+  refetch();
+  if (names.length === 1) {
+    router.push({ name: "DisbursementForm", params: { name: names[0] } });
+  }
+}
 
 const columns = [
   { key: "name", label: "Name" },
@@ -41,10 +52,7 @@ function goTo(row) {
   <div class="px-4 sm:px-6 py-4 sm:py-6 max-w-5xl mx-auto w-full">
     <PageHeader title="Disbursements" subtitle="Monthly expenditure records">
       <template #actions>
-        <AppButton
-          size="sm"
-          @click="router.push({ name: 'DisbursementForm', params: { name: 'new' } })"
-        >
+        <AppButton size="sm" @click="showCreate = true">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
@@ -131,5 +139,11 @@ function goTo(row) {
         </div>
       </template>
     </DataTable>
+
+    <CreateDisbursementModal
+      :is-open="showCreate"
+      @close="showCreate = false"
+      @created="onCreated"
+    />
   </div>
 </template>

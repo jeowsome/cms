@@ -5,7 +5,8 @@ const props = defineProps({
   value: { type: Number, default: 0 },
   currency: { type: String, default: "PHP" },
   colored: { type: Boolean, default: false },
-  size: { type: String, default: "sm" },
+  size: { type: String, default: "sm" }, // xs | sm | lg
+  weight: { type: String, default: "" }, // "" | bold
 });
 
 const formatted = computed(() => {
@@ -22,7 +23,9 @@ const colorClass = computed(() => {
 });
 
 const sizeClass = computed(() => {
-  return props.size === "lg" ? "text-xl font-black" : "text-sm font-semibold";
+  if (props.size === "lg") return "text-xl font-black";
+  if (props.size === "xs") return props.weight === "bold" ? "text-[11px] font-bold" : "text-[11px] font-medium";
+  return props.weight === "bold" ? "text-sm font-bold" : "text-sm font-semibold";
 });
 </script>
 

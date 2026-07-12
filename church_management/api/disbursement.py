@@ -294,22 +294,157 @@ def get_source_accounts():
     )
 
 @frappe.whitelist()
-def get_available_months():
+def get_available_months(year=None):
     """Get months that don't have a disbursement yet for generating new ones."""
     perms.require_finance()
     import calendar
 
     existing = frappe.get_all("Disbursement", pluck="name")
-    current_year = frappe.utils.now_datetime().year
+    year = int(year) if year else frappe.utils.now_datetime().year
 
     available = []
     for month_num in range(1, 13):
         month_name = calendar.month_name[month_num]
-        doc_name = f"{month_name}-{current_year}"
+        doc_name = f"{month_name}-{year}"
         if doc_name not in existing:
-            available.append({"month": month_name, "year": current_year, "name": doc_name})
+            available.append({"month": month_name, "year": year, "name": doc_name})
 
     return available
+
+
+@frappe.whitelist()
+def get_templates():
+    """List Disbursement Templates with stats for the create-from-template preview.
+
+    Weekly rows are replicated into every week of the generated month, so the
+    frontend multiplies weekly_amount by the month's Sunday count for estimates.
+    """
+    perms.require_finance()
+    # Templates pointing at a company that no longer exists (old test data)
+    # can never generate; flag them so pickers can filter and the management
+    # page can still show them for cleanup.
+    valid_companies = set(frappe.get_all("Company", pluck="name"))
+    templates = frappe.get_all(
+        "Disbursement Template", fields=["name", "company"], order_by="name asc"
+    )
+    for t in templates:
+        t.company_valid = t.company in valid_companies
+        doc = frappe.get_doc("Disbursement Template", t.name)
+        weekly_rows = list(doc.weekly_allowances or []) + list(doc.weekly_activity or [])
+        # Matches generate_disbursements: monthly_disbursement is intentionally
+        # not generated; only mission_support + monthly_expenses land monthly.
+        monthly_rows = list(doc.mission_support or []) + list(doc.monthly_expenses or [])
+        t.weekly_item_count = len(weekly_rows)
+        t.weekly_amount = sum((r.amount or 0) for r in weekly_rows)
+        t.monthly_item_count = len(monthly_rows)
+        t.monthly_amount = sum((r.amount or 0) for r in monthly_rows)
+    return templates
+
+
+TEMPLATE_TABLES = ("weekly_allowances", "weekly_activity", "mission_support", "monthly_expenses")
+TEMPLATE_ROW_FIELDS = ("worker", "description", "purpose", "amount", "source")
+
+
+@frappe.whitelist()
+def get_template(name):
+    """Full Disbursement Template with its editable child tables."""
+    perms.require_finance()
+    frappe.has_permission("Disbursement Template", doc=name, throw=True)
+    doc = frappe.get_doc("Disbursement Template", name)
+    out = {
+        "name": doc.name,
+        "company": doc.company,
+        "disbursement_year": doc.disbursement_year,
+    }
+    for table in TEMPLATE_TABLES:
+        out[table] = [
+            {"name": row.name, **{f: row.get(f) for f in TEMPLATE_ROW_FIELDS}}
+            for row in (doc.get(table) or [])
+        ]
+    return out
+
+
+@frappe.whitelist()
+def save_template(payload):
+    """Create or update a Disbursement Template (name auto-derives as DT - {year})."""
+    perms.require_finance()
+    payload = frappe.parse_json(payload)
+
+    name = payload.get("name")
+    if name:
+        frappe.has_permission("Disbursement Template", doc=name, ptype="write", throw=True)
+        doc = frappe.get_doc("Disbursement Template", name)
+    else:
+        frappe.has_permission("Disbursement Template", ptype="create", throw=True)
+        doc = frappe.new_doc("Disbursement Template")
+
+    if not payload.get("company"):
+        frappe.throw(_("Company is mandatory"))
+    if not payload.get("disbursement_year"):
+        frappe.throw(_("Year is mandatory"))
+
+    doc.company = payload["company"]
+    doc.disbursement_year = int(payload["disbursement_year"])
+
+    for table in TEMPLATE_TABLES:
+        if table not in payload:
+            continue
+        doc.set(table, [])
+        for row in payload[table] or []:
+            doc.append(
+                table,
+                {
+                    **{f: row.get(f) for f in TEMPLATE_ROW_FIELDS if row.get(f) not in (None, "")},
+                    "is_planned": 1,
+                },
+            )
+
+    doc.save()
+    return {"name": doc.name}
+
+
+@frappe.whitelist()
+def delete_template(name):
+    """Delete a Disbursement Template (blocked if disbursements link to it)."""
+    perms.require_finance()
+    frappe.has_permission("Disbursement Template", doc=name, ptype="delete", throw=True)
+    frappe.delete_doc("Disbursement Template", name)
+    return {"success": True}
+
+
+@frappe.whitelist()
+def get_companies():
+    """Companies for the template editor select."""
+    perms.require_finance()
+    return frappe.get_all("Company", fields=["name"], order_by="name asc")
+
+
+@frappe.whitelist()
+def create_from_template(template_name, year, months):
+    """Generate Disbursement docs from a Disbursement Template for the given months."""
+    perms.require_finance()
+    frappe.has_permission("Disbursement", ptype="create", throw=True)
+    frappe.has_permission("Disbursement Template", doc=template_name, throw=True)
+
+    months = frappe.parse_json(months)
+    year = int(year)
+    if not months:
+        frappe.throw(_("Select at least one month"))
+
+    existing = [m for m in months if frappe.db.exists("Disbursement", f"{m}-{year}")]
+    if existing:
+        frappe.throw(
+            _("Disbursement already exists for: {0}").format(
+                ", ".join(f"{m}-{year}" for m in existing)
+            )
+        )
+
+    from church_management.church_management.doctype.disbursement_template.disbursement_template import (
+        generate_disbursements,
+    )
+
+    created = generate_disbursements(template_name, months, year)
+    return {"created": created}
 
 
 def _all_child_fields():
