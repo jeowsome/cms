@@ -182,21 +182,21 @@ async function saveItem() {
               <div v-if="!isClaimed" class="space-y-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
                 <div v-if="item?.worker !== undefined">
                   <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Worker</label>
-                  <select v-model="editForm.worker" class="block w-full text-sm border-gray-200 rounded-lg shadow-sm focus:border-brand-500 focus:ring-brand-500 bg-white">
+                  <select v-model="editForm.worker" class="cm-field cm-select">
                     <option value="">Select Worker</option>
                     <option v-for="w in workers" :key="w.name" :value="w.name">{{ w.full_name }}</option>
                   </select>
                 </div>
                 <div>
                   <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Purpose</label>
-                  <select v-model="editForm.purpose" class="block w-full text-sm border-gray-200 rounded-lg shadow-sm focus:border-brand-500 focus:ring-brand-500 bg-white">
+                  <select v-model="editForm.purpose" class="cm-field cm-select">
                     <option value="">Select Purpose</option>
                     <option v-for="p in purposes" :key="p.name" :value="p.name">{{ p.name || p.description }}</option>
                   </select>
                 </div>
                 <div>
                   <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Source</label>
-                  <select v-model="editForm.source" class="block w-full text-sm border-gray-200 rounded-lg shadow-sm focus:border-brand-500 focus:ring-brand-500 bg-white">
+                  <select v-model="editForm.source" class="cm-field cm-select">
                     <option value="">Select Source</option>
                     <option v-for="a in accounts" :key="a.name" :value="a.name">{{ a.account_name || a.name }}</option>
                   </select>
@@ -211,7 +211,7 @@ async function saveItem() {
                     type="number"
                     min="0"
                     step="0.01"
-                    class="block w-full text-sm border-gray-200 rounded-lg shadow-sm focus:border-brand-500 focus:ring-brand-500 bg-white px-3 py-2"
+                    class="cm-field text-right tabular"
                   />
                   <p v-if="item?.amount_edited" class="mt-1 text-[11px] text-gray-500">
                     Original:
@@ -222,7 +222,7 @@ async function saveItem() {
                 </div>
                 <div v-if="item?.is_planned !== undefined">
                   <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Is Planned</label>
-                  <select v-model="editForm.is_planned" class="block w-full text-sm border-gray-200 rounded-lg shadow-sm focus:border-brand-500 focus:ring-brand-500 bg-white">
+                  <select v-model="editForm.is_planned" class="cm-field cm-select">
                     <option :value="1">Yes</option>
                     <option :value="0">No</option>
                   </select>

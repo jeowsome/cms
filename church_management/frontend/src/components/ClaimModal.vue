@@ -151,7 +151,7 @@ async function submit() {
               </label>
               <select
                 v-model="receivedBy"
-                class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors appearance-none"
+                class="cm-select w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors appearance-none"
               >
                 <option value="" disabled>Select worker...</option>
                 <option v-for="w in workers || []" :key="w.name" :value="w.name">
@@ -166,7 +166,7 @@ async function submit() {
               </label>
               <select
                 v-model="source"
-                class="w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors appearance-none"
+                class="cm-select w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors appearance-none"
               >
                 <option value="" disabled>Select source account...</option>
                 <option v-for="a in accounts || []" :key="a.name" :value="a.name">

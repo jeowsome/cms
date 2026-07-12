@@ -89,17 +89,17 @@ async function saveItem() {
           <div class="flex-1 p-5 space-y-4 overflow-y-auto max-h-[70vh]">
             <div>
               <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Description *</label>
-              <input v-model="form.description" type="text" placeholder="e.g. Utility Bill" class="block w-full text-sm border-gray-200 rounded-lg shadow-sm focus:border-brand-500 focus:ring-brand-500">
+              <input v-model="form.description" type="text" placeholder="e.g. Utility Bill" class="cm-field">
             </div>
 
             <div>
               <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Amount *</label>
-              <input v-model="form.amount" type="number" step="0.01" min="0" class="block w-full text-sm border-gray-200 rounded-lg shadow-sm focus:border-brand-500 focus:ring-brand-500">
+              <input v-model="form.amount" type="number" step="0.01" min="0" class="cm-field text-right tabular">
             </div>
 
             <div>
               <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Purpose</label>
-              <select v-model="form.purpose" class="block w-full text-sm border-gray-200 rounded-lg shadow-sm focus:border-brand-500 focus:ring-brand-500">
+              <select v-model="form.purpose" class="cm-field cm-select">
                 <option value="">Select Purpose</option>
                 <option v-for="p in purposes" :key="p.name" :value="p.name">{{ p.name || p.description }}</option>
               </select>
@@ -107,7 +107,7 @@ async function saveItem() {
 
             <div>
               <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Source</label>
-              <select v-model="form.source" class="block w-full text-sm border-gray-200 rounded-lg shadow-sm focus:border-brand-500 focus:ring-brand-500">
+              <select v-model="form.source" class="cm-field cm-select">
                 <option value="">Select Source</option>
                 <option v-for="a in accounts" :key="a.name" :value="a.name">{{ a.account_name || a.name }}</option>
               </select>
@@ -115,7 +115,7 @@ async function saveItem() {
 
             <div>
               <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Is Planned</label>
-              <select v-model="form.is_planned" class="block w-full text-sm border-gray-200 rounded-lg shadow-sm focus:border-brand-500 focus:ring-brand-500">
+              <select v-model="form.is_planned" class="cm-field cm-select">
                 <option :value="1">Yes</option>
                 <option :value="0">No</option>
               </select>

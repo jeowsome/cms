@@ -34,6 +34,30 @@
   }
 }
 
+@layer components {
+  /* Shared form controls — the app doesn't use @tailwindcss/forms, so native
+     inputs/selects keep cramped UA padding unless normalized here.
+     44px tall (touch target), 8pt-rhythm padding, brand focus ring. */
+  .cm-field {
+    @apply block w-full h-11 appearance-none rounded-xl border border-gray-200 bg-white px-3.5 text-sm text-gray-900 shadow-sm transition-colors placeholder:text-gray-400 hover:border-gray-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 disabled:cursor-not-allowed disabled:border-gray-100 disabled:bg-gray-50 disabled:text-gray-500;
+  }
+  .cm-select {
+    @apply cursor-pointer bg-no-repeat pr-10;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+    background-position: right 0.65rem center;
+    background-size: 1.1rem 1.1rem;
+  }
+  /* Numeric fields: hide spinners so right-aligned amounts stay clean */
+  .cm-field::-webkit-outer-spin-button,
+  .cm-field::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .cm-field[type="number"] {
+    -moz-appearance: textfield;
+  }
+}
+
 @layer utilities {
   .tabular { font-variant-numeric: tabular-nums; }
   .anim-fadein { animation: dc-fadein .15s ease-out; }
@@ -61,5 +85,13 @@
 @keyframes dc-overdue-tab {
   0%, 100% { background-color: rgba(239,68,68,.08); }
   50%      { background-color: rgba(239,68,68,.22); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overdue-blink,
+  .overdue-blink-tab,
+  .pulse-ring {
+    animation: none;
+  }
 }
 
