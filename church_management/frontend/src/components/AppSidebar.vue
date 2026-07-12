@@ -14,6 +14,7 @@ const navItems = computed(() => {
   // Disbursements — Finance Team and Admin only.
   if (session.hasFinanceAccess) {
     items.push({ label: "Disbursements", to: "/disbursements", icon: "wallet" });
+    items.push({ label: "Templates", to: "/templates", icon: "layers" });
   }
 
   // Role assignments — Music Team Leader and Admin only.
@@ -103,6 +104,11 @@ function toggle(label) {
               v-if="item.icon === 'wallet'"
               stroke-linecap="round" stroke-linejoin="round"
               d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3"
+            />
+            <path
+              v-else-if="item.icon === 'layers'"
+              stroke-linecap="round" stroke-linejoin="round"
+              d="M6.429 9.75 2.25 12l4.179 2.25m0-4.5 5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0 4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0-5.571 3-5.571-3"
             />
             <path
               v-else-if="item.icon === 'shield'"

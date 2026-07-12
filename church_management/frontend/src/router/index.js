@@ -13,6 +13,10 @@ const routes = [
   { path: "/disbursements", name: "DisbursementList", component: () => import("@/pages/DisbursementList.vue"), meta: { requiresAuth: true, requiresFinance: true } },
   { path: "/disbursements/:name", name: "DisbursementForm", component: () => import("@/pages/DisbursementForm.vue"), props: true, meta: { requiresAuth: true, requiresFinance: true } },
 
+  // Disbursement Templates (Finance Team or Admin)
+  { path: "/templates", name: "TemplateList", component: () => import("@/pages/TemplateList.vue"), meta: { requiresAuth: true, requiresFinance: true } },
+  { path: "/templates/:name", name: "TemplateForm", component: () => import("@/pages/TemplateForm.vue"), props: true, meta: { requiresAuth: true, requiresFinance: true } },
+
   // Music team (any music role required)
   { path: "/music", redirect: "/music/lineup" },
   { path: "/music/lineup", name: "MusicLineup", component: () => import("@/pages/MusicLineup.vue"), meta: { requiresAuth: true, requiresMusic: true, requiresWorshipLeader: true } },

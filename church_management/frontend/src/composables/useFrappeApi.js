@@ -23,7 +23,9 @@ async function request(url, options = {}) {
 
   if (!res.ok) {
     const error = await res.json().catch(() => ({ message: res.statusText }));
-    throw new Error(error.message || error.exc || `HTTP ${res.status}`);
+    const err = new Error(error.message || error.exc || `HTTP ${res.status}`);
+    err.status = res.status;
+    throw err;
   }
 
   const data = await res.json();

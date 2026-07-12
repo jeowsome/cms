@@ -77,7 +77,12 @@ export const useSessionStore = defineStore("session", () => {
       const r = await call("church_management.api.music_team.whoami");
       applyWhoami(r);
     } catch (e) {
-      reset();
+      // Transient failures (server restarting, network blip) must not wipe an
+      // authenticated session's nav; only an explicit auth rejection — or
+      // never having been authenticated — resets to guest.
+      if (e.status === 401 || e.status === 403 || !user.value || user.value === "Guest") {
+        reset();
+      }
     } finally {
       ready.value = true;
     }
