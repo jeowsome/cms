@@ -8,8 +8,12 @@ def get_context(context):
     selected_year = frappe.form_dict.get('year', '2026')
     selected_month = frappe.form_dict.get('month', '')
     group_by = frappe.form_dict.get('group_by', 'Source')
-    
+
     month_names = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    if selected_month not in month_names:
+        selected_month = ''
+    if group_by not in ('Source', 'Purpose', 'Department'):
+        group_by = 'Source'
     
     # Initialize basic context
     res = {
@@ -37,9 +41,9 @@ def get_context(context):
     try:
         settings = frappe.get_single("Church Management Settings")
         
-        cols_query = frappe.get_all('Collection', 
-            fields=['name', 'date', 'grand_total', 'tithes_total', 'mission_total', 'offering_total', 'benevolence_collection', 'loose_collection', 'sunday_school_collection', 
-                    'tithes_total_cls', 'mission_total_cls', 'offering_total_cls', 'benevolence_collection_cls', 'loose_collection_cls'], 
+        cols_query = frappe.get_all('Collection',
+            fields=['name', 'date', 'grand_total', 'grand_total_cls', 'tithes_total', 'mission_total', 'offering_total', 'benevolence_collection', 'loose_collection', 'sunday_school_collection',
+                    'tithes_total_cls', 'mission_total_cls', 'offering_total_cls', 'benevolence_collection_cls', 'loose_collection_cls'],
             filters=[['Collection', 'date', '>=', f'{selected_year}-01-01'], ['Collection', 'date', '<=', f'{selected_year}-12-31'], ['Collection', 'docstatus', '=', 1]])
         
         disb_query = frappe.get_all('Disbursement', fields=['name', 'month_recorded', 'year_recorded'], filters={'year_recorded': selected_year, 'docstatus': ['<', 2]})
@@ -65,7 +69,7 @@ def get_context(context):
             fs['funds']['Mission']['collected'] += (c.mission_total or 0) + (c.mission_total_cls or 0)
             fs['funds']['Benevolence']['collected'] += (c.benevolence_collection or 0) + (c.benevolence_collection_cls or 0)
             fs['cash_collected'] += c.grand_total or 0.0
-            fs['cashless_collected'] += sum([c.tithes_total_cls or 0.0, c.mission_total_cls or 0.0, c.offering_total_cls or 0.0, c.benevolence_collection_cls or 0.0, c.loose_collection_cls or 0.0])
+            fs['cashless_collected'] += c.grand_total_cls or 0.0
 
         # White Gift collected = cumulative GL balance (separate doctype, not in Collection)
         for wg_acc in [settings.white_gift_cash_account, settings.white_gift_cashless_account]:
@@ -89,23 +93,25 @@ def get_context(context):
 
             for item in items:
                 if item.get('status') != 'Claimed': continue
-                amt = item.get('disbursed_amount') or item.get('amount') or 0.0
+                amt = item.get('amount') or 0.0
                 purp, src = item.get('purpose'), item.get('source')
-                if src: account_deductions[src] = account_deductions.get(src, 0.0) + amt
-                # Map disbursed amounts to funds by source account
-                mapped_fund = None
-                if src:
-                    src_lower = src.lower()
-                    if 'white gift' in src_lower: mapped_fund = 'White Gift'
-                    elif 'mission' in src_lower: mapped_fund = 'Mission'
-                    elif 'benevolence' in src_lower: mapped_fund = 'Benevolence'
-                    else: mapped_fund = 'General'
-                if mapped_fund: fs['funds'][mapped_fund]['disbursed'] += amt
+                account_deductions[src or ''] = account_deductions.get(src or '', 0.0) + amt
+                # Map disbursed amounts to funds by source account.
+                # Items without a source fall into General so fund totals reconcile with total_disbursed.
+                src_lower = (src or '').lower()
+                if 'white gift' in src_lower: mapped_fund = 'White Gift'
+                elif 'mission' in src_lower: mapped_fund = 'Mission'
+                elif 'benevolence' in src_lower: mapped_fund = 'Benevolence'
+                else: mapped_fund = 'General'
+                fs['funds'][mapped_fund]['disbursed'] += amt
                 fs['total_disbursed'] += amt
-                # Store for monthly breakdown
+                # Store for monthly breakdown. Allowance rows have no description field —
+                # fall back to remarks, then purpose + worker.
+                worker = item.get('worker')
+                fallback = f"{purp} — {worker}" if (purp and worker) else (purp or worker)
                 disb_items_by_month.setdefault(d.month_recorded, []).append({
                     'amount': amt, 'source': src, 'purpose': purp,
-                    'description': item.get('description') or item.get('remarks') or purp or "No Description",
+                    'description': item.get('description') or item.get('remarks') or fallback or "No Description",
                     'received_date': item.get('received_date'),
                     'received_by': item.get('received_by'),
                     'department': item.get('department')
@@ -180,9 +186,11 @@ def get_context(context):
             ('White Gift Cashless', [settings.white_gift_cashless_account], [settings.white_gift_cashless_account], True),
         ]
 
+        matched_sources = set()
         for label, ledger_accounts, deduction_sources, cumulative in display_accounts:
             ledger_balance = sum(get_gl_balance(a, cumulative=cumulative) for a in ledger_accounts if a)
             deduction = sum(account_deductions.get(s, 0.0) for s in deduction_sources if s)
+            matched_sources.update(s for s in deduction_sources if s)
             if ledger_balance != 0 or deduction != 0:
                 res['account_balances'].append({
                     'name': label,
@@ -190,6 +198,18 @@ def get_context(context):
                     'pending_deductions': deduction,
                     'effective_balance': ledger_balance - deduction
                 })
+
+        # Claimed items whose source is empty or matches no display account above —
+        # shown so the table always reconciles with the fund summary totals.
+        unmatched = sum(amt for src, amt in account_deductions.items() if src not in matched_sources)
+        if unmatched:
+            res['account_balances'].append({
+                'name': 'Unassigned Source',
+                'ledger_balance': 0.0,
+                'pending_deductions': unmatched,
+                'effective_balance': -unmatched,
+                'is_unassigned': True
+            })
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "Financial Statement Error")
     
@@ -211,8 +231,9 @@ def download_disbursements_excel(year):
         items.extend(doc.get('monthly_disbursement_items') or [])
         for item in items:
             if item.get('status') == 'Claimed':
-                amt = item.get('disbursed_amount') or item.get('amount') or 0.0
-                data.append([d.month_recorded, item.get('received_date'), item.get('source'), item.get('purpose'), item.get('department'), item.get('description') or item.get('remarks') or item.get('purpose') or "", item.get('received_by'), amt])
+                amt = item.get('amount') or 0.0
+                desc = item.get('description') or item.get('remarks') or item.get('worker') or item.get('purpose') or ""
+                data.append([d.month_recorded, item.get('received_date'), item.get('source'), item.get('purpose'), item.get('department'), desc, item.get('received_by'), amt])
     xlsx_file = make_xlsx(data, "Disbursements")
     frappe.response['filename'] = f"Disbursements_{year}.xlsx"
     frappe.response['filecontent'] = xlsx_file.getvalue()

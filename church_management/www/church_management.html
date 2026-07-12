@@ -1,27 +1,50 @@
+{% extends "templates/base.html" %}
+
+{% block title %}Member Portal — Jezreel Baptist Church Pasig{% endblock %}
+
+{% block favicon %}
+<link rel="shortcut icon" href="/assets/church_management/images/jbc-logo-192.png" type="image/png">
+{% endblock %}
+
 {% block head_include %}
-<meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>JBC Church Management</title>
 <link rel="stylesheet" href="/assets/church_management/dist/assets/main.css?v={{ frappe.utils.now() }}" />
 <style>
-    /* Strip all Frappe chrome for full SPA takeover */
-    html, body { margin: 0; padding: 0; overflow: hidden; height: 100%; }
-    .web-footer, .navbar, .page-header, .page-header-wrapper,
-    .website-footer, footer, .banner, .hero { display: none !important; }
-    [data-page-container], .main-section, .container,
-    .web-content, .main-column {
-        padding: 0 !important; margin: 0 !important;
-        max-width: 100% !important; width: 100% !important;
-        min-height: 100vh !important;
+    html, body { margin: 0 !important; padding: 0 !important; overflow: hidden; height: 100%; background: #f8fafc !important; }
+    #app { min-height: 100vh; }
+    /* Branded splash shown until the SPA mounts (Vue replaces #app content) */
+    .jbc-splash {
+        min-height: 100vh; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 16px;
+        background: linear-gradient(160deg, #064e3b 0%, #022c22 100%);
     }
-    .page-content { padding: 0 !important; }
-    /* Prevent Frappe's body scroll */
-    body > .container { display: contents !important; }
+    .jbc-splash img { width: 88px; height: 88px; border-radius: 9999px; box-shadow: 0 0 0 8px rgba(255,255,255,0.08); }
+    .jbc-splash p {
+        margin: 0; color: #d1fae5; font-size: 14px; font-weight: 600; letter-spacing: 0.08em;
+        text-transform: uppercase; font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+    .jbc-splash .spinner {
+        width: 22px; height: 22px; border-radius: 9999px;
+        border: 3px solid rgba(250, 204, 21, 0.25); border-top-color: #facc15;
+        animation: jbc-spin 0.8s linear infinite;
+    }
+    @keyframes jbc-spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { .jbc-splash .spinner { animation-duration: 2s; } }
 </style>
 {% endblock %}
 
-{% block page_content %}
-<div id="app"></div>
+{% block navbar %}{% endblock %}
+{% block banner %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div id="app">
+    <div class="jbc-splash" aria-label="Loading">
+        <img src="/assets/church_management/images/jbc-logo-192.png" alt="Jezreel Baptist Church logo">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Loading member portal&hellip;</p>
+    </div>
+</div>
 <script>
     window.csrfToken = "{{ csrf_token }}";
 </script>
