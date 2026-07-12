@@ -18,6 +18,38 @@ const showChrome = computed(() => {
 });
 
 onMounted(() => { if (!session.ready) session.refresh(); });
+
+// Self-healing staleness check: a tab restored from browser session-restore
+// (or any cached shell) keeps running an old bundle forever. Compare the
+// build version embedded in the page HTML against the deployed asset's
+// Last-Modified and reload once when they diverge.
+async function checkBuild() {
+  const embedded = String(window.cmBuildVer || "");
+  if (!embedded) return;
+  try {
+    const res = await fetch("/assets/church_management/dist/assets/index.js", {
+      method: "HEAD",
+      cache: "no-store",
+    });
+    const lm = res.headers.get("Last-Modified");
+    if (!lm) return;
+    const deployed = String(Math.floor(Date.parse(lm) / 1000));
+    if (deployed !== embedded && !sessionStorage.getItem("cm_reload_" + deployed)) {
+      sessionStorage.setItem("cm_reload_" + deployed, "1"); // guard against reload loops
+      window.location.reload();
+    }
+  } catch {
+    /* offline or blocked — try again next trigger */
+  }
+}
+
+onMounted(() => {
+  checkBuild();
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") checkBuild();
+  });
+  setInterval(checkBuild, 15 * 60 * 1000);
+});
 </script>
 
 <template>

@@ -18,6 +18,9 @@ app_license = "MIT"
 # web_include_css = "/assets/church_management/css/church_management.css"
 # web_include_js = "/assets/church_management/js/church_management.js"
 
+# Prevent browsers from heuristically caching the SPA shell page
+after_request = ["church_management.web.set_no_store_headers"]
+
 # include custom scss in every website theme (without file extension ".scss")
 # website_theme_scss = "church_management/public/scss/website"
 
