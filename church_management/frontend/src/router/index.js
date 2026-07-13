@@ -9,6 +9,13 @@ const routes = [
   { path: "/forgot-password", name: "ForgotPassword", component: () => import("@/pages/ForgotPassword.vue"), meta: { public: true, chrome: false } },
   { path: "/register", name: "MusicRegister", component: () => import("@/pages/MusicRegister.vue"), meta: { public: true, chrome: false } },
 
+  // Collections (Finance Team or Admin)
+  { path: "/collections", name: "CollectionList", component: () => import("@/pages/CollectionList.vue"), meta: { requiresAuth: true, requiresFinance: true } },
+  { path: "/collections/:name", name: "CollectionForm", component: () => import("@/pages/CollectionForm.vue"), props: true, meta: { requiresAuth: true, requiresFinance: true } },
+
+  // Church Members (Finance Team or Admin)
+  { path: "/members", name: "MemberList", component: () => import("@/pages/MemberList.vue"), meta: { requiresAuth: true, requiresFinance: true } },
+
   // Disbursements (Finance Team or Admin)
   { path: "/disbursements", name: "DisbursementList", component: () => import("@/pages/DisbursementList.vue"), meta: { requiresAuth: true, requiresFinance: true } },
   { path: "/disbursements/:name", name: "DisbursementForm", component: () => import("@/pages/DisbursementForm.vue"), props: true, meta: { requiresAuth: true, requiresFinance: true } },

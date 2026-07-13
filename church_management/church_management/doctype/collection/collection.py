@@ -167,7 +167,10 @@ class Collection(Document):
 			
 		if accounts:
 			je.set("accounts", accounts)
-			je.save()
+			# Finance Team can submit Collections but has no ERPNext Accounts role;
+			# the JE is a system-generated side effect of an already-authorized submit.
+			je.flags.ignore_permissions = True
+			je.save(ignore_permissions=True)
 			je.submit()
 			self.db_set("journal_entry", je.name)
 			frappe.msgprint(frappe._("Journal Entry {0} created.").format(je.name))

@@ -11,10 +11,12 @@ const collapsed = ref(false);
 const navItems = computed(() => {
   const items = [];
 
-  // Disbursements — Finance Team and Admin only.
+  // Finance area — Finance Team and Admin only.
   if (session.hasFinanceAccess) {
+    items.push({ label: "Collections", to: "/collections", icon: "inbox" });
     items.push({ label: "Disbursements", to: "/disbursements", icon: "wallet" });
     items.push({ label: "Templates", to: "/templates", icon: "layers" });
+    items.push({ label: "Members", to: "/members", icon: "users" });
   }
 
   // Role assignments — Music Team Leader and Admin only.
@@ -101,7 +103,12 @@ function toggle(label) {
         >
           <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
             <path
-              v-if="item.icon === 'wallet'"
+              v-if="item.icon === 'inbox'"
+              stroke-linecap="round" stroke-linejoin="round"
+              d="M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859m-19.5.338V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661l-2.074-6.742a2.25 2.25 0 0 0-2.15-1.588H6.574a2.25 2.25 0 0 0-2.15 1.588l-2.075 6.742a2.25 2.25 0 0 0-.1.661Z"
+            />
+            <path
+              v-else-if="item.icon === 'wallet'"
               stroke-linecap="round" stroke-linejoin="round"
               d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3"
             />
@@ -109,6 +116,11 @@ function toggle(label) {
               v-else-if="item.icon === 'layers'"
               stroke-linecap="round" stroke-linejoin="round"
               d="M6.429 9.75 2.25 12l4.179 2.25m0-4.5 5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0 4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0-5.571 3-5.571-3"
+            />
+            <path
+              v-else-if="item.icon === 'users'"
+              stroke-linecap="round" stroke-linejoin="round"
+              d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"
             />
             <path
               v-else-if="item.icon === 'shield'"
