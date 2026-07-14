@@ -13,23 +13,30 @@ MANAGED_ROLES = (
 	"Music Team Leader",
 	"Music Team Member",
 	"Worship Leader",
+	"Donation Editor",
 )
-# Subset that a Music Team Leader (without admin) is allowed to manage.
-# Admin can manage all MANAGED_ROLES.
+# Subsets a non-admin operator may manage. Admin can manage all MANAGED_ROLES.
 LEADER_GRANTABLE = ("Music Team Member", "Worship Leader")
+DONATION_ADMIN_GRANTABLE = ("Donation Editor",)
 
 
 def _grantable():
 	if perms.is_admin():
 		return set(MANAGED_ROLES)
+	grantable = set()
 	if perms.is_music_leader():
-		return set(LEADER_GRANTABLE)
-	return set()
+		grantable |= set(LEADER_GRANTABLE)
+	if perms.is_donation_admin():
+		grantable |= set(DONATION_ADMIN_GRANTABLE)
+	return grantable
 
 
 def _require_role_admin():
-	if not (perms.is_admin() or perms.is_music_leader()):
-		frappe.throw("Music Team Leader or Administrator access required.", frappe.PermissionError)
+	if not (perms.is_admin() or perms.is_music_leader() or perms.is_donation_admin()):
+		frappe.throw(
+			"Music Team Leader, Pasig Admin or Administrator access required.",
+			frappe.PermissionError,
+		)
 
 
 @frappe.whitelist()
@@ -65,6 +72,33 @@ def list_assignable_users(search=None):
 		order_by="full_name asc",
 		limit_page_length=500,
 	)
+
+	# The historical department accounts are System Users, so a non-admin
+	# donation operator would never see them under the Website User filter.
+	# Pull donation-role holders in explicitly.
+	if not perms.is_admin() and perms.is_donation_admin():
+		donation_holders = frappe.get_all(
+			"Has Role",
+			filters={"role": ["in", ["Donation Editor", "Donation Creator"]], "parenttype": "User"},
+			pluck="parent",
+			distinct=True,
+		)
+		listed = {u.name for u in users}
+		extra_filters = [
+			["enabled", "=", 1],
+			["name", "in", [h for h in donation_holders if h not in listed]],
+			["name", "not in", ["Guest", "Administrator"]],
+		]
+		if search:
+			extra_filters.append(["full_name", "like", f"%{search}%"])
+		users += frappe.get_all(
+			"User", filters=extra_filters,
+			fields=["name", "email", "full_name", "enabled", "user_image", "user_type"],
+			order_by="full_name asc",
+			limit_page_length=500,
+		)
+		users.sort(key=lambda u: (u.full_name or u.name or "").lower())
+
 	if not users:
 		return []
 
@@ -99,6 +133,18 @@ def list_assignable_users(search=None):
 	)
 	admin_users = {r["parent"] for r in admin_rows}
 
+	# Department donation assignments — shown as context next to the
+	# Donations role toggle so operators know what a role-holder can see.
+	dept_rows = frappe.get_all(
+		"Donation",
+		filters={"assigned_to": ["in", user_names]},
+		fields=["assigned_to", "department"],
+		distinct=True,
+	)
+	depts_by_user = {}
+	for r in dept_rows:
+		depts_by_user.setdefault(r.assigned_to, set()).add(r.department)
+
 	# Linked Church Member by email (so the UI can show who's a real church member)
 	member_by_email = {}
 	emails = [u.email for u in users if u.email]
@@ -122,6 +168,7 @@ def list_assignable_users(search=None):
 			"enabled": bool(u.enabled),
 			"user_image": u.user_image,
 			"roles": sorted(by_user.get(u.name, [])),
+			"donation_departments": sorted(depts_by_user.get(u.name, [])),
 			"is_admin": u.name in admin_users,
 			"church_member": member.name if member else None,
 			"church_member_name": (

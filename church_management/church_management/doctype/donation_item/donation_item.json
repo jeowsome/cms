@@ -10,7 +10,12 @@
   "amount_donated",
   "column_break_hjmz",
   "donation_type",
-  "description"
+  "purpose",
+  "description",
+  "approval_status",
+  "approved_by",
+  "approved_on",
+  "journal_entry"
  ],
  "fields": [
   {
@@ -35,9 +40,42 @@
    "options": "Cash\nGCash"
   },
   {
+   "fieldname": "purpose",
+   "fieldtype": "Link",
+   "label": "Purpose",
+   "options": "Donation Purpose"
+  },
+  {
    "fieldname": "description",
    "fieldtype": "Text",
    "label": "Description"
+  },
+  {
+   "fieldname": "approval_status",
+   "fieldtype": "Select",
+   "label": "Approval Status",
+   "options": "\nPending\nApproved",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approved_by",
+   "fieldtype": "Link",
+   "label": "Approved By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approved_on",
+   "fieldtype": "Datetime",
+   "label": "Approved On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "journal_entry",
+   "fieldtype": "Link",
+   "label": "Journal Entry",
+   "options": "Journal Entry",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,

@@ -2,8 +2,10 @@
 import { onMounted, ref, computed, reactive } from "vue";
 import { call } from "@/composables/useFrappeApi";
 import { useSessionStore } from "@/stores/session";
+import InviteDonationModal from "@/components/InviteDonationModal.vue";
 
 const session = useSessionStore();
+const showInvite = ref(false);
 
 const users = ref([]);
 const grantable = ref([]);
@@ -20,6 +22,7 @@ const ROLE_META = {
   "Music Team Leader": { color: "rose", label: "Music Leader" },
   "Music Team Member": { color: "sky", label: "Music Member" },
   "Worship Leader": { color: "amber", label: "Worship Leader" },
+  "Donation Editor": { color: "violet", label: "Donations" },
 };
 
 const COLOR_MAP = {
@@ -27,7 +30,16 @@ const COLOR_MAP = {
   rose:    { chip: "bg-rose-100 text-rose-700 ring-rose-200",          on: "bg-rose-600 text-white",    off: "bg-white text-ink-500 ring-ink-200 hover:bg-rose-50" },
   sky:     { chip: "bg-sky-100 text-sky-700 ring-sky-200",             on: "bg-sky-600 text-white",     off: "bg-white text-ink-500 ring-ink-200 hover:bg-sky-50" },
   amber:   { chip: "bg-amber-100 text-amber-700 ring-amber-200",       on: "bg-amber-600 text-white",   off: "bg-white text-ink-500 ring-ink-200 hover:bg-amber-50" },
+  violet:  { chip: "bg-violet-100 text-violet-700 ring-violet-200",    on: "bg-violet-600 text-white",  off: "bg-white text-ink-500 ring-ink-200 hover:bg-violet-50" },
 };
+
+// What the operator's limited scope is called in the header badge.
+const scopeLabel = computed(() => {
+  if (session.isAdmin) return "";
+  if (session.isLeader && session.isDonationAdmin) return "Music Leader + Donation scope";
+  if (session.isLeader) return "Music Leader scope";
+  return "Donation Admin scope";
+});
 
 onMounted(async () => {
   await Promise.all([loadGrantable(), load()]);
@@ -131,8 +143,20 @@ function initials(u) {
               Grant or revoke church-management roles. System Manager and other Frappe roles are managed in Frappe Desk.
             </p>
           </div>
-          <div v-if="!session.isAdmin" class="text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 ring-1 ring-amber-200 px-2 py-1 rounded">
-            Music Leader scope
+          <div class="flex items-center gap-2 shrink-0">
+            <div v-if="scopeLabel" class="text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 ring-1 ring-amber-200 px-2 py-1 rounded">
+              {{ scopeLabel }}
+            </div>
+            <button
+              v-if="session.isDonationAdmin"
+              @click="showInvite = true"
+              class="px-3 py-2 text-xs font-bold bg-violet-600 text-white rounded-lg hover:bg-violet-700 inline-flex items-center gap-1.5"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+              </svg>
+              Invite to Donations
+            </button>
           </div>
         </div>
 
@@ -189,6 +213,18 @@ function initials(u) {
               </div>
               <div class="text-[11px] text-ink-500 truncate">{{ u.email }}</div>
 
+              <!-- Department donation assignments -->
+              <div v-if="u.donation_departments?.length" class="mt-1.5 flex flex-wrap gap-1">
+                <span
+                  v-for="d in u.donation_departments"
+                  :key="d"
+                  class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-violet-50 text-violet-600 ring-1 ring-violet-200"
+                  title="Assigned donation record — controls which department they see on /donations"
+                >
+                  {{ d }}
+                </span>
+              </div>
+
               <!-- Role toggles -->
               <div class="mt-2 flex flex-wrap gap-1.5">
                 <button v-for="role in Object.keys(ROLE_META)" :key="role"
@@ -226,6 +262,12 @@ function initials(u) {
           </div>
         </div>
       </div>
+
+      <InviteDonationModal
+        :is-open="showInvite"
+        @close="showInvite = false"
+        @invited="load"
+      />
     </div>
   </div>
 </template>

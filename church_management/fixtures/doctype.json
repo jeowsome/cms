@@ -148,7 +148,6 @@
     "report_hide": 0,
     "reqd": 0,
     "search_index": 0,
-    "set_only_once": 1,
     "show_dashboard": 0,
     "show_on_timeline": 0,
     "show_preview_popup": 0,
@@ -1087,6 +1086,12 @@
     "width": null
    },
    {
+    "fieldname": "purpose",
+    "fieldtype": "Link",
+    "label": "Purpose",
+    "options": "Donation Purpose"
+   },
+   {
     "allow_bulk_edit": 0,
     "allow_in_quick_entry": 0,
     "allow_on_submit": 0,
@@ -1149,6 +1154,33 @@
     "trigger": null,
     "unique": 0,
     "width": null
+   },
+   {
+    "fieldname": "approval_status",
+    "fieldtype": "Select",
+    "label": "Approval Status",
+    "options": "\nPending\nApproved",
+    "read_only": 1
+   },
+   {
+    "fieldname": "approved_by",
+    "fieldtype": "Link",
+    "label": "Approved By",
+    "options": "User",
+    "read_only": 1
+   },
+   {
+    "fieldname": "approved_on",
+    "fieldtype": "Datetime",
+    "label": "Approved On",
+    "read_only": 1
+   },
+   {
+    "fieldname": "journal_entry",
+    "fieldtype": "Link",
+    "label": "Journal Entry",
+    "options": "Journal Entry",
+    "read_only": 1
    }
   ],
   "force_re_route_to_default_view": 0,

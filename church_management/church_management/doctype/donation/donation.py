@@ -1,7 +1,7 @@
 # Copyright (c) 2025, Jeomar Bayoguina and contributors
 # For license information, please see license.txt
 
-# import frappe
+import frappe
 from frappe.model.document import Document
 from frappe.utils import flt
 
@@ -11,7 +11,27 @@ class Donation(Document):
         Calculates the total amounts from the donation_items child table
         and sets the values in the parent document's fields.
         """
+        self.mark_mission_items_pending()
         self.calculate_donation_totals()
+
+    def mark_mission_items_pending(self):
+        """Items whose purpose is a mission fund need admin approval before
+        they post to the ledger. Approved items are never touched here."""
+        purposes = {i.purpose for i in self.get("donated_amounts") if i.purpose}
+        if not purposes:
+            mission = set()
+        else:
+            mission = set(
+                frappe.get_all(
+                    "Donation Purpose",
+                    filters={"name": ["in", list(purposes)], "is_mission": 1},
+                    pluck="name",
+                )
+            )
+        for item in self.get("donated_amounts"):
+            if item.approval_status == "Approved":
+                continue
+            item.approval_status = "Pending" if item.purpose in mission else ""
 
     def calculate_donation_totals(self):
         """

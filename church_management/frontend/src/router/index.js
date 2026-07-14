@@ -24,6 +24,10 @@ const routes = [
   { path: "/templates", name: "TemplateList", component: () => import("@/pages/TemplateList.vue"), meta: { requiresAuth: true, requiresFinance: true } },
   { path: "/templates/:name", name: "TemplateForm", component: () => import("@/pages/TemplateForm.vue"), props: true, meta: { requiresAuth: true, requiresFinance: true } },
 
+  // Donations (department users; Pasig Admin / Administrator see all)
+  { path: "/donations", name: "DonationList", component: () => import("@/pages/DonationList.vue"), meta: { requiresAuth: true, requiresDonation: true } },
+  { path: "/donations/:name", name: "DonationForm", component: () => import("@/pages/DonationForm.vue"), props: true, meta: { requiresAuth: true, requiresDonation: true } },
+
   // Music team (any music role required)
   { path: "/music", redirect: "/music/lineup" },
   { path: "/music/lineup", name: "MusicLineup", component: () => import("@/pages/MusicLineup.vue"), meta: { requiresAuth: true, requiresMusic: true, requiresWorshipLeader: true } },
@@ -36,13 +40,36 @@ const routes = [
   { path: "/music/profile", name: "MusicProfile", component: () => import("@/pages/MusicProfile.vue"), meta: { requiresAuth: true, requiresMusic: true } },
   { path: "/music/change-password", name: "ChangePassword", component: () => import("@/pages/ChangePassword.vue"), meta: { requiresAuth: true, chrome: false } },
 
-  // Admin / access management — Music Team Leader or Admin only.
-  { path: "/admin/roles", name: "AdminRoles", component: () => import("@/pages/AdminRoles.vue"), meta: { requiresAuth: true, requiresLeader: true } },
+  // Admin / access management — Music Team Leader, Donation Admin (Pasig Admin) or Admin.
+  { path: "/admin/roles", name: "AdminRoles", component: () => import("@/pages/AdminRoles.vue"), meta: { requiresAuth: true, requiresRoleAdmin: true } },
 ];
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes,
+});
+
+// Recover from lazy chunks deleted by a newer deploy: jump to the intended
+// route and force a full reload so the fresh bundle is fetched. The
+// sessionStorage flag prevents a reload loop if the failure is permanent.
+router.onError((error, to) => {
+  const chunkFailed = /error loading dynamically imported module|Failed to fetch dynamically imported module|Importing a module script failed/i.test(
+    String(error?.message || error)
+  );
+  if (!chunkFailed) return;
+  const key = "cm-chunk-reload";
+  if (sessionStorage.getItem(key) === to.fullPath) return;
+  sessionStorage.setItem(key, to.fullPath);
+  window.location.hash = "#" + to.fullPath;
+  window.location.reload();
+});
+
+// Once the route loads fine, clear the reload marker so a future deploy can
+// trigger recovery again.
+router.afterEach((to) => {
+  if (sessionStorage.getItem("cm-chunk-reload") === to.fullPath) {
+    sessionStorage.removeItem("cm-chunk-reload");
+  }
 });
 
 router.beforeEach(async (to) => {
@@ -62,9 +89,12 @@ router.beforeEach(async (to) => {
   }
 
   if (to.meta.public) {
-    // If logged-in user lands on a public page, send them to their landing
+    // If logged-in user lands on a public page, send them to their landing.
+    // A landing of "/login" (account with no SPA roles) must fall through,
+    // or this guard would redirect /login → /login forever.
     if (!session.isGuest && (to.name === "Login" || to.name === "ForgotPassword")) {
-      return session.landingRoute();
+      const landing = session.landingRoute();
+      if (landing !== "/login") return landing;
     }
     return true;
   }
@@ -75,6 +105,9 @@ router.beforeEach(async (to) => {
   if (to.meta.requiresFinance && !session.hasFinanceAccess) {
     return session.landingRoute();
   }
+  if (to.meta.requiresDonation && !session.hasDonationAccess) {
+    return session.landingRoute();
+  }
   if (to.meta.requiresMusic && !session.hasMusicAccess) {
     return session.landingRoute();
   }
@@ -82,6 +115,9 @@ router.beforeEach(async (to) => {
     return session.landingRoute();
   }
   if (to.meta.requiresLeader && !session.isLeader) {
+    return session.landingRoute();
+  }
+  if (to.meta.requiresRoleAdmin && !session.isLeader && !session.isDonationAdmin) {
     return session.landingRoute();
   }
   return true;

@@ -19,6 +19,8 @@ export const useSessionStore = defineStore("session", () => {
     is_music_member: false,
     has_music_access: false,
     has_finance_access: false,
+    has_donation_access: false,
+    is_donation_admin: false,
   });
 
   const isGuest = computed(() => !user.value || user.value === "Guest");
@@ -31,6 +33,8 @@ export const useSessionStore = defineStore("session", () => {
   const isMusicMember = computed(() => flags.value.is_music_member);
   const hasMusicAccess = computed(() => flags.value.has_music_access);
   const hasFinanceAccess = computed(() => flags.value.has_finance_access);
+  const hasDonationAccess = computed(() => flags.value.has_donation_access);
+  const isDonationAdmin = computed(() => flags.value.is_donation_admin);
   // True only when a user has *only* slim-member privileges and no leader role.
   const isMemberOnly = computed(
     () =>
@@ -53,6 +57,8 @@ export const useSessionStore = defineStore("session", () => {
       is_music_member: !!r.is_music_member,
       has_music_access: !!r.has_music_access,
       has_finance_access: !!r.has_finance_access,
+      has_donation_access: !!r.has_donation_access,
+      is_donation_admin: !!r.is_donation_admin,
     };
   }
 
@@ -69,6 +75,8 @@ export const useSessionStore = defineStore("session", () => {
       is_music_member: false,
       has_music_access: false,
       has_finance_access: false,
+      has_donation_access: false,
+      is_donation_admin: false,
     };
   }
 
@@ -117,13 +125,14 @@ export const useSessionStore = defineStore("session", () => {
     if (flags.value.is_music_leader) return "/music/registrations";
     if (flags.value.is_music_member) return "/music/profile";
     if (flags.value.is_finance) return "/disbursements";
+    if (flags.value.has_donation_access) return "/donations";
     return "/login";
   }
 
   return {
     user, roles, churchMember, tempPasswordPending, ready, flags,
     isGuest, isAdmin, isFinance, isLeader, isWorshipLeader, isMusicMember,
-    isMemberOnly, hasMusicAccess, hasFinanceAccess,
+    isMemberOnly, hasMusicAccess, hasFinanceAccess, hasDonationAccess, isDonationAdmin,
     refresh, login, logout, landingRoute,
   };
 });

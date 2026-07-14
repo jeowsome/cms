@@ -45,6 +45,9 @@ const navItems = computed(() => {
     items.push({ label: "Disbursements", to: "/disbursements", icon: "wallet" });
     items.push({ label: "Templates", to: "/templates", icon: "layers" });
   }
+  if (session.hasDonationAccess) {
+    items.push({ label: "Donations", to: "/donations", icon: "gift" });
+  }
   if (session.hasMusicAccess) {
     items.push({ label: "Music", to: "/music/lineup", icon: "music" });
     if (session.isWorshipLeader) {
@@ -97,6 +100,11 @@ function isActive(path) {
             v-else-if="item.icon === 'music' || item.icon === 'songs'"
             stroke-linecap="round" stroke-linejoin="round"
             d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 1 1-.99-3.467l2.31-.66a2.25 2.25 0 0 0 1.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 0 1-.99-3.467l2.31-.66A2.25 2.25 0 0 0 9 15.553z"
+          />
+          <path
+            v-else-if="item.icon === 'gift'"
+            stroke-linecap="round" stroke-linejoin="round"
+            d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H4.5a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"
           />
           <path
             v-else-if="item.icon === 'calendar'"

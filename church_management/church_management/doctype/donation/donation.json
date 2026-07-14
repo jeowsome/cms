@@ -49,8 +49,7 @@
    "fieldname": "assigned_to",
    "fieldtype": "Link",
    "label": "Assigned to",
-   "options": "User",
-   "set_only_once": 1
+   "options": "User"
   },
   {
    "fieldname": "total_donated_cash_amount",

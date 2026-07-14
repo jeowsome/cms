@@ -1,0 +1,64 @@
+<div style="font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background:#f0eee9; padding:32px 16px; color:#1f2937;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.08);">
+    <tr>
+      <td style="background:linear-gradient(135deg,#0284c7 0%,#0c4a6e 100%);color:#ffffff;padding:32px 32px 28px;">
+        <div style="font-size:10px;font-weight:900;letter-spacing:0.25em;text-transform:uppercase;color:#bae6fd;margin-bottom:8px;">
+          Jezreel Baptist Church · Donations
+        </div>
+        <h1 style="margin:0;font-size:28px;line-height:1.15;font-weight:700;letter-spacing:-0.01em;">You've been invited.</h1>
+        <p style="margin:8px 0 0;font-size:14px;color:#bae6fd;">
+          Hi {{ first_name }} — you can now record donations for <strong style="color:#ffffff;">{{ department }}</strong> ({{ year }}).
+        </p>
+      </td>
+    </tr>
+    {% if temp_password %}
+    <tr>
+      <td style="padding:28px 32px 8px;">
+        <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#374151;">
+          An account has been created for you. Use the credentials below for your first sign-in — you'll be asked to set a permanent password right after.
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:0 32px 20px;">
+        <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:18px 20px;">
+          <div style="font-size:10px;font-weight:900;letter-spacing:0.2em;text-transform:uppercase;color:#6b7280;margin-bottom:4px;">Email</div>
+          <div style="font-size:15px;color:#111827;font-weight:600;margin-bottom:14px;">{{ email }}</div>
+          <div style="font-size:10px;font-weight:900;letter-spacing:0.2em;text-transform:uppercase;color:#6b7280;margin-bottom:4px;">Temporary password</div>
+          <div style="font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-size:18px;color:#0369a1;font-weight:700;letter-spacing:0.06em;">{{ temp_password }}</div>
+        </div>
+      </td>
+    </tr>
+    {% else %}
+    <tr>
+      <td style="padding:28px 32px 20px;">
+        <p style="margin:0;font-size:15px;line-height:1.6;color:#374151;">
+          Donation access has been added to your existing account (<strong>{{ email }}</strong>).
+          Sign in with your usual password to start recording entries.
+        </p>
+      </td>
+    </tr>
+    {% endif %}
+    <tr>
+      <td style="padding:0 32px 28px;text-align:center;">
+        <a href="{{ login_url }}" style="display:inline-block;background:#0284c7;color:#ffffff;text-decoration:none;font-weight:700;font-size:14px;padding:12px 24px;border-radius:12px;box-shadow:0 1px 2px rgba(0,0,0,0.05);">
+          Open the donations page
+        </a>
+      </td>
+    </tr>
+    {% if temp_password %}
+    <tr>
+      <td style="padding:0 32px 24px;">
+        <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:14px 18px;font-size:12px;color:#92400e;line-height:1.6;">
+          <strong style="font-weight:700;">Heads up:</strong> this temporary password works only for your first sign-in. You'll set a new one immediately. Keep it private.
+        </div>
+      </td>
+    </tr>
+    {% endif %}
+    <tr>
+      <td style="padding:0 32px 28px;font-size:11px;color:#9ca3af;text-align:center;">
+        Sent automatically by the JBC church management system.
+      </td>
+    </tr>
+  </table>
+</div>

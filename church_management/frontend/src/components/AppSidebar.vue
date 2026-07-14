@@ -19,8 +19,13 @@ const navItems = computed(() => {
     items.push({ label: "Members", to: "/members", icon: "users" });
   }
 
-  // Role assignments — Music Team Leader and Admin only.
-  if (session.isLeader) {
+  // Donations — department users, Pasig Admin sees all departments.
+  if (session.hasDonationAccess) {
+    items.push({ label: "Donations", to: "/donations", icon: "gift" });
+  }
+
+  // Role assignments — Music Team Leader, Donation Admin (Pasig Admin) and Admin.
+  if (session.isLeader || session.isDonationAdmin) {
     items.push({ label: "Role Assignments", to: "/admin/roles", icon: "shield" });
   }
 
@@ -121,6 +126,11 @@ function toggle(label) {
               v-else-if="item.icon === 'users'"
               stroke-linecap="round" stroke-linejoin="round"
               d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"
+            />
+            <path
+              v-else-if="item.icon === 'gift'"
+              stroke-linecap="round" stroke-linejoin="round"
+              d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H4.5a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"
             />
             <path
               v-else-if="item.icon === 'shield'"

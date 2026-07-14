@@ -15,6 +15,10 @@ import frappe
 
 ADMIN_ROLES = {"System Manager", "Administrator"}
 FINANCE_ROLES = {"Finance Team"} | ADMIN_ROLES
+DONATION_ROLES = {"Donation Editor", "Donation Creator"} | ADMIN_ROLES
+
+# Users assigned to this department's Donation records see every department.
+DONATION_ADMIN_DEPARTMENT = "Pasig Admin"
 MUSIC_LEADER_ROLES = {"Music Team Leader"} | ADMIN_ROLES
 WORSHIP_LEADER_ROLES = {"Worship Leader"} | MUSIC_LEADER_ROLES
 MUSIC_MEMBER_ROLES = {"Music Team Member"} | WORSHIP_LEADER_ROLES
@@ -56,6 +60,58 @@ def has_finance_access(user=None):
 	return is_finance(user)
 
 
+def donation_departments(user=None):
+	"""Departments a user records donations for — derived from the Donation
+	docs they are `assigned_to`. This is the only user↔department mapping."""
+	user = user or frappe.session.user
+	if user == "Guest":
+		return []
+	return list(
+		set(
+			frappe.get_all(
+				"Donation",
+				filters={"assigned_to": user},
+				pluck="department",
+				distinct=True,
+			)
+		)
+	)
+
+
+def is_donation_admin(user=None):
+	"""Administrator / System Manager, or a donation-role holder assigned to
+	the Pasig Admin department — they see donations of every department."""
+	user = user or frappe.session.user
+	if is_admin(user):
+		return True
+	return has_donation_access(user) and bool(
+		frappe.db.exists(
+			"Donation",
+			{"department": DONATION_ADMIN_DEPARTMENT, "assigned_to": user},
+		)
+	)
+
+
+def has_donation_access(user=None):
+	"""Access to the donation pages is purely role-gated so revoking the role
+	on /admin/roles fully revokes access; Donation.assigned_to only scopes
+	which departments a role-holder sees."""
+	return bool(_roles(user) & DONATION_ROLES)
+
+
+def require_donation_access():
+	if not has_donation_access():
+		frappe.throw("Donation access required.", frappe.PermissionError)
+
+
+def require_donation_admin():
+	if not is_donation_admin():
+		frappe.throw(
+			"Only Pasig Admin or Administrator can perform this action.",
+			frappe.PermissionError,
+		)
+
+
 def require_finance():
 	if not has_finance_access():
 		frappe.throw("Finance Team access required.", frappe.PermissionError)
@@ -91,6 +147,8 @@ def role_flags(user=None):
 			"is_music_member": False,
 			"has_music_access": False,
 			"has_finance_access": False,
+			"has_donation_access": False,
+			"is_donation_admin": False,
 		}
 	roles = _roles(user)
 	return {
@@ -101,4 +159,6 @@ def role_flags(user=None):
 		"is_music_member": bool(roles & MUSIC_MEMBER_ROLES),
 		"has_music_access": bool(roles & MUSIC_ANY_ROLES),
 		"has_finance_access": bool(roles & FINANCE_ROLES),
+		"has_donation_access": has_donation_access(user),
+		"is_donation_admin": is_donation_admin(user),
 	}
