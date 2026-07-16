@@ -9,7 +9,11 @@ import "./assets/style.css";
 // the next `npm run build` (emptyOutDir). When such a chunk 404s, reload the
 // page so the browser picks up the current bundle — otherwise navigation
 // silently aborts and the user is stuck (e.g. frozen on "Redirecting…").
+// Reload at most once: a persistent failure (poisoned cache, blocked request)
+// must surface as an error instead of an infinite reload loop.
 window.addEventListener("vite:preloadError", (event) => {
+  if (sessionStorage.getItem("cm-preload-reload")) return;
+  sessionStorage.setItem("cm-preload-reload", "1");
   event.preventDefault();
   window.location.reload();
 });

@@ -49,22 +49,14 @@ const showChrome = computed(() => {
 onMounted(() => { if (!session.ready) session.refresh(); });
 
 // Self-healing staleness check: a tab restored from browser session-restore
-// (or any cached shell) keeps running an old bundle forever. Compare the
-// build version embedded in the page HTML against the deployed asset's
-// Last-Modified and reload once when they diverge.
+// (or any cached shell) keeps running an old bundle forever. Entry filenames
+// are salted per build, so if our own module URL now 404s a newer deploy has
+// replaced it — reload once to pick up the fresh HTML and bundle.
 async function checkBuild() {
-  const embedded = String(window.cmBuildVer || "");
-  if (!embedded) return;
   try {
-    const res = await fetch("/assets/church_management/dist/assets/index.js", {
-      method: "HEAD",
-      cache: "no-store",
-    });
-    const lm = res.headers.get("Last-Modified");
-    if (!lm) return;
-    const deployed = String(Math.floor(Date.parse(lm) / 1000));
-    if (deployed !== embedded && !sessionStorage.getItem("cm_reload_" + deployed)) {
-      sessionStorage.setItem("cm_reload_" + deployed, "1"); // guard against reload loops
+    const res = await fetch(import.meta.url, { method: "HEAD", cache: "no-store" });
+    if (res.status === 404 && !sessionStorage.getItem("cm_reload_" + import.meta.url)) {
+      sessionStorage.setItem("cm_reload_" + import.meta.url, "1"); // guard against reload loops
       window.location.reload();
     }
   } catch {

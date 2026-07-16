@@ -13,7 +13,7 @@
 
 {% block head_include %}
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<link rel="stylesheet" href="/assets/church_management/dist/assets/main.css?v={{ build_ver }}" />
+<link rel="stylesheet" href="{{ spa_css }}" />
 <style>
     html, body { margin: 0 !important; padding: 0 !important; overflow: hidden; height: 100%; background: #f8fafc !important; }
     #app { min-height: 100vh; }
@@ -52,7 +52,6 @@
 </div>
 <script>
     window.csrfToken = "{{ csrf_token }}";
-    window.cmBuildVer = "{{ build_ver }}";
 </script>
-<script type="module" src="/assets/church_management/dist/assets/index.js?v={{ build_ver }}"></script>
+<script type="module" src="{{ spa_js }}"></script>
 {% endblock %}

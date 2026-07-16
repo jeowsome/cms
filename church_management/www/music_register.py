@@ -1,5 +1,7 @@
 import frappe
 
+from church_management.www.church_management import get_spa_assets
+
 
 def get_context(context):
     """Public, guest-allowed mount of the SPA at the /register hash route."""
@@ -9,3 +11,4 @@ def get_context(context):
         context.csrf_token = frappe.sessions.get_csrf_token()
     except Exception:
         context.csrf_token = ""
+    context.update(get_spa_assets())

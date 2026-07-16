@@ -1,6 +1,39 @@
+import json
 import os
 
 import frappe
+
+
+def get_spa_assets():
+    """Resolve the SPA entry JS/CSS URLs from Vite's build manifest.
+
+    Filenames carry a per-build salt (see frontend/vite.config.js) so every
+    deploy is a fresh URL — no ?v= query strings. A query on the module entry
+    is unsafe: lazy chunks import the entry by its bare filename, and the two
+    URLs would load as two separate module instances.
+    """
+    dist = frappe.get_app_path("church_management", "public", "dist")
+    base = "/assets/church_management/dist/"
+    try:
+        with open(os.path.join(dist, ".vite", "manifest.json")) as f:
+            manifest = json.load(f)
+        entry = manifest["src/main.js"]
+        return {
+            "spa_js": base + entry["file"],
+            "spa_css": base + entry["css"][0] if entry.get("css") else "",
+        }
+    except (OSError, KeyError, ValueError, IndexError):
+        # Manifest missing (old build) — fall back to globbing dist/assets.
+        try:
+            names = os.listdir(os.path.join(dist, "assets"))
+        except OSError:
+            names = []
+        js = next((n for n in sorted(names) if n.startswith("index") and n.endswith(".js")), "")
+        css = next((n for n in sorted(names) if n.startswith("main") and n.endswith(".css")), "")
+        return {
+            "spa_js": base + "assets/" + js if js else "",
+            "spa_css": base + "assets/" + css if css else "",
+        }
 
 
 def get_context(context):
@@ -11,16 +44,4 @@ def get_context(context):
         context.csrf_token = frappe.sessions.get_csrf_token()
     except Exception:
         context.csrf_token = ""
-
-    # Version assets by build mtime: browsers cache the bundle between deploys
-    # and bust exactly when a new `npm run build` lands.
-    try:
-        dist = frappe.get_app_path("church_management", "public", "dist", "assets")
-        context.build_ver = int(
-            max(
-                os.path.getmtime(os.path.join(dist, "index.js")),
-                os.path.getmtime(os.path.join(dist, "main.css")),
-            )
-        )
-    except OSError:
-        context.build_ver = int(frappe.utils.now_datetime().timestamp())
+    context.update(get_spa_assets())

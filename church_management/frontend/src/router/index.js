@@ -70,6 +70,7 @@ router.afterEach((to) => {
   if (sessionStorage.getItem("cm-chunk-reload") === to.fullPath) {
     sessionStorage.removeItem("cm-chunk-reload");
   }
+  sessionStorage.removeItem("cm-preload-reload");
 });
 
 router.beforeEach(async (to) => {
