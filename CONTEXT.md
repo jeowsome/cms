@@ -8,5 +8,8 @@ Donations SPA: department expenses vs collections, multi-recorder invites with p
 
 ## Next Steps
 - Deploys still need: npm run build + sudo bench restart (or supervisorctl restart frappe-bench-web:)
-- 6 claimed items in "Unassigned Source" still need real source accounts
 - hooks.py Account fixture filter still lists NTC names (exports empty account.json) — update to JBC
+
+## Data fixes applied 2026-07-18 (DB-only, no code)
+- Mission Support items sourced to Mission Cash - JBC (8 unclaimed Jun/Jul + 4 claimed Mar/Apr); DT - 2026 template + purpose default_account set
+- 2 claimed April wk4 allowances re-sourced Cash - JBC → General Cash - JBC; "Unassigned Source" row now gone
