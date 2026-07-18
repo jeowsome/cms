@@ -1,9 +1,23 @@
 import frappe
 from frappe.utils import getdate
 
+
+def _require_admin():
+    """The financial statement is internal — System Manager (admin) only."""
+    if frappe.session.user == "Guest":
+        frappe.local.flags.redirect_location = "/login?redirect-to=/financial_statement"
+        raise frappe.Redirect
+    if "System Manager" not in frappe.get_roles():
+        frappe.throw(
+            frappe._("You are not permitted to view the financial statement."),
+            frappe.PermissionError,
+        )
+
+
 def get_context(context):
+    _require_admin()
     context.no_cache = 1
-    
+
     # 1. Filters Setup
     selected_year = frappe.form_dict.get('year', '2026')
     selected_month = frappe.form_dict.get('month', '')
@@ -26,11 +40,12 @@ def get_context(context):
             'cash_collected': 0.0,
             'cashless_collected': 0.0,
             'total_disbursed': 0.0,
+            'total_unclaimed': 0.0,
             'funds': {
-                'General': {'collected': 0.0, 'disbursed': 0.0},
-                'Mission': {'collected': 0.0, 'disbursed': 0.0},
-                'Benevolence': {'collected': 0.0, 'disbursed': 0.0},
-                'White Gift': {'collected': 0.0, 'disbursed': 0.0}
+                'General': {'collected': 0.0, 'disbursed': 0.0, 'unclaimed': 0.0},
+                'Mission': {'collected': 0.0, 'disbursed': 0.0, 'unclaimed': 0.0},
+                'Benevolence': {'collected': 0.0, 'disbursed': 0.0, 'unclaimed': 0.0},
+                'White Gift': {'collected': 0.0, 'disbursed': 0.0, 'unclaimed': 0.0}
             }
         },
         'monthly_data': [],
@@ -92,17 +107,24 @@ def get_context(context):
             items.extend(doc.get('monthly_disbursement_items') or [])
 
             for item in items:
-                if item.get('status') != 'Claimed': continue
                 amt = item.get('amount') or 0.0
                 purp, src = item.get('purpose'), item.get('source')
-                account_deductions[src or ''] = account_deductions.get(src or '', 0.0) + amt
-                # Map disbursed amounts to funds by source account.
+                # Map amounts to funds by source account.
                 # Items without a source fall into General so fund totals reconcile with total_disbursed.
                 src_lower = (src or '').lower()
                 if 'white gift' in src_lower: mapped_fund = 'White Gift'
                 elif 'mission' in src_lower: mapped_fund = 'Mission'
                 elif 'benevolence' in src_lower: mapped_fund = 'Benevolence'
                 else: mapped_fund = 'General'
+
+                if item.get('status') != 'Claimed':
+                    # Committed but not yet claimed — money already promised out.
+                    # Feeds the projected view; excluded from claimed totals below.
+                    fs['funds'][mapped_fund]['unclaimed'] += amt
+                    fs['total_unclaimed'] += amt
+                    continue
+
+                account_deductions[src or ''] = account_deductions.get(src or '', 0.0) + amt
                 fs['funds'][mapped_fund]['disbursed'] += amt
                 fs['total_disbursed'] += amt
                 # Store for monthly breakdown. Allowance rows have no description field —
@@ -216,8 +238,13 @@ def get_context(context):
     context.update(res)
     return context
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def download_disbursements_excel(year):
+    if "System Manager" not in frappe.get_roles():
+        frappe.throw(
+            frappe._("You are not permitted to download the financial statement."),
+            frappe.PermissionError,
+        )
     from frappe.utils.xlsxutils import make_xlsx
     disbursements = frappe.get_all('Disbursement', filters={'year_recorded': year, 'docstatus': ['<', 2]}, fields=['name', 'month_recorded'])
     data = [["Month", "Date", "Source", "Purpose", "Department", "Description/Remarks", "Received By", "Amount"]]

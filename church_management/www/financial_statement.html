@@ -87,8 +87,11 @@
         {% set fs = financial_summary %}
         {% set total_collections = (fs.cash_collected or 0) + (fs.cashless_collected or 0) %}
         {% set wg_disbursed = fs['funds']['White Gift'].disbursed or 0 %}
+        {% set wg_unclaimed = fs['funds']['White Gift'].unclaimed or 0 %}
+        {% set total_unclaimed = fs.total_unclaimed or 0 %}
         {% set net_operating = total_collections - ((fs.total_disbursed or 0) - wg_disbursed) %}
-        <section aria-label="Year summary" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+        {% set projected_net = net_operating - (total_unclaimed - wg_unclaimed) %}
+        <section aria-label="Year summary" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
                 <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Total Collections</p>
                 <p class="mt-2 text-2xl font-extrabold text-emerald-700 num">{{ peso(total_collections) }}</p>
@@ -97,12 +100,17 @@
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
                 <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Claimed Disbursements</p>
                 <p class="mt-2 text-2xl font-extrabold text-rose-600 num">{{ peso(fs.total_disbursed) }}</p>
-                <p class="mt-1 text-xs text-slate-400">All claimed items recorded for {{ selected_year }}</p>
+                <p class="mt-1 text-xs text-slate-400 num">+ {{ peso(total_unclaimed) }} committed but unclaimed</p>
             </div>
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
                 <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Net (Operating)</p>
                 <p class="mt-2 text-2xl font-extrabold num {{ 'text-brand-700' if net_operating >= 0 else 'text-rose-700' }}">{{ peso(net_operating) }}</p>
-                <p class="mt-1 text-xs text-slate-400">Collections minus disbursements, excluding the White Gift fund</p>
+                <p class="mt-1 text-xs text-slate-400">Collections minus claimed disbursements, excluding the White Gift fund</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-amber-200 shadow-sm p-5">
+                <p class="text-xs font-semibold uppercase tracking-wide text-amber-600">Projected Net</p>
+                <p class="mt-2 text-2xl font-extrabold num {{ 'text-brand-700' if projected_net >= 0 else 'text-rose-700' }}">{{ peso(projected_net) }}</p>
+                <p class="mt-1 text-xs text-slate-400">Net (Operating) once every unclaimed commitment is claimed</p>
             </div>
         </section>
 
@@ -148,6 +156,7 @@
             <h2 id="funds-heading" class="font-display text-xl sm:text-2xl font-bold text-slate-900">Virtual Fund Summary</h2>
             <p class="mt-1 mb-6 text-sm text-slate-500 max-w-3xl">
                 Submitted collections minus claimed disbursements for {{ selected_year }}. Funds track money set aside for a purpose, independent of which physical account holds it. The White Gift fund is cumulative across years.
+                Unclaimed amounts are recorded commitments not yet paid out — the projected balance shows each fund once they are claimed.
             </p>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -169,6 +178,8 @@
                         <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-rose-700"><span class="w-1.5 h-1.5 rounded-full bg-rose-500" aria-hidden="true"></span>Overdrawn</span>
                         {% endif %}
                     </div>
+                    {% set fund_unclaimed = data.unclaimed or 0 %}
+                    {% set projected_balance = balance - fund_unclaimed %}
                     <div class="p-5 flex flex-col gap-2.5">
                         <div class="flex justify-between text-sm">
                             <span class="text-slate-500">Collected</span>
@@ -178,12 +189,20 @@
                             <span class="text-slate-500">Disbursed</span>
                             <span class="font-semibold text-rose-600 num">− {{ peso(data.disbursed) }}</span>
                         </div>
+                        <div class="flex justify-between text-sm" title="Recorded commitments not yet claimed or paid out">
+                            <span class="text-slate-500">Unclaimed</span>
+                            <span class="font-semibold text-amber-600 num">− {{ peso(fund_unclaimed) }}</span>
+                        </div>
                         <div class="h-1.5 rounded-full bg-slate-100 overflow-hidden" role="img" aria-label="{{ '%.0f'|format(pct) }} percent of this fund disbursed">
                             <div class="h-full rounded-full {{ 'bg-rose-500' if pct > 100 else 'bg-brand-500' }}" style="width: {{ [pct, 100]|min }}%"></div>
                         </div>
                         <div class="pt-3 border-t border-slate-100 flex justify-between items-end">
                             <span class="text-xs font-medium text-slate-400 uppercase tracking-wide">Available</span>
                             <span class="text-xl font-extrabold num {{ 'text-rose-700' if balance < 0 else 'text-brand-700' }}">{{ peso(balance) }}</span>
+                        </div>
+                        <div class="flex justify-between items-end" title="Available balance once every unclaimed commitment is claimed">
+                            <span class="text-xs font-medium text-amber-600 uppercase tracking-wide">Projected</span>
+                            <span class="text-sm font-bold num {{ 'text-rose-700' if projected_balance < 0 else 'text-slate-700' }}">{{ peso(projected_balance) }}</span>
                         </div>
                     </div>
                 </div>
