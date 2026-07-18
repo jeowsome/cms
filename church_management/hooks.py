@@ -68,9 +68,12 @@ after_request = ["church_management.web.set_no_store_headers"]
 
 # before_install = "church_management.install.before_install"
 # after_install = "church_management.install.after_install"
+before_request = ["church_management.desk_guard.check_desk_access"]
+
 after_migrate = [
     "church_management.setup_accounting.execute",
     "church_management.populate_purpose.execute",
+    "church_management.populate_donation_purpose.execute",
     "church_management.populate_ministry.execute",
     "church_management.populate_music_team_tag.execute",
     "church_management.setup_music_roles.execute"
@@ -224,6 +227,8 @@ fixtures = [
             [
                 "name", "in", [
                     "Donation Item",
+                    "Donation Expense Item",
+                    "Donation Assignee",
                     "Donation"
                 ]
             ]

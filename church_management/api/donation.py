@@ -26,6 +26,12 @@ ITEM_FIELDS = (
     "description",
 )
 
+EXPENSE_FIELDS = (
+    "date_spent",
+    "amount_spent",
+    "description",
+)
+
 
 def _visible_filters(year=None, department=None):
     """List filters for the current user; None means nothing is visible."""
@@ -41,15 +47,20 @@ def _visible_filters(year=None, department=None):
         if department:
             filters["department"] = department
     else:
-        departments = perms.donation_departments()
-        if not departments:
+        # Record-level visibility: a user sees exactly the records they were
+        # invited to (assigned_to or assignees), nothing else.
+        names = perms.donation_record_names()
+        if not names:
             return None
+        filters["name"] = ["in", names]
         if department:
-            if department not in departments:
-                return None
-            departments = [department]
-        filters["department"] = ["in", departments]
+            filters["department"] = department
     return filters
+
+
+def _is_recorder(doc, user=None):
+    user = user or frappe.session.user
+    return doc.assigned_to == user or user in {a.user for a in doc.get("assignees")}
 
 
 def _require_can_view(doc):
@@ -57,9 +68,9 @@ def _require_can_view(doc):
         frappe.throw(_("Donations before {0} are read-only history.").format(MIN_YEAR))
     if perms.is_donation_admin():
         return
-    if doc.department not in perms.donation_departments():
+    if not _is_recorder(doc):
         frappe.throw(
-            _("You can only view donations of your own department."),
+            _("You can only view donation records you have been invited to."),
             frappe.PermissionError,
         )
 
@@ -71,7 +82,7 @@ def get_list(year=None, department=None):
     filters = _visible_filters(year, department)
     if filters is None:
         return []
-    return frappe.get_all(
+    rows = frappe.get_all(
         "Donation",
         filters=filters,
         fields=[
@@ -82,11 +93,26 @@ def get_list(year=None, department=None):
             "total_donated_cash_amount",
             "total_donated_cashless_amount",
             "total_donated_amount",
+            "total_mission_amount",
+            "total_expenses",
             "modified",
         ],
         order_by="year desc, department asc",
         ignore_permissions=True,
     )
+    # Attach every recorder (assigned_to + invited assignees) for display.
+    assignee_map = {}
+    if rows:
+        for a in frappe.get_all(
+            "Donation Assignee",
+            filters={"parent": ["in", [r.name for r in rows]], "parenttype": "Donation"},
+            fields=["parent", "user"],
+        ):
+            assignee_map.setdefault(a.parent, []).append(a.user)
+    for r in rows:
+        extra = [u for u in assignee_map.get(r.name, []) if u != r.assigned_to]
+        r["recorders"] = ([r.assigned_to] if r.assigned_to else []) + extra
+    return rows
 
 
 @frappe.whitelist()
@@ -130,6 +156,18 @@ def _apply_items(doc, payload):
         doc.append("donated_amounts", child)
 
 
+def _apply_expenses(doc, payload):
+    """Rebuild the expenses child table from the payload. Expenses never post
+    to the ledger, so unlike donation items there are no locked rows."""
+    if "expenses" not in payload:
+        return
+    doc.set("expenses", [])
+    for row in payload.get("expenses") or []:
+        clean = {field: row.get(field) for field in EXPENSE_FIELDS}
+        clean["doctype"] = "Donation Expense Item"
+        doc.append("expenses", clean)
+
+
 def _pending_rows(doc):
     return {r.name for r in doc.get("donated_amounts") if r.approval_status == "Pending"}
 
@@ -145,13 +183,23 @@ def _donation_admin_users():
         )
     )
     admins.add("Administrator")
-    admins |= set(
-        frappe.get_all(
-            "Donation",
-            filters={"department": perms.DONATION_ADMIN_DEPARTMENT},
-            pluck="assigned_to",
-        )
+    admin_donations = frappe.get_all(
+        "Donation",
+        filters={"department": perms.DONATION_ADMIN_DEPARTMENT},
+        fields=["name", "assigned_to"],
     )
+    admins |= {d.assigned_to for d in admin_donations}
+    if admin_donations:
+        admins |= set(
+            frappe.get_all(
+                "Donation Assignee",
+                filters={
+                    "parent": ["in", [d.name for d in admin_donations]],
+                    "parenttype": "Donation",
+                },
+                pluck="user",
+            )
+        )
     return {a for a in admins if a}
 
 
@@ -202,6 +250,7 @@ def save_donation(doc):
         _require_can_view(existing)
         pending_before = _pending_rows(existing)
         _apply_items(existing, payload)
+        _apply_expenses(existing, payload)
         if perms.is_donation_admin() and "assigned_to" in payload:
             existing.assigned_to = payload.get("assigned_to") or None
         existing.save(ignore_permissions=True)
@@ -225,6 +274,7 @@ def save_donation(doc):
     new_doc.year = year
     new_doc.assigned_to = payload.get("assigned_to") or None
     _apply_items(new_doc, payload)
+    _apply_expenses(new_doc, payload)
     new_doc.insert(ignore_permissions=True)
     _emit_new_pending(new_doc, set())
     return new_doc.as_dict()
@@ -419,16 +469,20 @@ def invite_user(email, department, first_name=None, last_name=None, year=None):
         # SPA forces a password change before anything else.
         frappe.cache().set_value(f"music_temp_pw:{user.name}", "1")
 
-    # Assign them the department's record, creating it on first use.
+    # Add them to the department's record, creating it on first use. Invites
+    # accumulate: the first invitee becomes `assigned_to`, later ones join the
+    # `assignees` table — everyone on the record sees and edits it together.
     donation_name = frappe.db.get_value(
         "Donation", {"department": department, "year": year}
     )
-    previous_assignee = None
     if donation_name:
         doc = frappe.get_doc("Donation", donation_name)
-        if doc.assigned_to and doc.assigned_to != user.name:
-            previous_assignee = doc.assigned_to
-        doc.assigned_to = user.name
+        if not doc.assigned_to:
+            doc.assigned_to = user.name
+        elif user.name != doc.assigned_to and user.name not in {
+            a.user for a in doc.get("assignees")
+        }:
+            doc.append("assignees", {"user": user.name})
         doc.save(ignore_permissions=True)
     else:
         doc = frappe.new_doc("Donation")
@@ -436,6 +490,10 @@ def invite_user(email, department, first_name=None, last_name=None, year=None):
         doc.year = year
         doc.assigned_to = user.name
         doc.insert(ignore_permissions=True)
+
+    recorders = ([doc.assigned_to] if doc.assigned_to else []) + [
+        a.user for a in doc.get("assignees")
+    ]
 
     frappe.db.commit()
 
@@ -465,9 +523,32 @@ def invite_user(email, department, first_name=None, last_name=None, year=None):
         "department": department,
         "year": year,
         "donation": doc.name,
-        "previous_assignee": previous_assignee,
+        "recorders": recorders,
         "email_sent": email_sent,
     }
+
+
+@frappe.whitelist()
+def remove_recorder(donation, user):
+    """Admin removal of a recorder: they immediately stop seeing this record.
+    If the primary (assigned_to) is removed, the first remaining assignee is
+    promoted so the record keeps a primary recorder."""
+    perms.require_donation_admin()
+
+    doc = frappe.get_doc("Donation", donation)
+    if doc.year and int(doc.year) < MIN_YEAR:
+        frappe.throw(_("Donations before {0} are read-only history.").format(MIN_YEAR))
+    if not _is_recorder(doc, user):
+        frappe.throw(_("{0} is not a recorder on this record.").format(user))
+
+    keep = [a.user for a in doc.get("assignees") if a.user != user]
+    if doc.assigned_to == user:
+        doc.assigned_to = keep.pop(0) if keep else None
+    doc.set("assignees", [])
+    for u in keep:
+        doc.append("assignees", {"user": u})
+    doc.save(ignore_permissions=True)
+    return doc.as_dict()
 
 
 # ---------------------------------------------------------------------------

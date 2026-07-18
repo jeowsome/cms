@@ -8,14 +8,19 @@
  "field_order": [
   "department",
   "assigned_to",
+  "assignees",
   "column_break_ggky",
   "year",
   "section_break_yhwd",
   "donated_amounts",
+  "expenses_section",
+  "expenses",
   "section_break_cmuo",
   "total_donated_cash_amount",
   "total_donated_cashless_amount",
-  "total_donated_amount"
+  "total_donated_amount",
+  "total_mission_amount",
+  "total_expenses"
  ],
  "fields": [
   {
@@ -52,6 +57,13 @@
    "options": "User"
   },
   {
+   "description": "Additional users invited to record on this donation record. They see and edit it alongside the assigned user.",
+   "fieldname": "assignees",
+   "fieldtype": "Table",
+   "label": "Additional Recorders",
+   "options": "Donation Assignee"
+  },
+  {
    "fieldname": "total_donated_cash_amount",
    "fieldtype": "Currency",
    "label": "Total Donated Cash Amount",
@@ -71,6 +83,30 @@
    "fieldname": "total_donated_amount",
    "fieldtype": "Currency",
    "label": "Total Donated Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "expenses_section",
+   "fieldtype": "Section Break",
+   "label": "Expenses"
+  },
+  {
+   "fieldname": "expenses",
+   "fieldtype": "Table",
+   "label": "Expenses",
+   "options": "Donation Expense Item"
+  },
+  {
+   "description": "Donations whose purpose is a mission fund — held for the Mission funds, not spendable by the department.",
+   "fieldname": "total_mission_amount",
+   "fieldtype": "Currency",
+   "label": "Total Mission Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_expenses",
+   "fieldtype": "Currency",
+   "label": "Total Expenses",
    "read_only": 1
   }
  ],

@@ -1,12 +1,12 @@
 ## Current Task
-Donations shipped in the Vue 3 SPA: 2026+ department-scoped records, email invitations, /admin/roles Donations toggle, purpose dropdown with fuzzy dedup, mission approval flow posting Journal Entries with realtime admin toasts.
+Donations SPA: department expenses vs collections, multi-recorder invites with per-record access + removal UI; financial statement admin-only with projected (unclaimed) view; /app desk gated.
 
 ## Key Decisions
-- Donation access is role-gated (Donation Editor, desk_access=0 → invitees stay Website Users); Donation.assigned_to only scopes departments; Pasig Admin assignees + Administrator see all
-- Mission purposes (Donation Purpose.is_mission) need admin approval; approval posts JE (Mission Cash/Cashless → Mission Income) and locks the row server-side; record delete blocked while approved rows exist
-- Stale-chunk recovery: vite:preloadError + router.onError force reload; login redirect-loop guard
+- Donation visibility is per record: assigned_to OR Donation Assignee rows; remove_recorder promotes next assignee
+- /app restricted via before_request hook to admins + users on Pasig General records (desk_guard.py)
+- After Donation doctype edits, always re-export fixtures — stale fixtures/doctype.json reverts DocFields on migrate
 
 ## Next Steps
-- User testing mission approval flow end-to-end in browser (backend verified in console)
-- Cancelling a Collection doesn't cascade-cancel its Journal Entry — decide if it should
-- Music team follow-ups remain: slim member view, dedicated Worship Leader view, route-guard non-music pages
+- Deploys still need: npm run build + sudo bench restart (or supervisorctl restart frappe-bench-web:)
+- 6 claimed items in "Unassigned Source" still need real source accounts
+- hooks.py Account fixture filter still lists NTC names (exports empty account.json) — update to JBC

@@ -135,15 +135,23 @@ def list_assignable_users(search=None):
 
 	# Department donation assignments — shown as context next to the
 	# Donations role toggle so operators know what a role-holder can see.
-	dept_rows = frappe.get_all(
-		"Donation",
-		filters={"assigned_to": ["in", user_names]},
-		fields=["assigned_to", "department"],
-		distinct=True,
+	# A user is on a record either as `assigned_to` or in the `assignees` table.
+	dept_rows = frappe.db.sql(
+		"""
+		select d.assigned_to as user, d.department from `tabDonation` d
+		where d.assigned_to in %(users)s
+		union
+		select a.user as user, d.department from `tabDonation` d
+		inner join `tabDonation Assignee` a
+			on a.parent = d.name and a.parenttype = 'Donation'
+		where a.user in %(users)s
+		""",
+		{"users": tuple(user_names)},
+		as_dict=True,
 	)
 	depts_by_user = {}
 	for r in dept_rows:
-		depts_by_user.setdefault(r.assigned_to, set()).add(r.department)
+		depts_by_user.setdefault(r.user, set()).add(r.department)
 
 	# Linked Church Member by email (so the UI can show who's a real church member)
 	member_by_email = {}

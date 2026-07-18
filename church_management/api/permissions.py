@@ -19,6 +19,9 @@ DONATION_ROLES = {"Donation Editor", "Donation Creator"} | ADMIN_ROLES
 
 # Users assigned to this department's Donation records see every department.
 DONATION_ADMIN_DEPARTMENT = "Pasig Admin"
+
+# Users on this department's Donation records may open the Frappe desk (/app).
+DESK_DEPARTMENT = "Pasig General"
 MUSIC_LEADER_ROLES = {"Music Team Leader"} | ADMIN_ROLES
 WORSHIP_LEADER_ROLES = {"Worship Leader"} | MUSIC_LEADER_ROLES
 MUSIC_MEMBER_ROLES = {"Music Team Member"} | WORSHIP_LEADER_ROLES
@@ -60,35 +63,70 @@ def has_finance_access(user=None):
 	return is_finance(user)
 
 
+def _user_donations(user, column, extra_where="", extra_args=None):
+	"""Distinct `column` values of Donation docs the user is on — either as
+	`assigned_to` or via the `assignees` child table."""
+	args = {"user": user, **(extra_args or {})}
+	return [
+		r[0]
+		for r in frappe.db.sql(
+			f"""
+			select distinct d.`{column}`
+			from `tabDonation` d
+			left join `tabDonation Assignee` a
+				on a.parent = d.name and a.parenttype = 'Donation'
+			where (d.assigned_to = %(user)s or a.user = %(user)s) {extra_where}
+			""",
+			args,
+		)
+	]
+
+
 def donation_departments(user=None):
 	"""Departments a user records donations for — derived from the Donation
-	docs they are `assigned_to`. This is the only user↔department mapping."""
+	docs they are on. This is the only user↔department mapping."""
 	user = user or frappe.session.user
 	if user == "Guest":
 		return []
-	return list(
-		set(
-			frappe.get_all(
-				"Donation",
-				filters={"assigned_to": user},
-				pluck="department",
-				distinct=True,
-			)
+	return _user_donations(user, "department")
+
+
+def donation_record_names(user=None):
+	"""Names of the Donation docs the user is on. Visibility is per record:
+	an invite grants exactly that record, and removal takes it away."""
+	user = user or frappe.session.user
+	if user == "Guest":
+		return []
+	return _user_donations(user, "name")
+
+
+def has_desk_access(user=None):
+	"""Only Administrator / System Manager, or users on a Pasig General
+	department Donation record, may open the Frappe desk (/app)."""
+	user = user or frappe.session.user
+	if user == "Guest":
+		return False
+	if user == "Administrator" or is_admin(user):
+		return True
+	return bool(
+		_user_donations(
+			user,
+			"name",
+			extra_where="and d.department = %(dept)s",
+			extra_args={"dept": DESK_DEPARTMENT},
 		)
 	)
 
 
 def is_donation_admin(user=None):
-	"""Administrator / System Manager, or a donation-role holder assigned to
-	the Pasig Admin department — they see donations of every department."""
+	"""Administrator / System Manager, or a donation-role holder on the
+	Pasig Admin department's records — they see donations of every department."""
 	user = user or frappe.session.user
 	if is_admin(user):
 		return True
-	return has_donation_access(user) and bool(
-		frappe.db.exists(
-			"Donation",
-			{"department": DONATION_ADMIN_DEPARTMENT, "assigned_to": user},
-		)
+	return (
+		has_donation_access(user)
+		and DONATION_ADMIN_DEPARTMENT in donation_departments(user)
 	)
 
 

@@ -154,7 +154,7 @@ function cancelPending() {
               :key="p.name"
               class="px-2.5 py-1 rounded-lg text-xs font-semibold inline-flex items-center gap-1.5"
               :class="p.is_mission ? 'bg-amber-50 text-amber-800 ring-1 ring-amber-200' : 'bg-gray-100 text-gray-700'"
-              :title="p.is_mission ? 'Mission fund — entries need admin approval and post to the mission ledger' : ''"
+              :title="p.is_mission ? 'Mission fund — donations with this purpose become part of the church Mission Funds and are subject to admin approval before they count as mission funding. They are not part of your department\'s spendable balance.' : ''"
             >
               {{ p.name }}
               <span v-if="p.is_mission" class="text-[9px] font-black uppercase tracking-wider text-amber-600">Mission</span>

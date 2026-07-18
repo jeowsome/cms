@@ -53,7 +53,16 @@ const columns = [
   { key: "total_donated_cash_amount", label: "Cash", hideOnMobile: true },
   { key: "total_donated_cashless_amount", label: "GCash", hideOnMobile: true },
   { key: "total_donated_amount", label: "Total" },
+  { key: "total_expenses", label: "Expenses", hideOnMobile: true },
+  { key: "remaining", label: "Remaining" },
 ];
+
+// Spendable balance: collected minus mission-fund entries minus expenses.
+function remainingOf(row) {
+  return (
+    (row.total_donated_amount || 0) - (row.total_mission_amount || 0) - (row.total_expenses || 0)
+  );
+}
 
 const subtitle = computed(() => {
   const n = (donations.value || []).length;
@@ -118,7 +127,13 @@ function onCreated(doc) {
     >
       <template #cell-department="{ row }">
         <span class="font-semibold text-gray-900">{{ row.department }}</span>
-        <p v-if="row.assigned_to" class="text-xs text-gray-400 truncate">{{ row.assigned_to }}</p>
+        <p
+          v-if="(row.recorders || []).length"
+          class="text-xs text-gray-400 truncate"
+          :title="row.recorders.join(', ')"
+        >
+          {{ row.recorders[0] }}<template v-if="row.recorders.length > 1"> +{{ row.recorders.length - 1 }} more</template>
+        </p>
       </template>
       <template #cell-year="{ value }">
         <span class="tabular text-gray-600">{{ value }}</span>
@@ -132,6 +147,12 @@ function onCreated(doc) {
       <template #cell-total_donated_amount="{ value }">
         <CurrencyDisplay :value="value" weight="bold" />
       </template>
+      <template #cell-total_expenses="{ value }">
+        <CurrencyDisplay :value="value" />
+      </template>
+      <template #cell-remaining="{ row }">
+        <CurrencyDisplay :value="remainingOf(row)" weight="bold" colored />
+      </template>
 
       <!-- Mobile card -->
       <template #mobile-card="{ row }">
@@ -140,7 +161,12 @@ function onCreated(doc) {
             <p class="font-semibold text-gray-900 text-sm truncate">{{ row.department }}</p>
             <p class="text-xs text-gray-400 mt-0.5">{{ row.year }}</p>
           </div>
-          <CurrencyDisplay :value="row.total_donated_amount" weight="bold" />
+          <div class="text-right">
+            <CurrencyDisplay :value="row.total_donated_amount" weight="bold" />
+            <p class="text-[10px] text-gray-400 uppercase tracking-wider">
+              Left: <CurrencyDisplay :value="remainingOf(row)" size="xs" colored />
+            </p>
+          </div>
           <svg class="w-4 h-4 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
           </svg>

@@ -113,14 +113,13 @@ async function send() {
               {{ result.new_user ? "Invitation sent" : "Access granted" }} — {{ result.user }}
             </p>
             <p class="mt-1 text-xs leading-relaxed">
-              Assigned to <strong>{{ result.department }} · {{ result.year }}</strong>.
+              Added to <strong>{{ result.department }} · {{ result.year }}</strong>.
               <template v-if="result.new_user">A temporary password was emailed; they'll set their own on first sign-in.</template>
               <template v-else>They already had an account, so it kept its password — we emailed them that donation access was added.</template>
             </p>
-          </div>
-          <div v-if="result.previous_assignee" class="mt-2 p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800">
-            This record was previously assigned to <strong>{{ result.previous_assignee }}</strong> — they can no longer see it
-            unless they're assigned another department.
+            <p v-if="(result.recorders || []).length > 1" class="mt-1 text-xs leading-relaxed">
+              Recorders on this record: <strong>{{ result.recorders.join(", ") }}</strong> — they all see and record on it together.
+            </p>
           </div>
           <div v-if="!result.email_sent" class="mt-2 p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700">
             The email could not be sent (check Email Account settings in Frappe Desk). The account and assignment were still
@@ -174,7 +173,8 @@ async function send() {
             </div>
 
             <p class="text-[11px] text-gray-400 leading-relaxed">
-              If this department already has an assignee for that year, the record moves to the new person.
+              You can invite several people to the same department and year — each one is added as a recorder,
+              and they all see and record on the same donation record.
             </p>
 
             <div class="flex justify-end gap-2 pt-1">
