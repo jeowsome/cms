@@ -8,6 +8,7 @@
 
 {% block head_include %}
 <script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -113,6 +114,134 @@
                 <p class="mt-1 text-xs text-slate-400">Net (Operating) once every unclaimed commitment is claimed</p>
             </div>
         </section>
+
+        <!-- Collections vs Disbursements trend (whole year, collapsible) -->
+        {% if trend and trend|length > 1 %}
+        <section aria-labelledby="trend-heading" class="mb-10">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <button
+                    type="button"
+                    @click="toggleTrend()"
+                    :aria-expanded="trendOpen"
+                    aria-controls="trend-panel"
+                    class="w-full flex items-center justify-between gap-3 px-5 sm:px-6 py-4 text-left cursor-pointer hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-inset transition-colors"
+                >
+                    <div>
+                        <h2 id="trend-heading" class="font-display text-lg sm:text-xl font-bold text-slate-900">Collections vs Disbursements Trend</h2>
+                        <p class="text-xs text-slate-500 mt-0.5">
+                            Month by month for {{ selected_year }}, including unclaimed commitments — always the full year, regardless of the month filter.
+                        </p>
+                    </div>
+                    <svg class="w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200" :class="trendOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+
+                <div id="trend-panel" x-show="trendOpen" x-cloak class="border-t border-slate-100 p-4 sm:p-6">
+                    <div class="relative h-72 sm:h-80">
+                        <canvas id="trend-chart" role="img" aria-label="Monthly collections compared with claimed and unclaimed disbursements for {{ selected_year }}. The same figures are available in the table below."></canvas>
+                    </div>
+                    <p class="mt-3 text-[11px] text-slate-400">
+                        Hover a month for exact figures and the net position. Click a legend entry to show or hide that series.
+                    </p>
+
+                    <!-- Table view: same figures without hovering -->
+                    <details class="mt-2">
+                        <summary class="cursor-pointer text-xs font-medium text-slate-400 hover:text-slate-600">View as table</summary>
+                        <div class="overflow-x-auto mt-2">
+                            <table class="min-w-full text-xs">
+                                <thead>
+                                    <tr class="text-left text-slate-400 font-medium border-b border-slate-200">
+                                        <th scope="col" class="py-2 pr-4">Month</th>
+                                        <th scope="col" class="py-2 pr-4 text-right">Collections</th>
+                                        <th scope="col" class="py-2 pr-4 text-right">Claimed Disbursements</th>
+                                        <th scope="col" class="py-2 pr-4 text-right">Unclaimed (Committed)</th>
+                                        <th scope="col" class="py-2 text-right">Net</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    {% for t in trend %}
+                                    {% set t_net = (t.collections or 0) - (t.claimed or 0) - (t.unclaimed or 0) %}
+                                    <tr class="text-slate-600">
+                                        <td class="py-2 pr-4 font-semibold text-slate-800">{{ t.month }}</td>
+                                        <td class="py-2 pr-4 text-right num">{{ peso(t.collections) }}</td>
+                                        <td class="py-2 pr-4 text-right num">{{ peso(t.claimed) }}</td>
+                                        <td class="py-2 pr-4 text-right num">{{ peso(t.unclaimed) }}</td>
+                                        <td class="py-2 text-right font-semibold num {{ 'text-rose-700' if t_net < 0 else 'text-slate-900' }}">{{ peso(t_net) }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
+
+                    {% if purpose_totals %}
+                    <!-- Allotment breakdown -->
+                    <div class="mt-8 pt-6 border-t border-slate-100">
+                        <h3 class="font-display text-base sm:text-lg font-bold text-slate-900">Where the Money Goes — by Allotment</h3>
+                        <p class="text-xs text-slate-500 mt-0.5 mb-4">
+                            Every {{ selected_year }} commitment grouped by purpose, largest first. The biggest bars are where a budget adjustment matters most.
+                        </p>
+                        <div class="relative" style="height: {{ 70 + (purpose_totals[:9]|length) * 40 }}px">
+                            <canvas id="purpose-chart" role="img" aria-label="Total committed amount per disbursement purpose for {{ selected_year }}, split into claimed and unclaimed. The same figures are in the table below."></canvas>
+                        </div>
+                        <details class="mt-2">
+                            <summary class="cursor-pointer text-xs font-medium text-slate-400 hover:text-slate-600">View as table</summary>
+                            <div class="overflow-x-auto mt-2">
+                                {% set p_grand = purpose_totals|sum(attribute='total') %}
+                                <table class="min-w-full text-xs">
+                                    <thead>
+                                        <tr class="text-left text-slate-400 font-medium border-b border-slate-200">
+                                            <th scope="col" class="py-2 pr-4">Allotment</th>
+                                            <th scope="col" class="py-2 pr-4 text-right">Claimed</th>
+                                            <th scope="col" class="py-2 pr-4 text-right">Unclaimed</th>
+                                            <th scope="col" class="py-2 pr-4 text-right">Total</th>
+                                            <th scope="col" class="py-2 text-right">Share</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        {% for p in purpose_totals %}
+                                        <tr class="text-slate-600">
+                                            <td class="py-2 pr-4 font-semibold text-slate-800">{{ p.purpose }}</td>
+                                            <td class="py-2 pr-4 text-right num">{{ peso(p.claimed) }}</td>
+                                            <td class="py-2 pr-4 text-right num">{{ peso(p.unclaimed) }}</td>
+                                            <td class="py-2 pr-4 text-right font-semibold text-slate-900 num">{{ peso(p.total) }}</td>
+                                            <td class="py-2 text-right num">{{ '%.1f'|format(p.total / p_grand * 100 if p_grand else 0) }}%</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </details>
+                    </div>
+                    {% endif %}
+
+                    {% if insights %}
+                    <!-- Planning insights -->
+                    <div class="mt-8 pt-6 border-t border-slate-100">
+                        <h3 class="font-display text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
+                            </svg>
+                            Planning Insights
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-0.5 mb-4">
+                            Generated from this year's figures on every load — pointers on which allotments to look at first.
+                        </p>
+                        <ul class="space-y-2.5" role="list">
+                            {% for tip in insights %}
+                            <li class="flex items-start gap-2.5 p-3 rounded-xl bg-amber-50/70 border border-amber-100 text-sm text-slate-700 leading-relaxed">
+                                <span class="mt-0.5 shrink-0 w-5 h-5 rounded-full bg-amber-100 text-amber-700 text-[11px] font-bold flex items-center justify-center num">{{ loop.index }}</span>
+                                <span class="num">{{ tip }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+        {% endif %}
 
         <!-- Filters + export -->
         <section aria-label="Filters" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6 mb-10">
@@ -376,14 +505,192 @@
     </div>
 </div>
 
+<script type="application/json" id="trend-data">{{ trend_json }}</script>
+<script type="application/json" id="purpose-data">{{ purpose_json }}</script>
 <script>
     function financialStatement() {
         return {
             openGroups: [],
+            trendOpen: (() => { try { return JSON.parse(localStorage.getItem('fs_trend_open') ?? 'true'); } catch { return true; } })(),
+            trendChart: null,
+            purposeChart: null,
+            chartTries: 0,
+            init() {
+                if (this.trendOpen) this.$nextTick(() => this.initTrendChart());
+            },
             toggleGroup(id) {
                 this.openGroups.includes(id) ? this.openGroups = this.openGroups.filter(g => g !== id) : this.openGroups.push(id);
             },
             isGroupOpen(id) { return this.openGroups.includes(id); },
+            toggleTrend() {
+                this.trendOpen = !this.trendOpen;
+                try { localStorage.setItem('fs_trend_open', JSON.stringify(this.trendOpen)); } catch {}
+                if (this.trendOpen) this.$nextTick(() => this.initTrendChart());
+            },
+            initTrendChart() {
+                if (this.trendChart) return;
+                const canvas = document.getElementById('trend-chart');
+                if (!canvas) return;
+                // Chart.js is a deferred CDN script — retry briefly if it isn't parsed yet.
+                // Give up after ~6s; the table view still carries the figures.
+                if (typeof Chart === 'undefined') {
+                    if (++this.chartTries < 40) setTimeout(() => this.initTrendChart(), 150);
+                    return;
+                }
+
+                const rows = JSON.parse(document.getElementById('trend-data').textContent);
+                const peso = v => new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(v || 0);
+                const compact = v => Math.abs(v) >= 1e6 ? `₱${(v / 1e6).toFixed(1)}M`
+                    : Math.abs(v) >= 1e3 ? `₱${Math.round(v / 1e3)}k` : `₱${v}`;
+
+                Chart.defaults.font.family = "'Work Sans', ui-sans-serif, system-ui, sans-serif";
+                this.initPurposeChart(peso, compact);
+                this.trendChart = new Chart(canvas, {
+                    type: 'bar',
+                    data: {
+                        labels: rows.map(r => r.month.slice(0, 3)),
+                        datasets: [
+                            {
+                                label: 'Collections',
+                                data: rows.map(r => r.collections),
+                                backgroundColor: '#059669',
+                                stack: 'in',
+                                maxBarThickness: 24,
+                                borderRadius: 4
+                            },
+                            {
+                                label: 'Claimed Disbursements',
+                                data: rows.map(r => r.claimed),
+                                backgroundColor: '#be123c',
+                                stack: 'out',
+                                maxBarThickness: 24,
+                                borderRadius: 0
+                            },
+                            {
+                                label: 'Unclaimed (Committed)',
+                                data: rows.map(r => r.unclaimed),
+                                backgroundColor: '#d97706',
+                                stack: 'out',
+                                maxBarThickness: 24,
+                                borderRadius: 4,
+                                // 2px surface gap between the stacked segments
+                                borderColor: '#ffffff',
+                                borderWidth: { bottom: 2 },
+                                borderSkipped: false
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        scales: {
+                            x: {
+                                stacked: true,
+                                grid: { display: false },
+                                border: { color: '#e2e8f0' },
+                                ticks: { color: '#64748b' }
+                            },
+                            y: {
+                                stacked: true,
+                                beginAtZero: true,
+                                grid: { color: '#e2e8f0' },
+                                border: { display: false },
+                                ticks: { color: '#64748b', callback: v => compact(v) }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: '#475569', boxWidth: 12, boxHeight: 12 }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => ` ${peso(ctx.parsed.y)}   ${ctx.dataset.label}`,
+                                    footer: items => {
+                                        const r = rows[items[0].dataIndex];
+                                        return `Net: ${peso((r.collections || 0) - (r.claimed || 0) - (r.unclaimed || 0))}`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            },
+            initPurposeChart(peso, compact) {
+                if (this.purposeChart) return;
+                const canvas = document.getElementById('purpose-chart');
+                if (!canvas) return;
+                const { rows, grand, months } = JSON.parse(document.getElementById('purpose-data').textContent);
+                if (!rows || !rows.length) return;
+
+                this.purposeChart = new Chart(canvas, {
+                    type: 'bar',
+                    data: {
+                        labels: rows.map(r => r.purpose),
+                        datasets: [
+                            {
+                                label: 'Claimed',
+                                data: rows.map(r => r.claimed),
+                                backgroundColor: '#be123c',
+                                maxBarThickness: 24,
+                                borderRadius: 0
+                            },
+                            {
+                                label: 'Unclaimed (Committed)',
+                                data: rows.map(r => r.unclaimed),
+                                backgroundColor: '#d97706',
+                                maxBarThickness: 24,
+                                borderRadius: 4,
+                                // 2px surface gap between the stacked segments
+                                borderColor: '#ffffff',
+                                borderWidth: { left: 2 },
+                                borderSkipped: false
+                            }
+                        ]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', axis: 'y', intersect: false },
+                        scales: {
+                            x: {
+                                stacked: true,
+                                beginAtZero: true,
+                                grid: { color: '#e2e8f0' },
+                                border: { display: false },
+                                ticks: { color: '#64748b', callback: v => compact(v) }
+                            },
+                            y: {
+                                stacked: true,
+                                grid: { display: false },
+                                border: { color: '#e2e8f0' },
+                                ticks: { color: '#475569' }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: '#475569', boxWidth: 12, boxHeight: 12 }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: ctx => ` ${peso(ctx.parsed.x)}   ${ctx.dataset.label}`,
+                                    footer: items => {
+                                        const r = rows[items[0].dataIndex];
+                                        const share = grand ? (r.total / grand * 100).toFixed(1) : 0;
+                                        return [
+                                            `Total: ${peso(r.total)} (${share}% of all commitments)`,
+                                            `Average: ${peso(r.total / months)} per month`
+                                        ];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            },
             downloadExcel() {
                 const year = '{{ selected_year }}';
                 window.location.href = `/api/method/church_management.www.financial_statement.download_disbursements_excel?year=${year}`;

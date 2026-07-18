@@ -1,3 +1,5 @@
+import json
+
 import frappe
 from frappe.utils import getdate
 
@@ -50,7 +52,12 @@ def get_context(context):
         },
         'monthly_data': [],
         'account_balances': [],
-        'available_months': []
+        'available_months': [],
+        'trend': [],
+        'trend_json': '[]',
+        'purpose_totals': [],
+        'purpose_json': '{}',
+        'insights': []
     }
 
     try:
@@ -72,6 +79,9 @@ def get_context(context):
         
         fs = res['financial_summary']
         account_deductions = {}
+        unclaimed_by_month = {}
+        claimed_by_purpose = {}
+        unclaimed_by_purpose = {}
         
         for c in cols_query:
             # General Fund = Tithes + Offering + Loose + Sunday School
@@ -117,13 +127,17 @@ def get_context(context):
                 elif 'benevolence' in src_lower: mapped_fund = 'Benevolence'
                 else: mapped_fund = 'General'
 
+                purp_key = purp or 'No Purpose'
                 if item.get('status') != 'Claimed':
                     # Committed but not yet claimed — money already promised out.
                     # Feeds the projected view; excluded from claimed totals below.
                     fs['funds'][mapped_fund]['unclaimed'] += amt
                     fs['total_unclaimed'] += amt
+                    unclaimed_by_month[d.month_recorded] = unclaimed_by_month.get(d.month_recorded, 0.0) + amt
+                    unclaimed_by_purpose[purp_key] = unclaimed_by_purpose.get(purp_key, 0.0) + amt
                     continue
 
+                claimed_by_purpose[purp_key] = claimed_by_purpose.get(purp_key, 0.0) + amt
                 account_deductions[src or ''] = account_deductions.get(src or '', 0.0) + amt
                 fs['funds'][mapped_fund]['disbursed'] += amt
                 fs['total_disbursed'] += amt
@@ -138,6 +152,92 @@ def get_context(context):
                     'received_by': item.get('received_by'),
                     'department': item.get('department')
                 })
+
+        # Whole-year trend: collections vs disbursements (claimed + unclaimed)
+        # per month. Deliberately ignores the month filter — the trend chart
+        # always shows the full year so planning has the complete picture.
+        for m in res['available_months']:
+            m_idx = month_names.index(m) + 1
+            res['trend'].append({
+                'month': m,
+                'collections': sum(
+                    (c.grand_total or 0.0) + (c.grand_total_cls or 0.0)
+                    for c in cols_query if c.date and getdate(c.date).month == m_idx
+                ),
+                'claimed': sum(i['amount'] for i in disb_items_by_month.get(m, [])),
+                'unclaimed': unclaimed_by_month.get(m, 0.0),
+            })
+        res['trend_json'] = json.dumps(res['trend'])
+
+        # Allotment breakdown: total committed (claimed + unclaimed) per
+        # purpose for the whole year, largest first — shows which allotment
+        # takes the most and where a budget adjustment moves the needle.
+        purpose_rows = []
+        for p in set(claimed_by_purpose) | set(unclaimed_by_purpose):
+            c = claimed_by_purpose.get(p, 0.0)
+            u = unclaimed_by_purpose.get(p, 0.0)
+            purpose_rows.append({'purpose': p, 'claimed': c, 'unclaimed': u, 'total': c + u})
+        purpose_rows.sort(key=lambda r: -r['total'])
+        res['purpose_totals'] = purpose_rows
+
+        grand_committed = sum(r['total'] for r in purpose_rows)
+        # The chart caps at 8 purposes + "Other"; the table keeps the full list.
+        chart_rows = purpose_rows
+        if len(purpose_rows) > 9:
+            head, tail = purpose_rows[:8], purpose_rows[8:]
+            chart_rows = head + [{
+                'purpose': 'Other',
+                'claimed': sum(r['claimed'] for r in tail),
+                'unclaimed': sum(r['unclaimed'] for r in tail),
+                'total': sum(r['total'] for r in tail),
+            }]
+        res['purpose_json'] = json.dumps({
+            'rows': chart_rows,
+            'grand': grand_committed,
+            'months': len(res['trend']) or 1,
+        })
+
+        # Rule-based planning insights — deterministic advice from this
+        # year's numbers, recomputed on every load.
+        insights = []
+        n_months = len(res['trend'])
+        total_coll_ytd = sum(t['collections'] for t in res['trend'])
+        if purpose_rows and grand_committed and n_months:
+            top = purpose_rows[0]
+            share = top['total'] / grand_committed * 100
+            per_month = top['total'] / n_months
+            insights.append(
+                f"{top['purpose']} is the largest allotment: ₱{top['total']:,.0f} "
+                f"({share:.0f}% of all {selected_year} commitments), averaging ₱{per_month:,.0f} per month. "
+                f"A 10% trim here frees about ₱{top['total'] * 0.1:,.0f} a year — more than most smaller allotments cost in total."
+            )
+            if len(purpose_rows) >= 3:
+                top3 = sum(r['total'] for r in purpose_rows[:3])
+                if top3 / grand_committed >= 0.7:
+                    names = ", ".join(r['purpose'] for r in purpose_rows[:3])
+                    insights.append(
+                        f"Spending is concentrated: {names} together make up "
+                        f"{top3 / grand_committed * 100:.0f}% of all commitments. Budget planning should start with these three."
+                    )
+            backlog = max(purpose_rows, key=lambda r: r['unclaimed'])
+            if backlog['unclaimed'] > 0:
+                insights.append(
+                    f"{backlog['purpose']} carries the largest unclaimed backlog (₱{backlog['unclaimed']:,.0f}). "
+                    f"Have these claimed — or release the ones no longer needed, which immediately improves the projected balance."
+                )
+            neg_months = [
+                t for t in res['trend']
+                if t['collections'] - t['claimed'] - t['unclaimed'] < 0
+            ]
+            if neg_months:
+                worst = min(neg_months, key=lambda t: t['collections'] - t['claimed'] - t['unclaimed'])
+                worst_gap = worst['collections'] - worst['claimed'] - worst['unclaimed']
+                insights.append(
+                    f"{len(neg_months)} of {n_months} months committed more than they collected "
+                    f"(worst: {worst['month']}, short ₱{abs(worst_gap):,.0f}). "
+                    f"Monthly collections average ₱{total_coll_ytd / n_months:,.0f} — keeping recurring allotments under that keeps every month funded."
+                )
+        res['insights'] = insights
 
         # Build monthly highlights
         months_to_process = [selected_month] if selected_month else res['available_months']
