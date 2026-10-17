@@ -10,10 +10,13 @@ import CurrencyDisplay from "@/components/CurrencyDisplay.vue";
 import CollectionEntryTable from "@/components/CollectionEntryTable.vue";
 import MathInput from "@/components/MathInput.vue";
 import MemberModal from "@/components/MemberModal.vue";
+import { useCollectionSync, ENTRY_TABLES, blankRow } from "@/composables/useCollectionSync";
+import { useSessionStore } from "@/stores/session";
 
 const route = useRoute();
 const router = useRouter();
 const queryCache = useQueryCache();
+const session = useSessionStore();
 
 const isNew = computed(() => route.params.name === "new");
 
@@ -38,12 +41,9 @@ const form = reactive({
   collection_tally: [],
 });
 
-const dirty = ref(false);
-const saving = ref(false);
 const submitting = ref(false);
 const deleting = ref(false);
 const errorMsg = ref("");
-const savedFlash = ref(false);
 const showSubmitConfirm = ref(false);
 const showDeleteConfirm = ref(false);
 
@@ -58,10 +58,14 @@ const readOnly = computed(() => form.docstatus !== 0);
 // ---------------------------------------------------------------------------
 // Server data: detail, member cache, defaults (denominations + cost center)
 // ---------------------------------------------------------------------------
+// Focus/reconnect refetches are off: they used to replace the whole form and
+// wipe what was being typed. Live sync (below) merges changes instead.
 const { data: detail, error: loadError, isPending: loadingDetail } = useQuery({
   key: () => ["collection", route.params.name],
   query: () => call("church_management.api.collection.get_detail", { name: route.params.name }),
   enabled: () => !isNew.value,
+  refetchOnWindowFocus: false,
+  refetchOnReconnect: false,
 });
 
 // Members are cached for 30 minutes — envelope lookups are instant and the
@@ -87,42 +91,46 @@ const membersMap = computed(() => {
   return map;
 });
 
-function childRow(row) {
-  return {
-    number: row.number || "",
-    first_name: row.first_name || "",
-    last_name: row.last_name || "",
-    amount: row.amount ?? null,
-    account_type: row.account_type || "Cash",
-  };
+function lookupMember(envelope) {
+  if (!envelope) return null;
+  return membersMap.value.get(String(envelope).trim().toUpperCase()) || null;
 }
 
-function hydrate(doc) {
-  form.name = doc.name;
-  form.docstatus = doc.docstatus;
-  form.date = doc.date;
-  form.cost_center = doc.cost_center || "";
-  form.attendees = doc.attendees ?? null;
-  form.benevolence_collection = doc.benevolence_collection || 0;
-  form.benevolence_collection_cls = doc.benevolence_collection_cls || 0;
-  form.loose_collection = doc.loose_collection || 0;
-  form.loose_collection_cls = doc.loose_collection_cls || 0;
-  form.sunday_school_collection = doc.sunday_school_collection || 0;
-  form.journal_entry = doc.journal_entry || null;
-  form.tithes_collection = (doc.tithes_collection || []).map(childRow);
-  form.offering_collection = (doc.offering_collection || []).map(childRow);
-  form.mission_collection = (doc.mission_collection || []).map(childRow);
-  form.collection_tally = (doc.collection_tally || []).map((r) => ({
-    denum_name: r.denum_name,
-    denomination: r.denomination,
-    quantity: r.quantity || 0,
-    quantity_coins: r.quantity_coins || 0,
-    total: r.total || 0,
-  }));
-  dirty.value = false;
-}
+// ---------------------------------------------------------------------------
+// Live sync: every edit autosaves and streams to other devices
+// ---------------------------------------------------------------------------
+const deletedBy = ref("");
 
-watch(detail, (doc) => doc && hydrate(doc), { immediate: true });
+const sync = useCollectionSync({
+  form,
+  lookupMember,
+  onCreated: (doc) => {
+    if (route.params.name !== doc.name) router.replace({ name: "CollectionForm", params: { name: doc.name } });
+  },
+  onDeleted: (by) => {
+    deletedBy.value = by || "someone";
+  },
+  onError: (e) => {
+    errorMsg.value = e.message || "Failed to save a change.";
+  },
+});
+
+watch(detail, (doc) => doc && sync.merge(doc), { immediate: true });
+
+// Unknown envelopes can't be saved until they match a member
+const unsavedRows = computed(() =>
+  ENTRY_TABLES.reduce((n, t) => n + form[t].filter((r) => r.number && !lookupMember(r.number)).length, 0)
+);
+
+const otherViewers = computed(() => {
+  return sync.viewers.value.filter((u) => u !== session.user);
+});
+
+const syncState = computed(() => {
+  if (sync.offline.value) return "offline";
+  if (sync.pendingKeys.size) return "saving";
+  return form.name ? "saved" : "idle";
+});
 
 // Prefill: default cost center + a full denomination tally for fresh/blank docs
 watch(
@@ -143,15 +151,12 @@ watch(
   { immediate: true }
 );
 
-// Start each entry table with one empty row so typing can begin immediately
+// Keep at least one empty row in each editable table so typing can begin immediately
 watch(
-  [isNew, members],
+  [readOnly, loadingDetail, () => ENTRY_TABLES.map((t) => form[t].length)],
   () => {
-    if (isNew.value && !form.tithes_collection.length) {
-      for (const key of ["tithes_collection", "offering_collection", "mission_collection"]) {
-        form[key].push({ number: "", first_name: "", last_name: "", amount: null, account_type: "Cash" });
-      }
-    }
+    if (readOnly.value || (!isNew.value && loadingDetail.value)) return;
+    for (const t of ENTRY_TABLES) if (!form[t].length) form[t].push(blankRow());
   },
   { immediate: true }
 );
@@ -195,7 +200,7 @@ const tallyBalanced = computed(() => tallyTotal.value > 0 && tallyDiff.value ===
 function onTallyQty(row) {
   const coins = row.denum_name === "20" ? row.quantity_coins || 0 : 0;
   row.total = (row.denomination || 0) * ((row.quantity || 0) + coins);
-  dirty.value = true;
+  sync.touchTally(row);
 }
 
 // Coin denominations: ₱20 has a coin variant (quantity_coins); 10/5/1/0.25 are
@@ -248,7 +253,7 @@ const dateLocal = computed({
   get: () => (form.date ? form.date.slice(0, 16).replace(" ", "T") : ""),
   set: (v) => {
     form.date = v ? v.replace("T", " ") + ":00" : "";
-    dirty.value = true;
+    sync.touchField("date");
   },
 });
 
@@ -298,74 +303,28 @@ function validate() {
   return null;
 }
 
-function buildPayload() {
-  const payload = {
-    name: form.name,
-    date: form.date,
-    cost_center: form.cost_center || null,
-    attendees: form.attendees || 0,
-    benevolence_collection: form.benevolence_collection || 0,
-    benevolence_collection_cls: form.benevolence_collection_cls || 0,
-    loose_collection: form.loose_collection || 0,
-    loose_collection_cls: form.loose_collection_cls || 0,
-    sunday_school_collection: form.sunday_school_collection || 0,
-  };
-  for (const [field] of TABLES) {
-    payload[field] = form[field]
-      .filter((row) => row.number || row.amount)
-      .map((row) => {
-        const member = membersMap.value.get(String(row.number).trim().toUpperCase());
-        return {
-          number: member ? member.name : "",
-          first_name: member?.firstname || "",
-          last_name: member?.lastname || "",
-          amount: row.amount || 0,
-          account_type: row.account_type || "Cash",
-        };
-      });
-  }
-  payload.collection_tally = form.collection_tally.map((r) => ({
-    denum_name: r.denum_name,
-    quantity: r.quantity || 0,
-    quantity_coins: r.quantity_coins || 0,
-    total: r.total || 0,
-  }));
-  return payload;
-}
-
-async function save() {
-  errorMsg.value = "";
-  const problem = validate();
-  if (problem) {
-    errorMsg.value = problem.msg;
-    activeTab.value = problem.tab;
-    return null;
-  }
-  saving.value = true;
-  try {
-    const wasNew = !form.name;
-    const doc = await call("church_management.api.collection.save_collection", { doc: buildPayload() });
-    hydrate(doc);
-    if (wasNew) router.replace({ name: "CollectionForm", params: { name: doc.name } });
-    savedFlash.value = true;
-    setTimeout(() => (savedFlash.value = false), 2000);
-    return doc;
-  } catch (e) {
-    errorMsg.value = e.message || "Failed to save.";
-    return null;
-  } finally {
-    saving.value = false;
-  }
-}
-
 async function doSubmit() {
   submitting.value = true;
   errorMsg.value = "";
   try {
-    const saved = await save();
-    if (!saved) return;
-    const doc = await call("church_management.api.collection.submit_collection", { name: saved.name });
-    hydrate(doc);
+    await sync.flush();
+    const problem = validate();
+    if (problem) {
+      errorMsg.value = problem.msg;
+      activeTab.value = problem.tab;
+      showSubmitConfirm.value = false;
+      return;
+    }
+    if (!form.name) {
+      errorMsg.value = "Nothing to submit yet — enter at least one amount.";
+      showSubmitConfirm.value = false;
+      return;
+    }
+    const doc = await call("church_management.api.collection.submit_collection", {
+      name: form.name,
+      client_id: sync.clientId,
+    });
+    sync.merge(doc);
     showSubmitConfirm.value = false;
   } catch (e) {
     errorMsg.value = e.message || "Failed to submit.";
@@ -379,7 +338,8 @@ async function doDelete() {
   deleting.value = true;
   errorMsg.value = "";
   try {
-    await call("church_management.api.collection.delete_collection", { name: form.name });
+    sync.cancelAll();
+    await call("church_management.api.collection.delete_collection", { name: form.name, client_id: sync.clientId });
     router.replace({ name: "CollectionList" });
   } catch (e) {
     errorMsg.value = e.message || "Failed to delete.";
@@ -402,14 +362,36 @@ const status = computed(() =>
     >
       <template #actions>
         <div class="flex items-center gap-2">
-          <Transition name="fade">
-            <span v-if="savedFlash" class="inline-flex items-center gap-1 text-xs font-semibold text-green-600 anim-pop">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-              </svg>
-              Saved
-            </span>
-          </Transition>
+          <span
+            v-if="otherViewers.length && !readOnly"
+            class="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-violet-700 bg-violet-50 border border-violet-100 rounded-full px-2.5 py-1"
+            :title="`Also editing: ${otherViewers.join(', ')}`"
+          >
+            <span class="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
+            {{ otherViewers.length }} other{{ otherViewers.length === 1 ? "" : "s" }} editing
+          </span>
+          <span
+            v-if="!readOnly && syncState !== 'idle'"
+            class="inline-flex items-center gap-1 text-xs font-semibold"
+            :class="{
+              'text-green-600': syncState === 'saved',
+              'text-gray-400': syncState === 'saving',
+              'text-amber-600': syncState === 'offline',
+            }"
+            :title="syncState === 'offline' ? 'No connection — your changes are kept and will be sent when it returns' : 'Changes save automatically and appear live on other devices'"
+          >
+            <svg v-if="syncState === 'saved'" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+            <svg v-else-if="syncState === 'saving'" class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" class="opacity-25" />
+              <path d="M21 12a9 9 0 00-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+            </svg>
+            <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0 3h.008v.008H12v-.008zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {{ syncState === "saved" ? "Saved" : syncState === "saving" ? "Saving…" : "Offline" }}
+          </span>
           <StatusBadge :status="status" />
           <AppButton variant="ghost" size="sm" @click="router.push({ name: 'CollectionList' })">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -429,6 +411,20 @@ const status = computed(() =>
     </div>
 
     <template v-else>
+      <!-- Deleted on another device -->
+      <div v-if="deletedBy" class="mb-4 p-3 bg-amber-50 text-amber-800 rounded-xl text-sm flex items-center justify-between gap-2">
+        <span>This draft was deleted by <b>{{ deletedBy }}</b>.</span>
+        <AppButton size="sm" variant="secondary" @click="router.replace({ name: 'CollectionList' })">Back to list</AppButton>
+      </div>
+
+      <!-- Unknown envelopes are held back from autosave -->
+      <div v-if="unsavedRows && !readOnly" class="mb-4 p-3 bg-amber-50 text-amber-800 rounded-xl text-xs font-semibold flex items-center gap-2">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0 3h.008v.008H12v-.008zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        {{ unsavedRows }} row{{ unsavedRows === 1 ? " isn't" : "s aren't" }} saved yet — the envelope number doesn't match a member.
+      </div>
+
       <!-- Error banner -->
       <div v-if="errorMsg" class="mb-4 p-3 bg-red-50 text-red-700 rounded-xl text-sm flex items-start gap-2">
         <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -538,9 +534,10 @@ const status = computed(() =>
             :rows="form.tithes_collection"
             :members-map="membersMap"
             title="Tithes"
+            @change="(row) => sync.touchRow('tithes_collection', row)"
+            @remove="(row) => sync.removeRow('tithes_collection', row)"
             accent="brand"
             :disabled="readOnly"
-            @dirty="dirty = true"
             @create-member="onCreateMember"
           />
           <CollectionEntryTable
@@ -548,9 +545,10 @@ const status = computed(() =>
             :rows="form.offering_collection"
             :members-map="membersMap"
             title="Offering"
+            @change="(row) => sync.touchRow('offering_collection', row)"
+            @remove="(row) => sync.removeRow('offering_collection', row)"
             accent="violet"
             :disabled="readOnly"
-            @dirty="dirty = true"
             @create-member="onCreateMember"
           />
           <CollectionEntryTable
@@ -558,9 +556,10 @@ const status = computed(() =>
             :rows="form.mission_collection"
             :members-map="membersMap"
             title="Mission"
+            @change="(row) => sync.touchRow('mission_collection', row)"
+            @remove="(row) => sync.removeRow('mission_collection', row)"
             accent="teal"
             :disabled="readOnly"
-            @dirty="dirty = true"
             @create-member="onCreateMember"
           />
 
@@ -580,11 +579,11 @@ const status = computed(() =>
               <label class="w-full sm:w-32 shrink-0 text-sm font-semibold text-gray-700 sm:pb-3">Benevolence</label>
               <div class="flex-1 min-w-0">
                 <span class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Cash</span>
-                <MathInput v-model="form.benevolence_collection" :disabled="readOnly" @update:model-value="dirty = true" />
+                <MathInput v-model="form.benevolence_collection" :disabled="readOnly" @update:model-value="sync.touchField('benevolence_collection')" />
               </div>
               <div class="flex-1 min-w-0">
                 <span class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Cashless (GCash / Bank)</span>
-                <MathInput v-model="form.benevolence_collection_cls" :disabled="readOnly" @update:model-value="dirty = true" />
+                <MathInput v-model="form.benevolence_collection_cls" :disabled="readOnly" @update:model-value="sync.touchField('benevolence_collection_cls')" />
               </div>
             </div>
 
@@ -592,11 +591,11 @@ const status = computed(() =>
               <label class="w-full sm:w-32 shrink-0 text-sm font-semibold text-gray-700 sm:pb-3">Loose</label>
               <div class="flex-1 min-w-0">
                 <span class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Cash</span>
-                <MathInput v-model="form.loose_collection" :disabled="readOnly" @update:model-value="dirty = true" />
+                <MathInput v-model="form.loose_collection" :disabled="readOnly" @update:model-value="sync.touchField('loose_collection')" />
               </div>
               <div class="flex-1 min-w-0">
                 <span class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Cashless (GCash / Bank)</span>
-                <MathInput v-model="form.loose_collection_cls" :disabled="readOnly" @update:model-value="dirty = true" />
+                <MathInput v-model="form.loose_collection_cls" :disabled="readOnly" @update:model-value="sync.touchField('loose_collection_cls')" />
               </div>
             </div>
 
@@ -604,7 +603,7 @@ const status = computed(() =>
               <label class="w-full sm:w-32 shrink-0 text-sm font-semibold text-gray-700 sm:pb-3">Sunday School</label>
               <div class="flex-1 min-w-0">
                 <span class="block text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Cash</span>
-                <MathInput v-model="form.sunday_school_collection" :disabled="readOnly" @update:model-value="dirty = true" />
+                <MathInput v-model="form.sunday_school_collection" :disabled="readOnly" @update:model-value="sync.touchField('sunday_school_collection')" />
               </div>
               <div class="flex-1 min-w-0 hidden sm:flex items-center text-xs text-gray-300 italic pb-3">cash only</div>
             </div>
@@ -618,7 +617,7 @@ const status = computed(() =>
                   type="number" min="0" inputmode="numeric" placeholder="0"
                   :disabled="readOnly"
                   class="cm-field text-right tabular"
-                  @input="dirty = true"
+                  @input="sync.touchField('attendees')"
                 />
               </div>
               <div class="hidden sm:block flex-1" />
@@ -771,19 +770,16 @@ const status = computed(() =>
           v-if="form.name"
           variant="ghost" size="sm"
           class="!text-red-600 hover:!bg-red-50"
-          :disabled="saving || submitting"
+          :disabled="submitting"
           @click="showDeleteConfirm = true"
         >
           Delete draft
         </AppButton>
         <span v-else class="text-xs text-gray-400 hidden sm:block">
-          Saving keeps a draft — submitting posts the Journal Entry.
+          Changes save automatically — submitting posts the Journal Entry.
         </span>
         <div class="flex items-center gap-2">
-          <AppButton variant="secondary" :loading="saving" :disabled="submitting" @click="save">
-            Save draft
-          </AppButton>
-          <AppButton :loading="submitting" :disabled="saving" @click="showSubmitConfirm = true">
+          <AppButton :loading="submitting" :disabled="!!deletedBy" @click="showSubmitConfirm = true">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
             </svg>
@@ -852,14 +848,3 @@ const status = computed(() =>
     </Teleport>
   </div>
 </template>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-</style>

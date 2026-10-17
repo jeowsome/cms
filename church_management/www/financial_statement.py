@@ -52,6 +52,8 @@ def get_context(context):
         },
         'monthly_data': [],
         'account_balances': [],
+        'position': {'cash': 0.0, 'cashless': 0.0, 'unassigned': 0.0, 'available': 0.0,
+                     'white_gift': 0.0, 'unclaimed_operating': 0.0, 'projected': 0.0},
         'available_months': [],
         'trend': [],
         'trend_json': '[]',
@@ -297,28 +299,38 @@ def get_context(context):
             settings.loose_cashless_account
         ] if a]
 
+        # kind drives the "where we stand" KPI cards: cash on hand, cashless, White Gift
         display_accounts = [
-            ('General Cash', general_cash_ledger, ['General Cash - JBC'] + general_cash_ledger, False),
-            ('General Cashless', general_cashless_ledger, ['General Cashless - JBC'] + general_cashless_ledger, False),
-            ('Mission Cash', [settings.mission_cash_account], [settings.mission_cash_account], False),
-            ('Mission Cashless', [settings.mission_cashless_account], [settings.mission_cashless_account], False),
-            ('Benevolence Cash', [settings.benevolence_cash_account], [settings.benevolence_cash_account], False),
-            ('Benevolence Cashless', [settings.benevolence_cashless_account], [settings.benevolence_cashless_account], False),
-            ('White Gift Cash', [settings.white_gift_cash_account], [settings.white_gift_cash_account], True),
-            ('White Gift Cashless', [settings.white_gift_cashless_account], [settings.white_gift_cashless_account], True),
+            ('General Cash', general_cash_ledger, ['General Cash - JBC'] + general_cash_ledger, False, 'cash'),
+            ('General Cashless', general_cashless_ledger, ['General Cashless - JBC'] + general_cashless_ledger, False, 'cashless'),
+            ('Mission Cash', [settings.mission_cash_account], [settings.mission_cash_account], False, 'cash'),
+            ('Mission Cashless', [settings.mission_cashless_account], [settings.mission_cashless_account], False, 'cashless'),
+            ('Benevolence Cash', [settings.benevolence_cash_account], [settings.benevolence_cash_account], False, 'cash'),
+            ('Benevolence Cashless', [settings.benevolence_cashless_account], [settings.benevolence_cashless_account], False, 'cashless'),
+            ('White Gift Cash', [settings.white_gift_cash_account], [settings.white_gift_cash_account], True, 'white_gift'),
+            ('White Gift Cashless', [settings.white_gift_cashless_account], [settings.white_gift_cashless_account], True, 'white_gift'),
         ]
 
+        pos = res['position']
         matched_sources = set()
-        for label, ledger_accounts, deduction_sources, cumulative in display_accounts:
+        for label, ledger_accounts, deduction_sources, cumulative, kind in display_accounts:
             ledger_balance = sum(get_gl_balance(a, cumulative=cumulative) for a in ledger_accounts if a)
             deduction = sum(account_deductions.get(s, 0.0) for s in deduction_sources if s)
             matched_sources.update(s for s in deduction_sources if s)
+            pos[kind] += ledger_balance - deduction
             if ledger_balance != 0 or deduction != 0:
+                # Per-ledger composition, e.g. General Cash = Tithes + Offering + Loose + Sunday School
+                parts = [
+                    {'name': a.rsplit(' - ', 1)[0], 'balance': get_gl_balance(a, cumulative=cumulative)}
+                    for a in ledger_accounts if a
+                ] if len(ledger_accounts) > 1 else []
                 res['account_balances'].append({
                     'name': label,
+                    'parts': parts,
                     'ledger_balance': ledger_balance,
                     'pending_deductions': deduction,
-                    'effective_balance': ledger_balance - deduction
+                    'effective_balance': ledger_balance - deduction,
+                    'kind': kind
                 })
 
         # Claimed items whose source is empty or matches no display account above —
@@ -332,6 +344,13 @@ def get_context(context):
                 'effective_balance': -unmatched,
                 'is_unassigned': True
             })
+        pos['unassigned'] = -unmatched
+
+        # Available = every non-White-Gift account; projected subtracts the
+        # operating (non-White-Gift) commitments still waiting to be claimed.
+        pos['available'] = pos['cash'] + pos['cashless'] + pos['unassigned']
+        pos['unclaimed_operating'] = fs['total_unclaimed'] - fs['funds']['White Gift']['unclaimed']
+        pos['projected'] = pos['available'] - pos['unclaimed_operating']
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "Financial Statement Error")
     

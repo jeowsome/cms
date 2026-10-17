@@ -1,6 +1,7 @@
 <script setup>
 import { computed, nextTick, ref } from "vue";
 import CurrencyDisplay from "@/components/CurrencyDisplay.vue";
+import { blankRow } from "@/composables/useCollectionSync";
 
 /**
  * Fast keyboard-first entry table for tithes / offering / mission rows.
@@ -15,10 +16,12 @@ const props = defineProps({
   disabled: { type: Boolean, default: false },
   accent: { type: String, default: "brand" }, // brand | violet | teal
 });
-const emit = defineEmits(["dirty", "create-member"]);
+// change(row): a row's content changed; remove(row): row deleted — the parent autosaves both
+const emit = defineEmits(["change", "remove", "create-member"]);
 
 const envelopeEls = ref([]);
 const amountEls = ref([]);
+const mobileAmountEls = ref([]);
 
 const ACCENTS = {
   brand: { chip: "bg-brand-50 text-brand-700 border-brand-100", dot: "bg-brand-500" },
@@ -36,21 +39,23 @@ function memberFor(row) {
   return lookup(row.number);
 }
 
-function newRow() {
-  return { number: "", first_name: "", last_name: "", amount: null, account_type: "Cash" };
+// Focus a row's envelope and bring it into the middle of the viewport, so a
+// freshly added row is never hidden below the fold or behind the action bar.
+function focusEnvelope(idx) {
+  const el = envelopeEls.value[idx];
+  if (!el) return;
+  el.focus({ preventScroll: true });
+  el.scrollIntoView({ block: "center", behavior: "smooth" });
 }
 
 function addRow(focus = true) {
-  props.rows.push(newRow());
-  emit("dirty");
-  if (focus) {
-    nextTick(() => envelopeEls.value[props.rows.length - 1]?.focus());
-  }
+  props.rows.push(blankRow());
+  if (focus) nextTick(() => focusEnvelope(props.rows.length - 1));
 }
 
 function removeRow(idx) {
-  props.rows.splice(idx, 1);
-  emit("dirty");
+  const [row] = props.rows.splice(idx, 1);
+  emit("remove", row);
 }
 
 function onEnvelopeInput(row, e) {
@@ -58,17 +63,24 @@ function onEnvelopeInput(row, e) {
   const member = lookup(row.number);
   row.first_name = member?.firstname || "";
   row.last_name = member?.lastname || "";
-  emit("dirty");
+  emit("change", row);
 }
 
 function onEnvelopeEnter(idx) {
-  amountEls.value[idx]?.focus();
+  // Desktop amount is hidden on mobile — pick whichever is visible
+  const el = amountEls.value[idx]?.offsetParent ? amountEls.value[idx] : mobileAmountEls.value[idx];
+  el?.focus();
 }
 
 function onAmountInput(row, e) {
   const v = parseFloat(e.target.value);
   row.amount = Number.isFinite(v) ? v : null;
-  emit("dirty");
+  emit("change", row);
+}
+
+function onTypeChange(row, e) {
+  row.account_type = e.target.value;
+  emit("change", row);
 }
 
 // Tab or Enter on the amount of the LAST row spawns the next row.
@@ -85,7 +97,7 @@ function onAmountTab(idx, e) {
 function onAmountEnter(idx, e) {
   e.preventDefault();
   if (idx === props.rows.length - 1) addRow();
-  else envelopeEls.value[idx + 1]?.focus();
+  else focusEnvelope(idx + 1);
 }
 
 const stats = computed(() => {
@@ -120,19 +132,23 @@ defineExpose({ addRow });
 
     <!-- Rows -->
     <div class="space-y-1.5">
-      <div v-for="(row, idx) in rows" :key="idx" class="flex items-start sm:items-center gap-2">
+      <div v-for="(row, idx) in rows" :key="row._key" class="flex items-start sm:items-center gap-2">
         <span class="w-6 sm:w-8 text-center text-xs text-gray-400 font-semibold tabular shrink-0 pt-3 sm:pt-0">{{ idx + 1 }}</span>
 
         <!-- Envelope number -->
         <input
           :ref="(el) => (envelopeEls[idx] = el)"
           type="text"
-          inputmode="numeric"
+          inputmode="text"
+          autocapitalize="characters"
+          autocorrect="off"
+          spellcheck="false"
+          enterkeyhint="next"
           :value="row.number"
           :disabled="disabled"
           placeholder="No."
           autocomplete="off"
-          class="cm-field !h-10 !w-20 sm:!w-24 text-center tabular font-semibold shrink-0"
+          class="cm-field entry-field !h-10 !w-20 sm:!w-24 text-center tabular font-semibold shrink-0"
           :class="row.number && !memberFor(row) ? '!border-amber-300 !bg-amber-50/50' : ''"
           @input="onEnvelopeInput(row, $event)"
           @keydown.enter.prevent="onEnvelopeEnter(idx)"
@@ -171,21 +187,25 @@ defineExpose({ addRow });
           <!-- Mobile-only amount + type inline -->
           <div class="flex sm:hidden items-center gap-2 mt-1">
             <input
+              :ref="(el) => (mobileAmountEls[idx] = el)"
               type="number"
               step="0.01"
               min="0"
+              inputmode="decimal"
+              enterkeyhint="next"
               :value="row.amount ?? ''"
               :disabled="disabled"
               placeholder="0.00"
-              class="cm-field !h-9 flex-1 text-right tabular"
+              class="cm-field entry-field !h-9 flex-1 text-right tabular"
               @input="onAmountInput(row, $event)"
+              @keydown.enter="onAmountEnter(idx, $event)"
             />
             <select
               :value="row.account_type"
               :disabled="disabled"
               tabindex="-1"
               class="cm-field cm-select !h-9 !w-24 text-xs shrink-0"
-              @change="row.account_type = $event.target.value; emit('dirty')"
+              @change="onTypeChange(row, $event)"
             >
               <option>Cash</option>
               <option>GCash</option>
@@ -203,7 +223,7 @@ defineExpose({ addRow });
           :value="row.amount ?? ''"
           :disabled="disabled"
           placeholder="0.00"
-          class="cm-field !h-10 !w-28 text-right tabular hidden sm:block shrink-0"
+          class="cm-field entry-field !h-10 !w-28 text-right tabular hidden sm:block shrink-0"
           @input="onAmountInput(row, $event)"
           @focus="$event.target.select()"
           @keydown.tab="onAmountTab(idx, $event)"
@@ -218,7 +238,7 @@ defineExpose({ addRow });
           title="Payment channel — Tab skips this; click to change. Defaults to Cash."
           class="cm-field cm-select !h-10 !w-24 text-xs hidden sm:block shrink-0"
           :class="row.account_type !== 'Cash' ? '!border-sky-300 !bg-sky-50/50 font-semibold text-sky-800' : ''"
-          @change="row.account_type = $event.target.value; emit('dirty')"
+          @change="onTypeChange(row, $event)"
         >
           <option>Cash</option>
           <option>GCash</option>
@@ -280,3 +300,10 @@ defineExpose({ addRow });
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Keep focused fields clear of the sticky action bar / bottom nav */
+.entry-field {
+  scroll-margin-block: 6rem 9rem;
+}
+</style>
