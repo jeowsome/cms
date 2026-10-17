@@ -95,10 +95,16 @@
         {% set wg = fs['funds']['White Gift'] %}
         {% macro line(name, amount, cls='') %}<span class="flex justify-between gap-3 num {{ cls }}"><span>{{ name }}</span><span class="whitespace-nowrap">{{ amount }}</span></span>{% endmacro %}
         {% macro acct_lines(value, attr='kind') %}{% for a in account_balances if a[attr] == value %}{{ line(a.name, peso(a.effective_balance), 'font-semibold text-white' if a.parts else '') }}{% if a.parts %}<span class="block pl-3 mb-1 border-l border-white/20 text-slate-400">{% for p in a.parts if p.balance %}{{ line(p.name, peso(p.balance)) }}{% endfor %}{{ line('Less claimed', '− ' ~ peso(a.pending_deductions), 'text-rose-300') }}</span>{% endif %}{% endfor %}{% endmacro %}
-        {% macro kpi(label, value, tip, tone='text-slate-900', ring='border-slate-200', label_tone='text-slate-500', big=False, tag='', chip='', compact=False) %}
+        {% macro warn_icon(small=False) %}<svg class="{{ 'w-3.5 h-3.5' if small else 'w-4 h-4' }} shrink-0 text-amber-500" fill="currentColor" viewBox="0 0 24 24" role="img" aria-label="Warning"><path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clip-rule="evenodd"/></svg>{% endmacro %}
+        {#- Problems worth a look for one fund card: overdrawn accounts, an
+            overdrawn fund, or (set-aside funds) pending claims it cannot cover.
+            General's pending-claims gap is a timing question — see the Outlook. -#}
+        {% macro fund_warning(f) %}{% for a in account_balances if a.fund == f.name and a.effective_balance < 0 %}<p>{{ a.name }} is overdrawn by <b>{{ peso(-a.effective_balance) }}</b>: {{ peso(a.pending_deductions) }} was claimed from it but only {{ peso(a.ledger_balance) }} came in. Re-source those claims or record the missing deposit.</p>{% endfor %}{% if f.available < 0 %}<p>The {{ f.name }} fund as a whole is overdrawn by <b>{{ peso(-f.available) }}</b>.</p>{% elif f.projected < 0 and f.name != 'General' %}<p>Pending claims ({{ peso(f.pending) }}) are more than the {{ f.name }} fund holds — short by <b>{{ peso(-f.projected) }}</b>.</p>{% endif %}{% endmacro %}
+        {% macro kpi(label, value, tip, tone='text-slate-900', ring='border-slate-200', label_tone='text-slate-500', big=False, tag='', chip='', compact=False, warn='') %}
             <div class="kpi relative bg-white rounded-2xl border {{ ring }} shadow-sm {{ 'p-4' if compact else 'p-5' }}">
                 <div class="flex items-center gap-1.5">
                     <p class="text-xs font-semibold uppercase tracking-wide {{ label_tone }}">{{ label }}</p>
+                    {% if warn %}{{ warn_icon() }}{% endif %}
                     <button type="button" class="kpi-tip-btn shrink-0 w-5 h-5 inline-flex items-center justify-center rounded-full text-slate-400 hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 cursor-help" aria-label="What is {{ label }}?">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 11v5m0-8h.01"/></svg>
                     </button>
@@ -107,8 +113,8 @@
                     <p class="{{ 'text-3xl' if big else ('text-xl' if compact else 'text-2xl') }} font-extrabold num {{ tone }}">{{ peso(value) }}</p>
                     {% if tag %}<span class="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-100">{{ tag }}</span>{% endif %}
                 </div>
-                {% if chip %}<div class="mt-2">{{ chip }}</div>{% endif %}
-                <div role="tooltip" class="kpi-tip absolute left-3 right-3 top-12 z-30 rounded-xl bg-slate-900 text-slate-100 text-xs leading-relaxed p-3.5 shadow-xl space-y-1.5">{{ tip }}</div>
+                {% if chip or warn %}<div class="mt-2 flex flex-wrap gap-1.5">{% if warn %}<span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200">{{ warn_icon(small=True) }}Needs a look</span>{% endif %}{{ chip }}</div>{% endif %}
+                <div role="tooltip" class="kpi-tip absolute left-3 right-3 top-12 z-30 rounded-xl bg-slate-900 text-slate-100 text-xs leading-relaxed p-3.5 shadow-xl space-y-1.5">{% if warn %}<div class="rounded-lg bg-amber-400/15 border border-amber-400/30 text-amber-200 p-2 space-y-1">{{ warn }}</div>{% endif %}{{ tip }}</div>
             </div>
         {% endmacro %}
 
@@ -137,7 +143,8 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {{ kpi('Usable Funds', sp.usable,
                     '<p>The only money free for regular church spending: the <b>General fund</b> (tithes, offerings, loose and Sunday school), cash and cashless.</p><p>Mission and Benevolence are set aside for their purpose, and White Gift is separate — none of them are counted here.</p><div class="pt-1.5 border-t border-white/15 text-slate-300">' ~ acct_lines('General', 'fund') ~ '</div>',
-                    tone=('text-brand-700' if sp.usable >= 0 else 'text-rose-700'), ring='border-brand-200 ring-1 ring-brand-100', label_tone='text-brand-700', big=True, tag='General fund') }}
+                    tone=('text-brand-700' if sp.usable >= 0 else 'text-rose-700'), ring='border-brand-200 ring-1 ring-brand-100', label_tone='text-brand-700', big=True, tag='General fund',
+                    warn=fund_warning(fund_cards|selectattr('name', 'equalto', 'General')|first)|trim) }}
                 {% set due_chip %}{% if ol %}<span class="flex flex-wrap gap-1.5">{{ pill(peso(ol.due_now) ~ ' due now', 'amber') }}{% if ol.due_later_this_month %}{{ pill(peso(ol.due_later_this_month) ~ ' later in ' ~ ol.month[:3]) }}{% endif %}</span>{% endif %}{% endset %}
                 {{ kpi('Already Committed', sp.pending,
                     '<p>General-fund disbursements already scheduled (allowances, rent, utilities, expenses) but <b>not yet claimed</b>. This money is spoken for even though it is still on hand.</p>'
@@ -202,13 +209,16 @@
                     ~ line('Pending claims', '− ' ~ peso(f.pending), 'text-amber-300')
                     ~ line('Free after claims', peso(f.projected), 'mt-1 pt-1 border-t border-white/15 font-semibold text-white') ~ '</div>'
                     ~ '<div class="pt-1.5 border-t border-white/15 text-slate-300">' ~ acct_lines(f.name, 'fund') ~ '</div>',
-                    tone=('text-slate-900' if f.available >= 0 else 'text-rose-700'), compact=True, chip=f_chip) }}
+                    tone=('text-slate-900' if f.available >= 0 else 'text-rose-700'), compact=True, chip=f_chip,
+                    ring=('border-amber-300' if fund_warning(f)|trim else 'border-slate-200'), warn=fund_warning(f)|trim) }}
                 {% endfor %}
+                {% set wg_warn = fund_warning(fund_cards|selectattr('name', 'equalto', 'White Gift')|first)|trim %}
                 {% set wg_chip %}{{ pill(peso(pos.white_gift - (wg.unclaimed or 0)) ~ ' free after claims', 'green') }}{% endset %}
                 {{ kpi('White Gift Fund', pos.white_gift,
                     '<p>' ~ fund_info['White Gift'] ~ '</p><div class="pt-1.5 border-t border-white/15 text-slate-300">' ~ line('Received', peso(wg.collected)) ~ line('Spent (claimed)', '− ' ~ peso(wg.disbursed))
                     ~ (line('Pending claims', '− ' ~ peso(wg.unclaimed), 'text-amber-300') if wg.unclaimed else '') ~ '</div>',
-                    tone=('text-sky-700' if pos.white_gift >= 0 else 'text-rose-700'), ring='border-sky-200', label_tone='text-sky-700', compact=True, chip=wg_chip) }}
+                    tone=('text-sky-700' if pos.white_gift >= 0 else 'text-rose-700'), label_tone='text-sky-700', compact=True, chip=wg_chip,
+                    ring=('border-amber-300' if wg_warn else 'border-sky-200'), warn=wg_warn) }}
             </div>
 
             <!-- Where it is kept -->
@@ -492,9 +502,11 @@
                 {% for f in fund_cards %}
                 {% set is_wg = f.name == 'White Gift' %}
                 {% set pct = (f.claimed / f.received * 100) if f.received else 0 %}
-                <div class="relative bg-white rounded-2xl shadow-sm border {{ 'border-sky-200' if is_wg else 'border-slate-200' }} hover:shadow-md transition-shadow">
+                {% set f_warn = fund_warning(f)|trim %}
+                <div class="relative bg-white rounded-2xl shadow-sm border {{ 'border-amber-300' if f_warn else ('border-sky-200' if is_wg else 'border-slate-200') }} hover:shadow-md transition-shadow">
                     <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center gap-2">
                         <span class="font-bold text-slate-800 flex items-center gap-1">
+                            {% if f_warn %}{{ warn_icon() }}{% endif %}
                             {{ f.name }} Fund
                             {% set tip %}<p>{{ fund_info[f.name] }}</p><div class="pt-1.5 border-t border-white/15 text-slate-300">{% if is_wg %}{{ line('Received (all years)', peso(f.received)) }}{% else %}{{ line('From collections', peso(f.from_collections)) }}{% if f.other_postings|abs >= 0.01 %}{{ line('Other postings' ~ (' (donations)' if f.name == 'Mission' else ' — review'), peso(f.other_postings), 'text-amber-300' if f.name != 'Mission' else '') }}{% endif %}{% endif %}</div><div class="pt-1.5 border-t border-white/15 text-slate-300">{% for a in account_balances if a.fund == f.name %}{{ line(a.name, peso(a.effective_balance), 'text-rose-300' if a.effective_balance < 0 else '') }}{% endfor %}</div>{% endset %}
                             {{ info(f.name ~ ' Fund', tip, pos='left-3 right-3 top-14', anchored=False) }}
@@ -534,6 +546,12 @@
                             <span class="text-xs font-medium text-amber-600 uppercase tracking-wide">After pending claims</span>
                             <span class="text-base font-bold num {{ 'text-rose-700' if f.projected < 0 else 'text-slate-800' }}">{{ peso(f.projected) }}</span>
                         </div>
+                        {% if f_warn %}
+                        <div role="note" class="mt-1 flex items-start gap-2 rounded-xl bg-amber-50 border border-amber-200 p-2.5 text-xs text-amber-900 leading-snug num">
+                            {{ warn_icon() }}
+                            <div class="space-y-1">{{ f_warn }}</div>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
                 {% endfor %}
@@ -585,7 +603,7 @@
                                     {{ acc.name }}
                                 </button>
                                 {% else %}
-                                <span class="text-sm font-semibold text-slate-800 {{ 'pl-5' if not acc.is_unassigned }}">{{ acc.name }}</span>
+                                <span class="inline-flex items-center gap-1 text-sm font-semibold {{ 'text-rose-700' if acc.effective_balance < 0 else 'text-slate-800' }} {{ 'pl-5' if not acc.is_unassigned and acc.effective_balance >= 0 }}">{% if acc.effective_balance < 0 %}{{ warn_icon() }}{% endif %}{{ acc.name }}</span>
                                 {% endif %}
                                 {% if acc.kind == 'white_gift' %}<span class="ml-1.5 text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-sky-100 text-sky-700">All years</span>{% endif %}
                                 {% if acc.is_unassigned %}<span class="block text-xs text-amber-700 mt-0.5">Items missing a source account — needs review</span>{% endif %}
