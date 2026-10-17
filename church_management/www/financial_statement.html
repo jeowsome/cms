@@ -94,9 +94,9 @@
         {% set total_collections = (fs.cash_collected or 0) + (fs.cashless_collected or 0) %}
         {% set wg = fs['funds']['White Gift'] %}
         {% macro line(name, amount, cls='') %}<span class="flex justify-between gap-3 num {{ cls }}"><span>{{ name }}</span><span class="whitespace-nowrap">{{ amount }}</span></span>{% endmacro %}
-        {% macro acct_lines(kind) %}{% for a in account_balances if a.kind == kind %}{{ line(a.name, peso(a.effective_balance), 'font-semibold text-white' if a.parts else '') }}{% if a.parts %}<span class="block pl-3 mb-1 border-l border-white/20 text-slate-400">{% for p in a.parts if p.balance %}{{ line(p.name, peso(p.balance)) }}{% endfor %}{{ line('Less claimed', '− ' ~ peso(a.pending_deductions), 'text-rose-300') }}</span>{% endif %}{% endfor %}{% endmacro %}
-        {% macro kpi(label, value, tip, tone='text-slate-900', ring='border-slate-200', label_tone='text-slate-500', big=False, tag='') %}
-            <div class="kpi relative bg-white rounded-2xl border {{ ring }} shadow-sm p-5">
+        {% macro acct_lines(value, attr='kind') %}{% for a in account_balances if a[attr] == value %}{{ line(a.name, peso(a.effective_balance), 'font-semibold text-white' if a.parts else '') }}{% if a.parts %}<span class="block pl-3 mb-1 border-l border-white/20 text-slate-400">{% for p in a.parts if p.balance %}{{ line(p.name, peso(p.balance)) }}{% endfor %}{{ line('Less claimed', '− ' ~ peso(a.pending_deductions), 'text-rose-300') }}</span>{% endif %}{% endfor %}{% endmacro %}
+        {% macro kpi(label, value, tip, tone='text-slate-900', ring='border-slate-200', label_tone='text-slate-500', big=False, tag='', chip='', compact=False) %}
+            <div class="kpi relative bg-white rounded-2xl border {{ ring }} shadow-sm {{ 'p-4' if compact else 'p-5' }}">
                 <div class="flex items-center gap-1.5">
                     <p class="text-xs font-semibold uppercase tracking-wide {{ label_tone }}">{{ label }}</p>
                     <button type="button" class="kpi-tip-btn shrink-0 w-5 h-5 inline-flex items-center justify-center rounded-full text-slate-400 hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 cursor-help" aria-label="What is {{ label }}?">
@@ -104,32 +104,133 @@
                     </button>
                 </div>
                 <div class="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                    <p class="{{ 'text-3xl' if big else 'text-2xl' }} font-extrabold num {{ tone }}">{{ peso(value) }}</p>
+                    <p class="{{ 'text-3xl' if big else ('text-xl' if compact else 'text-2xl') }} font-extrabold num {{ tone }}">{{ peso(value) }}</p>
                     {% if tag %}<span class="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-100">{{ tag }}</span>{% endif %}
                 </div>
+                {% if chip %}<div class="mt-2">{{ chip }}</div>{% endif %}
                 <div role="tooltip" class="kpi-tip absolute left-3 right-3 top-12 z-30 rounded-xl bg-slate-900 text-slate-100 text-xs leading-relaxed p-3.5 shadow-xl space-y-1.5">{{ tip }}</div>
             </div>
         {% endmacro %}
 
+        {% macro info(label, tip, pos='left-0 top-8 w-80', anchored=True) %}
+            <span class="kpi {{ 'relative' if anchored }} inline-flex align-middle">
+                <button type="button" class="kpi-tip-btn shrink-0 w-5 h-5 inline-flex items-center justify-center rounded-full text-slate-400 hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 cursor-help" aria-label="About {{ label }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 11v5m0-8h.01"/></svg>
+                </button>
+                <span role="tooltip" class="kpi-tip absolute {{ pos }} z-30 max-w-[calc(100vw-2rem)] rounded-xl bg-slate-900 text-slate-100 text-xs font-normal normal-case tracking-normal text-left leading-relaxed p-3.5 shadow-xl space-y-1.5">{{ tip }}</span>
+            </span>
+        {% endmacro %}
+        {% set fund_info = {
+            'General': 'Tithes, offerings, loose and Sunday school collections (cash and cashless). Pays allowances, rent, utilities and other operating expenses.',
+            'Mission': 'Mission collections plus approved mission donations. Set aside for mission support — not for operating expenses.',
+            'Benevolence': 'Benevolence collections, set aside for helping members and others in need.',
+            'White Gift': 'The annual White Gift offering, counted across all years. Kept separate from Usable Funds and Total Held.'
+        } %}
+        {% set sp = spend %}
+        {% set ol = outlook %}
+        {% macro pill(text, tone='slate') %}<span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full num {{ {'slate': 'bg-slate-100 text-slate-600', 'green': 'bg-emerald-50 text-emerald-700', 'amber': 'bg-amber-50 text-amber-700', 'rose': 'bg-rose-50 text-rose-700'}[tone] }}">{{ text }}</span>{% endmacro %}
+        {% if sp %}
         <section aria-labelledby="standing-heading" class="mb-6">
             <h2 id="standing-heading" class="text-sm font-semibold text-slate-700 mb-3">Where the money stands today</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {{ kpi('Available Funds', pos.available,
-                    '<p>Money the church has right now for regular operations: <b>Cash on Hand + Cashless</b>.</p><p>Each account is ' ~ selected_year ~ ' collections posted to the ledger, minus disbursements already claimed from it. White Gift is kept separate and is <b>not</b> included.</p>'
-                    ~ ('<p class="text-amber-300">Includes ' ~ peso(pos.unassigned) ~ ' of claimed items with no source account.</p>' if pos.unassigned else ''),
-                    tone=('text-brand-700' if pos.available >= 0 else 'text-rose-700'), ring='border-brand-200 ring-1 ring-brand-100', label_tone='text-brand-700', big=True, tag='excl. White Gift') }}
+
+            <!-- What we can spend: General fund only -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {{ kpi('Usable Funds', sp.usable,
+                    '<p>The only money free for regular church spending: the <b>General fund</b> (tithes, offerings, loose and Sunday school), cash and cashless.</p><p>Mission and Benevolence are set aside for their purpose, and White Gift is separate — none of them are counted here.</p><div class="pt-1.5 border-t border-white/15 text-slate-300">' ~ acct_lines('General', 'fund') ~ '</div>',
+                    tone=('text-brand-700' if sp.usable >= 0 else 'text-rose-700'), ring='border-brand-200 ring-1 ring-brand-100', label_tone='text-brand-700', big=True, tag='General fund') }}
+                {% set due_chip %}{% if ol %}<span class="flex flex-wrap gap-1.5">{{ pill(peso(ol.due_now) ~ ' due now', 'amber') }}{% if ol.due_later_this_month %}{{ pill(peso(ol.due_later_this_month) ~ ' later in ' ~ ol.month[:3]) }}{% endif %}</span>{% endif %}{% endset %}
+                {{ kpi('Already Committed', sp.pending,
+                    '<p>General-fund disbursements already scheduled (allowances, rent, utilities, expenses) but <b>not yet claimed</b>. This money is spoken for even though it is still on hand.</p>'
+                    ~ ('<div class="pt-1.5 border-t border-white/15 text-slate-300">'
+                       ~ line('Overdue from past months', peso(ol.overdue_past), 'text-amber-300')
+                       ~ line(ol.month ~ ' weeks already due', peso(ol.due_now_this_month), 'text-amber-300')
+                       ~ line('Due now', peso(ol.due_now), 'font-semibold text-white')
+                       ~ line('Falls due later in ' ~ ol.month, peso(ol.due_later_this_month))
+                       ~ '</div>' if ol else '')
+                    ~ '<p class="text-slate-300">Week items fall due on that week&#39;s Sunday; monthly items by month end. Mission and Benevolence commitments are paid from their own funds and are not included.</p>',
+                    tone='text-amber-600', big=True, chip=due_chip) }}
+                {% set comfy_chip %}<span class="flex flex-wrap gap-1.5">{% if ol and sp.free < 0 and ol.end_of_month >= 0 %}{{ pill('Covered by end of ' ~ ol.month ~ ': ≈ ' ~ peso(ol.end_of_month), 'green') }}{% endif %}{% if sp.comfortable > 0 %}{{ pill('Comfortable to spend: ' ~ peso(sp.comfortable), 'green') }}{% elif ol and ol.end_of_month >= 0 %}{{ pill('Nothing extra to spend yet', 'amber') }}{% else %}{{ pill('No free money — hold new spending', 'rose') }}{% endif %}</span>{% endset %}
+                {{ kpi('Free to Spend' if sp.free >= 0 else 'Short if All Paid Today', sp.free,
+                    '<p>Usable Funds minus what is already committed — the surplus available for <b>new</b> spending.</p><div class="pt-1.5 border-t border-white/15 text-slate-300">'
+                    ~ line('Usable Funds', peso(sp.usable))
+                    ~ line('Already committed', '− ' ~ peso(sp.pending), 'text-amber-300')
+                    ~ line('Free to spend', peso(sp.free), 'mt-1 pt-1 border-t border-white/15 font-semibold text-white')
+                    ~ line(sp.reserve_weeks ~ '-week safety reserve', '− ' ~ peso(sp.reserve), 'text-slate-400')
+                    ~ '</div>'
+                    ~ ('<p>This counts commitments that are not due yet as if paid today. The <b>Outlook</b> below adds the Sunday collections still to come.</p>' if ol and sp.free < 0 else '')
+                    ~ '<p class="text-slate-300">Comfortable to spend = the lower of the end-of-month and year-end outlook, minus a ' ~ sp.reserve_weeks ~ '-week reserve (' ~ peso(sp.reserve) ~ ').</p>',
+                    tone=('text-brand-700' if sp.free >= 0 else 'text-rose-700'), ring=('border-emerald-200' if sp.free >= 0 else 'border-rose-200'), label_tone=('text-emerald-700' if sp.free >= 0 else 'text-rose-700'), big=True, chip=comfy_chip) }}
+            </div>
+
+            {% if ol %}
+            <!-- Outlook: when the commitments fall due vs the Sundays still to come -->
+            {% set steps = [
+                ('If all paid today', sp.free, 'Every General commitment paid now, before any more collections.', ''),
+                ('After what is due now', ol.after_due_now, 'Usable Funds minus ' ~ peso(ol.due_now) ~ ' already due (overdue + ' ~ ol.month ~ ' weeks so far).', ''),
+                ('End of ' ~ ol.month, ol.end_of_month, '+ ≈ ' ~ peso(ol.exp_in_this_month) ~ ' from ' ~ ol.sundays_left ~ ' more Sunday' ~ ('s' if ol.sundays_left != 1 else '') ~ ', − ' ~ peso(ol.due_later_this_month) ~ ' falling due.', 'expected'),
+                ('Year end', ol.year_end, 'Remaining months: ≈ ' ~ peso(ol.forecast|sum(attribute='g_expected_in')) ~ ' in, ≈ ' ~ peso(ol.forecast|sum(attribute='g_expected_out')) ~ ' out.', 'expected'),
+            ] %}
+            <div class="mt-4 bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-5">
+                <div class="flex items-center gap-1.5 mb-3">
+                    <h3 class="text-xs font-semibold uppercase tracking-wide text-slate-500">Outlook — General fund</h3>
+                    {{ info('Outlook',
+                        '<p>Shows how the usable balance moves as commitments fall due and the remaining Sunday collections come in.</p><div class="pt-1.5 border-t border-white/15 text-slate-300 space-y-1"><p>Expected income uses the average General collection per Sunday so far: <b class="text-white">' ~ peso(ol.per_sunday) ~ '</b>.</p><p>Months with no disbursement record yet are estimated at the average monthly General commitment: <b class="text-white">' ~ peso(sp.avg_out) ~ '</b>.</p></div><p class="text-slate-400">Estimates — actual collections and new commitments will move these numbers.</p>') }}
+                </div>
+                <ol class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {% for label, value, note, kind in steps %}
+                    <li class="relative rounded-xl border p-3 {{ 'border-rose-200 bg-rose-50/50' if value < 0 else 'border-emerald-200 bg-emerald-50/40' }} {{ 'border-dashed' if kind == 'expected' }}">
+                        <p class="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide {{ 'text-rose-700' if value < 0 else 'text-emerald-700' }}">
+                            <span class="w-5 h-5 rounded-full bg-white border text-[10px] flex items-center justify-center num {{ 'border-rose-200' if value < 0 else 'border-emerald-200' }}">{{ loop.index }}</span>
+                            {{ label }}{% if kind == 'expected' %}<span class="normal-case font-medium text-slate-400 tracking-normal">· expected</span>{% endif %}
+                        </p>
+                        <p class="mt-1.5 text-xl font-extrabold num {{ 'text-rose-700' if value < 0 else 'text-slate-900' }}">{{ ('≈ ' if kind == 'expected') ~ peso(value) }}</p>
+                        <p class="mt-1 text-[11px] leading-snug text-slate-500 num">{{ note }}</p>
+                    </li>
+                    {% endfor %}
+                </ol>
+            </div>
+            {% endif %}
+
+            <!-- Set aside: restricted funds -->
+            <h3 class="mt-6 mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Set aside — not for regular spending</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {% for f in sp.restricted %}
+                {% set f_chip %}{{ pill(peso(f.projected) ~ ' free after claims', 'green' if f.projected >= 0 else 'rose') }}{% endset %}
+                {{ kpi(f.name ~ ' Fund', f.available,
+                    '<p>' ~ fund_info[f.name] ~ '</p><div class="pt-1.5 border-t border-white/15 text-slate-300">'
+                    ~ line('Available', peso(f.available))
+                    ~ line('Pending claims', '− ' ~ peso(f.pending), 'text-amber-300')
+                    ~ line('Free after claims', peso(f.projected), 'mt-1 pt-1 border-t border-white/15 font-semibold text-white') ~ '</div>'
+                    ~ '<div class="pt-1.5 border-t border-white/15 text-slate-300">' ~ acct_lines(f.name, 'fund') ~ '</div>',
+                    tone=('text-slate-900' if f.available >= 0 else 'text-rose-700'), compact=True, chip=f_chip) }}
+                {% endfor %}
+                {% set wg_chip %}{{ pill(peso(pos.white_gift - (wg.unclaimed or 0)) ~ ' free after claims', 'green') }}{% endset %}
+                {{ kpi('White Gift Fund', pos.white_gift,
+                    '<p>' ~ fund_info['White Gift'] ~ '</p><div class="pt-1.5 border-t border-white/15 text-slate-300">' ~ line('Received', peso(wg.collected)) ~ line('Spent (claimed)', '− ' ~ peso(wg.disbursed))
+                    ~ (line('Pending claims', '− ' ~ peso(wg.unclaimed), 'text-amber-300') if wg.unclaimed else '') ~ '</div>',
+                    tone=('text-sky-700' if pos.white_gift >= 0 else 'text-rose-700'), ring='border-sky-200', label_tone='text-sky-700', compact=True, chip=wg_chip) }}
+            </div>
+
+            <!-- Where it is kept -->
+            <h3 class="mt-6 mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Where it is kept <span class="normal-case font-normal tracking-normal text-slate-400">(all funds except White Gift)</span></h3>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {{ kpi('Cash on Hand', pos.cash,
-                    '<p>Physical cash that should be in the cash boxes: cash collected minus claimed disbursements paid in cash. Excludes White Gift.</p><p class="text-slate-300">General Cash pools tithes, offerings, loose and Sunday school cash; claims are taken from the pool as a whole.</p><div class="pt-1.5 border-t border-white/15 text-slate-300">' ~ acct_lines('cash') ~ '</div>',
-                    tone=('text-slate-900' if pos.cash >= 0 else 'text-rose-700')) }}
+                    '<p>Physical cash that should be in the cash boxes — General, Mission and Benevolence together. Excludes White Gift.</p><p class="text-slate-300">General Cash pools tithes, offerings, loose and Sunday school cash; claims are taken from the pool as a whole.</p><div class="pt-1.5 border-t border-white/15 text-slate-300">' ~ acct_lines('cash') ~ '</div>',
+                    tone=('text-slate-900' if pos.cash >= 0 else 'text-rose-700'), compact=True) }}
                 {{ kpi('Cashless Balance', pos.cashless,
-                    '<p>Money received by bank transfer or e-wallet, minus claimed disbursements paid from those accounts. Excludes White Gift.</p><div class="pt-1.5 border-t border-white/15 text-slate-300">' ~ acct_lines('cashless') ~ '</div>',
-                    tone=('text-slate-900' if pos.cashless >= 0 else 'text-rose-700')) }}
-                {{ kpi('White Gift Remaining', pos.white_gift,
-                    '<p>What is left of the White Gift fund, counted across all years. It is set aside for its own purpose and is <b>not</b> part of Available Funds.</p><div class="pt-1.5 border-t border-white/15 text-slate-300"><span class="flex justify-between gap-3 num"><span>Received</span><span>' ~ peso(wg.collected) ~ '</span></span><span class="flex justify-between gap-3 num"><span>Spent (claimed)</span><span>− ' ~ peso(wg.disbursed) ~ '</span></span>'
-                    ~ ('<span class="flex justify-between gap-3 num text-amber-300"><span>Pending claims</span><span>− ' ~ peso(wg.unclaimed) ~ '</span></span>' if wg.unclaimed else '') ~ '</div>',
-                    tone=('text-sky-700' if pos.white_gift >= 0 else 'text-rose-700'), ring='border-sky-200', label_tone='text-sky-700') }}
+                    '<p>Money held by bank transfer or e-wallet — General, Mission and Benevolence together. Excludes White Gift.</p><div class="pt-1.5 border-t border-white/15 text-slate-300">' ~ acct_lines('cashless') ~ '</div>',
+                    tone=('text-slate-900' if pos.cashless >= 0 else 'text-rose-700'), compact=True) }}
+                {% set restricted_lines %}{% for f in sp.restricted %}{{ line(f.name ~ ' (set aside)', peso(f.available)) }}{% endfor %}{% endset %}
+                {{ kpi('Total Held', pos.available,
+                    '<p>Cash on Hand + Cashless. This includes money set aside for Mission and Benevolence, so it is <b>more than what can be spent</b> — see Usable Funds for that.</p><div class="pt-1.5 border-t border-white/15 text-slate-300">'
+                    ~ line('Usable (General)', peso(sp.usable))
+                    ~ restricted_lines
+                    ~ (line('Unassigned source', peso(pos.unassigned), 'text-amber-300') if pos.unassigned else '')
+                    ~ line('Total held', peso(pos.available), 'mt-1 pt-1 border-t border-white/15 font-semibold text-white') ~ '</div>',
+                    tone=('text-slate-900' if pos.available >= 0 else 'text-rose-700'), compact=True, tag='excl. White Gift') }}
             </div>
         </section>
+        {% endif %}
 
         <section aria-labelledby="flow-heading" class="mb-10">
             <h2 id="flow-heading" class="text-sm font-semibold text-slate-700 mb-3">{{ selected_year }} so far</h2>
@@ -143,15 +244,16 @@
                     ~ line('Total', peso(fs.total_disbursed), 'mt-1 pt-1 border-t border-white/15 font-semibold text-white') ~ '</div>',
                     tone='text-rose-600') }}
                 {{ kpi('Pending Claims', fs.total_unclaimed,
-                    '<p>Disbursements already scheduled (allowances, expenses, mission support) but <b>not yet claimed</b>. They have not been deducted from Available Funds yet.</p>',
+                    '<p>Disbursements already scheduled (allowances, expenses, mission support) but <b>not yet claimed</b>. They have not been deducted from Total Held yet.</p><p class="text-slate-300">Each fund pays its own: the General share is shown as Already Committed above.</p>',
                     tone='text-amber-600') }}
-                {{ kpi('Available After Pending Claims', pos.projected,
-                    '<p>What will be left of Available Funds once every scheduled disbursement is paid out. <b>White Gift is not included</b> — neither its balance nor its pending claims.</p><div class="pt-1.5 border-t border-white/15 text-slate-300">'
-                    ~ line('Available Funds (excl. White Gift)', peso(pos.available))
-                    ~ line('Pending claims (excl. White Gift)', '− ' ~ peso(pos.unclaimed_operating), 'text-amber-300')
-                    ~ line('Left after claims', peso(pos.projected), 'mt-1 pt-1 border-t border-white/15 font-semibold text-white') ~ '</div>'
-                    ~ ('<p class="text-slate-400">' ~ peso(wg.unclaimed) ~ ' of White Gift claims are pending; they come out of White Gift Remaining instead.</p>' if wg.unclaimed else ''),
-                    tone=('text-brand-700' if pos.projected >= 0 else 'text-rose-700'), ring='border-amber-200', label_tone='text-amber-600', tag='excl. White Gift') }}
+                {% if sp %}
+                {{ kpi('Monthly General Surplus' if sp.avg_gap >= 0 else 'Monthly General Deficit', sp.avg_gap,
+                    '<p>On average, how much more the General fund takes in each month than it commits to spending. A deficit means recurring spending is eating into Usable Funds.</p><div class="pt-1.5 border-t border-white/15 text-slate-300">'
+                    ~ line('Average General income', peso(sp.avg_in) ~ '/mo')
+                    ~ line('Average General commitments', '− ' ~ peso(sp.avg_out) ~ '/mo', 'text-amber-300')
+                    ~ line('Average per month', peso(sp.avg_gap), 'mt-1 pt-1 border-t border-white/15 font-semibold text-white') ~ '</div>',
+                    tone=('text-brand-700' if sp.avg_gap >= 0 else 'text-rose-700'), ring=('border-slate-200' if sp.avg_gap >= 0 else 'border-rose-200'), label_tone=('text-slate-500' if sp.avg_gap >= 0 else 'text-rose-700'), tag='per month') }}
+                {% endif %}
             </div>
         </section>
 
@@ -169,7 +271,7 @@
                     <div>
                         <h2 id="trend-heading" class="font-display text-lg sm:text-xl font-bold text-slate-900">Collections vs Disbursements Trend</h2>
                         <p class="text-xs text-slate-500 mt-0.5">
-                            Month by month for {{ selected_year }}, including unclaimed commitments — always the full year, regardless of the month filter.
+                            Month by month for {{ selected_year }}, including unclaimed commitments — always the full year.
                         </p>
                     </div>
                     <svg class="w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200" :class="trendOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
@@ -178,6 +280,18 @@
                 </button>
 
                 <div id="trend-panel" x-show="trendOpen" x-cloak class="border-t border-slate-100 p-4 sm:p-6">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                        <div role="tablist" aria-label="Trend view" class="inline-flex p-1 rounded-xl bg-slate-100 text-sm font-semibold">
+                            <button type="button" role="tab" :aria-selected="trendView === 'general'" @click="setTrendView('general')" class="px-3 py-1.5 rounded-lg cursor-pointer transition-colors" :class="trendView === 'general' ? 'bg-white text-brand-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'">Usable (General)</button>
+                            <button type="button" role="tab" :aria-selected="trendView === 'all'" @click="setTrendView('all')" class="px-3 py-1.5 rounded-lg cursor-pointer transition-colors" :class="trendView === 'all' ? 'bg-white text-brand-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'">All funds</button>
+                        </div>
+                        <p class="text-xs text-slate-500" x-show="trendView === 'general'">
+                            General fund only — the money we can spend. The solid line is the running <b class="text-slate-700">free-to-spend</b> balance after every commitment; the dashed line and pale bars are the <b class="text-slate-700">expected</b> rest of the year.
+                        </p>
+                        <p class="text-xs text-slate-500" x-show="trendView === 'all'" x-cloak>
+                            Every fund together, including Mission and Benevolence money that is set aside.
+                        </p>
+                    </div>
                     <div class="relative h-72 sm:h-80">
                         <canvas id="trend-chart" role="img" aria-label="Monthly collections compared with claimed and unclaimed disbursements for {{ selected_year }}. The same figures are available in the table below."></canvas>
                     </div>
@@ -189,7 +303,52 @@
                     <details class="mt-2">
                         <summary class="cursor-pointer text-xs font-medium text-slate-400 hover:text-slate-600">View as table</summary>
                         <div class="overflow-x-auto mt-2">
-                            <table class="min-w-full text-xs">
+                            <table x-show="trendView === 'general'" class="min-w-full text-xs">
+                                <thead>
+                                    <tr class="text-left text-slate-400 font-medium border-b border-slate-200">
+                                        <th scope="col" class="py-2 pr-4">Month</th>
+                                        <th scope="col" class="py-2 pr-4 text-right">General Income</th>
+                                        <th scope="col" class="py-2 pr-4 text-right">Claimed</th>
+                                        <th scope="col" class="py-2 pr-4 text-right">Unclaimed (Committed)</th>
+                                        <th scope="col" class="py-2 pr-4 text-right">Month Net</th>
+                                        <th scope="col" class="py-2 text-right">Free to Spend (running)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    {% for t in trend %}
+                                    {% set g_net = (t.g_collections or 0) - (t.g_claimed or 0) - (t.g_unclaimed or 0) %}
+                                    <tr class="text-slate-600">
+                                        <td class="py-2 pr-4 font-semibold text-slate-800">{{ t.month }}</td>
+                                        <td class="py-2 pr-4 text-right num">{{ peso(t.g_collections) }}</td>
+                                        <td class="py-2 pr-4 text-right num">{{ peso(t.g_claimed) }}</td>
+                                        <td class="py-2 pr-4 text-right num">{{ peso(t.g_unclaimed) }}</td>
+                                        <td class="py-2 pr-4 text-right num {{ 'text-rose-700' if g_net < 0 }}">{{ peso(g_net) }}</td>
+                                        <td class="py-2 text-right font-semibold num {{ 'text-rose-700' if t.g_free < 0 else 'text-slate-900' }}">{{ peso(t.g_free) }}</td>
+                                    </tr>
+                                    {% if t.g_expected_in is defined %}
+                                    <tr class="text-slate-400 italic">
+                                        <td class="py-2 pr-4">{{ t.month }} — rest of month (expected)</td>
+                                        <td class="py-2 pr-4 text-right num">≈ {{ peso(t.g_expected_in) }}</td>
+                                        <td class="py-2 pr-4 text-right">—</td>
+                                        <td class="py-2 pr-4 text-right">—</td>
+                                        <td class="py-2 pr-4 text-right">—</td>
+                                        <td class="py-2 text-right font-semibold num {{ 'text-rose-600' if t.g_forecast_free < 0 }}">≈ {{ peso(t.g_forecast_free) }}</td>
+                                    </tr>
+                                    {% endif %}
+                                    {% endfor %}
+                                    {% for f in (outlook.forecast if outlook else []) %}
+                                    <tr class="text-slate-400 italic">
+                                        <td class="py-2 pr-4">{{ f.month }} (expected)</td>
+                                        <td class="py-2 pr-4 text-right num">≈ {{ peso(f.g_expected_in) }}</td>
+                                        <td class="py-2 pr-4 text-right">—</td>
+                                        <td class="py-2 pr-4 text-right num">≈ {{ peso(f.g_expected_out) }}{% if f.estimated %} <span class="not-italic">(avg)</span>{% endif %}</td>
+                                        <td class="py-2 pr-4 text-right num">≈ {{ peso(f.g_expected_in - f.g_expected_out) }}</td>
+                                        <td class="py-2 text-right font-semibold num {{ 'text-rose-600' if f.g_forecast_free < 0 }}">≈ {{ peso(f.g_forecast_free) }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <table x-show="trendView === 'all'" x-cloak class="min-w-full text-xs">
                                 <thead>
                                     <tr class="text-left text-slate-400 font-medium border-b border-slate-200">
                                         <th scope="col" class="py-2 pr-4">Month</th>
@@ -266,7 +425,7 @@
                             Planning Insights
                         </h3>
                         <p class="text-xs text-slate-500 mt-0.5 mb-4">
-                            Generated from this year's figures on every load — pointers on which allotments to look at first.
+                            Recomputed on every load — today's fund position first, then which allotments to look at.
                         </p>
                         <ul class="space-y-2.5" role="list">
                             {% for tip in insights %}
@@ -320,114 +479,150 @@
             </form>
         </section>
 
-        <!-- Virtual Fund Summary -->
+
+        <!-- Funds: ledger-based, reconciles with "Where the money stands today" -->
         <section aria-labelledby="funds-heading" class="mb-12">
-            <h2 id="funds-heading" class="font-display text-xl sm:text-2xl font-bold text-slate-900">Virtual Fund Summary</h2>
-            <p class="mt-1 mb-6 text-sm text-slate-500 max-w-3xl">
-                Submitted collections minus claimed disbursements for {{ selected_year }}. Funds track money set aside for a purpose, independent of which physical account holds it. The White Gift fund is cumulative across years.
-                Unclaimed amounts are recorded commitments not yet paid out — the projected balance shows each fund once they are claimed.
-            </p>
+            <h2 id="funds-heading" class="font-display text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-1.5 mb-5">
+                Funds
+                {{ info('Funds',
+                    '<p>Each fund is money set aside for a purpose. The figures come from the cash and cashless account ledgers — the same numbers as <b>Where the money stands today</b>.</p><p>General + Mission + Benevolence = <b>Total Held</b>; only General is <b>Usable</b>. White Gift is separate and counted across all years.</p><p class="text-slate-300">Status: <b>Funded</b> covers its pending claims · <b>Short</b> has money now but not enough for pending claims · <b>Overdrawn</b> more was claimed than received.</p>') }}
+            </h2>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                {% if financial_summary and financial_summary['funds'] %}
-                    {% for fund_name, data in financial_summary['funds'].items() %}
-                    {% set balance = (data.collected or 0) - (data.disbursed or 0) %}
-                    {% set pct = ((data.disbursed or 0) / data.collected * 100) if data.collected else 0 %}
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow">
+                {% for f in fund_cards %}
+                {% set is_wg = f.name == 'White Gift' %}
+                {% set pct = (f.claimed / f.received * 100) if f.received else 0 %}
+                <div class="relative bg-white rounded-2xl shadow-sm border {{ 'border-sky-200' if is_wg else 'border-slate-200' }} hover:shadow-md transition-shadow">
                     <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center gap-2">
-                        <span class="font-bold text-slate-800">{{ fund_name }} Fund</span>
-                        {% if fund_name == 'White Gift' %}
-                        <span class="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">Cumulative</span>
-                        {% endif %}
-                        {% if balance > 0 %}
-                        <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500" aria-hidden="true"></span>Funded</span>
-                        {% elif balance == 0 %}
+                        <span class="font-bold text-slate-800 flex items-center gap-1">
+                            {{ f.name }} Fund
+                            {% set tip %}<p>{{ fund_info[f.name] }}</p><div class="pt-1.5 border-t border-white/15 text-slate-300">{% if is_wg %}{{ line('Received (all years)', peso(f.received)) }}{% else %}{{ line('From collections', peso(f.from_collections)) }}{% if f.other_postings|abs >= 0.01 %}{{ line('Other postings' ~ (' (donations)' if f.name == 'Mission' else ' — review'), peso(f.other_postings), 'text-amber-300' if f.name != 'Mission' else '') }}{% endif %}{% endif %}</div><div class="pt-1.5 border-t border-white/15 text-slate-300">{% for a in account_balances if a.fund == f.name %}{{ line(a.name, peso(a.effective_balance), 'text-rose-300' if a.effective_balance < 0 else '') }}{% endfor %}</div>{% endset %}
+                            {{ info(f.name ~ ' Fund', tip, pos='left-3 right-3 top-14', anchored=False) }}
+                        </span>
+                        {% if f.available < 0 %}
+                        <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-rose-700"><span class="w-1.5 h-1.5 rounded-full bg-rose-500" aria-hidden="true"></span>Overdrawn</span>
+                        {% elif f.projected < 0 %}
+                        <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-amber-700"><span class="w-1.5 h-1.5 rounded-full bg-amber-500" aria-hidden="true"></span>Short</span>
+                        {% elif f.available == 0 %}
                         <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-500"><span class="w-1.5 h-1.5 rounded-full bg-slate-400" aria-hidden="true"></span>Depleted</span>
                         {% else %}
-                        <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-rose-700"><span class="w-1.5 h-1.5 rounded-full bg-rose-500" aria-hidden="true"></span>Overdrawn</span>
+                        <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500" aria-hidden="true"></span>Funded</span>
                         {% endif %}
                     </div>
-                    {% set fund_unclaimed = data.unclaimed or 0 %}
-                    {% set projected_balance = balance - fund_unclaimed %}
                     <div class="p-5 flex flex-col gap-2.5">
-                        <div class="flex justify-between text-sm">
-                            <span class="text-slate-500">Collected</span>
-                            <span class="font-semibold text-emerald-700 num">{{ peso(data.collected) }}</span>
+                        <div>
+                            <p class="text-[11px] font-semibold uppercase tracking-wide {{ 'text-sky-700' if is_wg else 'text-brand-700' }}">{{ 'Remaining' if is_wg else 'Available' }}</p>
+                            <p class="text-2xl font-extrabold num {{ 'text-rose-700' if f.available < 0 else ('text-sky-700' if is_wg else 'text-brand-700') }}">{{ peso(f.available) }}</p>
+                            <p class="text-xs text-slate-400 num">Cash {{ peso(f.cash) }} &middot; Cashless {{ peso(f.cashless) }}</p>
                         </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-slate-500">Disbursed</span>
-                            <span class="font-semibold text-rose-600 num">− {{ peso(data.disbursed) }}</span>
-                        </div>
-                        <div class="flex justify-between text-sm" title="Recorded commitments not yet claimed or paid out">
-                            <span class="text-slate-500">Unclaimed</span>
-                            <span class="font-semibold text-amber-600 num">− {{ peso(fund_unclaimed) }}</span>
-                        </div>
-                        <div class="h-1.5 rounded-full bg-slate-100 overflow-hidden" role="img" aria-label="{{ '%.0f'|format(pct) }} percent of this fund disbursed">
+                        <div class="h-1.5 rounded-full bg-slate-100 overflow-hidden" role="img" aria-label="{{ '%.0f'|format(pct) }} percent of this fund already claimed">
                             <div class="h-full rounded-full {{ 'bg-rose-500' if pct > 100 else 'bg-brand-500' }}" style="width: {{ [pct, 100]|min }}%"></div>
                         </div>
-                        <div class="pt-3 border-t border-slate-100 flex justify-between items-end">
-                            <span class="text-xs font-medium text-slate-400 uppercase tracking-wide">Available</span>
-                            <span class="text-xl font-extrabold num {{ 'text-rose-700' if balance < 0 else 'text-brand-700' }}">{{ peso(balance) }}</span>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-500">Received</span>
+                            <span class="font-semibold text-emerald-700 num">{{ peso(f.received) }}</span>
                         </div>
-                        <div class="flex justify-between items-end" title="Available balance once every unclaimed commitment is claimed">
-                            <span class="text-xs font-medium text-amber-600 uppercase tracking-wide">Projected</span>
-                            <span class="text-sm font-bold num {{ 'text-rose-700' if projected_balance < 0 else 'text-slate-700' }}">{{ peso(projected_balance) }}</span>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-500">Claimed</span>
+                            <span class="font-semibold text-rose-600 num">− {{ peso(f.claimed) }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-500">Pending claims</span>
+                            <span class="font-semibold text-amber-600 num">− {{ peso(f.pending) }}</span>
+                        </div>
+                        <div class="pt-2.5 border-t border-slate-100 flex justify-between items-end">
+                            <span class="text-xs font-medium text-amber-600 uppercase tracking-wide">After pending claims</span>
+                            <span class="text-base font-bold num {{ 'text-rose-700' if f.projected < 0 else 'text-slate-800' }}">{{ peso(f.projected) }}</span>
                         </div>
                     </div>
                 </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="col-span-full p-6 bg-white border border-slate-200 rounded-2xl text-sm text-slate-500 text-center">
-                        No fund summary data available.
-                    </div>
-                {% endif %}
+                {% endfor %}
             </div>
+
+            <!-- Reconciliation with the "today" cards -->
+            {% set op_funds = fund_cards|rejectattr('name', 'equalto', 'White Gift')|list %}
+            {% if op_funds %}
+            <div class="mt-4 rounded-xl bg-white border border-slate-200 px-4 py-3 text-sm text-slate-600 flex flex-wrap items-center gap-x-2 gap-y-1 num">
+                {% for f in op_funds %}
+                <span>{{ f.name }} <b class="text-slate-800">{{ peso(f.available) }}</b></span>{% if not loop.last %}<span class="text-slate-400">+</span>{% endif %}
+                {% endfor %}
+                {% if position.unassigned %}<span class="text-slate-400">+</span><span class="text-amber-700">Unassigned <b>{{ peso(position.unassigned) }}</b></span>{% endif %}
+                <span class="text-slate-400">=</span>
+                <span class="font-semibold text-slate-800">Total Held {{ peso(position.available) }}</span>
+                <span class="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-100">excl. White Gift</span>
+            </div>
+            {% endif %}
         </section>
 
-        <!-- Effective Account Balances -->
+        <!-- Account balances -->
         <section aria-labelledby="accounts-heading" class="mb-12">
-            <h2 id="accounts-heading" class="font-display text-xl sm:text-2xl font-bold text-slate-900">Effective Account Balances</h2>
-            <p class="mt-1 mb-6 text-sm text-slate-500 max-w-3xl">
-                Ledger balance per cash and bank account, minus claimed disbursements not yet reconciled as bank transactions.
-            </p>
+            <h2 id="accounts-heading" class="font-display text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-1.5 mb-5">
+                Account Balances
+                {{ info('Account Balances',
+                    '<p>Where the money physically sits — each cash box and cashless (bank / e-wallet) account.</p><div class="pt-1.5 border-t border-white/15 text-slate-300 space-y-1"><p><b class="text-white">Received</b> — everything posted to the account ledger (' ~ selected_year ~ '; White Gift all years).</p><p><b class="text-white">Claimed</b> — disbursements already paid out from it.</p><p><b class="text-white">Available</b> — Received minus Claimed: what should be there now.</p><p><b class="text-white">Pending</b> — scheduled disbursements not yet claimed.</p><p><b class="text-white">After pending</b> — what is left once those are paid.</p></div><p class="text-slate-300">Click General Cash or General Cashless to see what it is made of.</p>') }}
+            </h2>
             <div class="overflow-x-auto bg-white rounded-2xl shadow-sm border border-slate-200">
                 <table class="min-w-full divide-y divide-slate-200">
                     <thead class="bg-slate-50">
-                        <tr>
-                            <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Account</th>
-                            <th scope="col" class="px-6 py-3.5 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Ledger Balance</th>
-                            <th scope="col" class="px-6 py-3.5 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Claimed Disbursements</th>
-                            <th scope="col" class="px-6 py-3.5 text-right text-xs font-semibold text-brand-700 uppercase tracking-wider">Available</th>
+                        <tr class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                            <th scope="col" class="px-5 py-3.5 text-left">Account</th>
+                            <th scope="col" class="px-5 py-3.5 text-right">Received</th>
+                            <th scope="col" class="px-5 py-3.5 text-right">Claimed</th>
+                            <th scope="col" class="px-5 py-3.5 text-right text-brand-700">Available</th>
+                            <th scope="col" class="px-5 py-3.5 text-right text-amber-600">Pending</th>
+                            <th scope="col" class="px-5 py-3.5 text-right">After pending</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         {% for acc in account_balances %}
-                        <tr class="{{ 'bg-amber-50/60' if acc.is_unassigned else 'hover:bg-slate-50/70' }} transition-colors">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="text-sm font-semibold text-slate-800">{{ acc.name }}</span>
-                                {% if acc.is_unassigned %}
-                                <span class="block text-xs text-amber-700 mt-0.5">Claimed items missing a source account — needs review</span>
+                        {% set acc_id = 'acct_' ~ acc.name|replace(' ', '_') %}
+                        {% set after = (acc.effective_balance or 0) - (acc.pending or 0) %}
+                        <tr class="{{ 'bg-amber-50/60' if acc.is_unassigned else ('bg-sky-50/40' if acc.kind == 'white_gift' else 'hover:bg-slate-50/70') }} transition-colors">
+                            <td class="px-5 py-3.5 whitespace-nowrap">
+                                {% if acc.parts %}
+                                <button type="button" @click="toggleGroup('{{ acc_id }}')" :aria-expanded="isGroupOpen('{{ acc_id }}')" class="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-800 hover:text-brand-700 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded">
+                                    <svg class="w-4 h-4 text-slate-400 transition-transform duration-200" :class="isGroupOpen('{{ acc_id }}') ? 'rotate-90' : ''" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                                    {{ acc.name }}
+                                </button>
+                                {% else %}
+                                <span class="text-sm font-semibold text-slate-800 {{ 'pl-5' if not acc.is_unassigned }}">{{ acc.name }}</span>
                                 {% endif %}
+                                {% if acc.kind == 'white_gift' %}<span class="ml-1.5 text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-sky-100 text-sky-700">All years</span>{% endif %}
+                                {% if acc.is_unassigned %}<span class="block text-xs text-amber-700 mt-0.5">Items missing a source account — needs review</span>{% endif %}
                             </td>
-                            <td class="px-6 py-4 text-right whitespace-nowrap text-sm text-slate-600 num">{{ peso(acc.ledger_balance) }}</td>
-                            <td class="px-6 py-4 text-right whitespace-nowrap text-sm text-rose-600 num">− {{ peso(acc.pending_deductions) }}</td>
-                            <td class="px-6 py-4 text-right whitespace-nowrap">
-                                <span class="text-base font-extrabold num {{ 'text-rose-700' if (acc.effective_balance or 0) < 0 else 'text-brand-700' }}">{{ peso(acc.effective_balance) }}</span>
+                            <td class="px-5 py-3.5 text-right whitespace-nowrap text-sm text-slate-600 num">{{ peso(acc.ledger_balance) }}</td>
+                            <td class="px-5 py-3.5 text-right whitespace-nowrap text-sm text-rose-600 num">− {{ peso(acc.pending_deductions) }}</td>
+                            <td class="px-5 py-3.5 text-right whitespace-nowrap">
+                                <span class="text-base font-extrabold num {{ 'text-rose-700' if (acc.effective_balance or 0) < 0 else ('text-sky-700' if acc.kind == 'white_gift' else 'text-brand-700') }}">{{ peso(acc.effective_balance) }}</span>
                             </td>
+                            <td class="px-5 py-3.5 text-right whitespace-nowrap text-sm text-amber-600 num">{{ ('− ' ~ peso(acc.pending)) if acc.pending else '—' }}</td>
+                            <td class="px-5 py-3.5 text-right whitespace-nowrap text-sm font-semibold num {{ 'text-rose-700' if after < 0 else 'text-slate-700' }}">{{ peso(after) }}</td>
                         </tr>
+                        {% for part in acc.parts if part.balance %}
+                        <tr x-show="isGroupOpen('{{ acc_id }}')" x-cloak class="bg-slate-50/70 text-xs text-slate-500">
+                            <td class="pl-12 pr-5 py-2 whitespace-nowrap">{{ part.name }}</td>
+                            <td class="px-5 py-2 text-right whitespace-nowrap num">{{ peso(part.balance) }}</td>
+                            <td colspan="4" class="px-5 py-2 text-slate-400">{% if loop.first %}Claims are taken from {{ acc.name }} as a whole{% endif %}</td>
+                        </tr>
+                        {% endfor %}
                         {% endfor %}
                     </tbody>
                     {% if account_balances %}
-                    <tfoot class="bg-slate-50 border-t border-slate-200">
-                        {% set t_ledger = account_balances|sum(attribute='ledger_balance') %}
-                        {% set t_ded = account_balances|sum(attribute='pending_deductions') %}
-                        {% set t_eff = account_balances|sum(attribute='effective_balance') %}
-                        <tr>
-                            <td class="px-6 py-3.5 text-sm font-bold text-slate-700">Total</td>
-                            <td class="px-6 py-3.5 text-right text-sm font-bold text-slate-700 num">{{ peso(t_ledger) }}</td>
-                            <td class="px-6 py-3.5 text-right text-sm font-bold text-rose-600 num">− {{ peso(t_ded) }}</td>
-                            <td class="px-6 py-3.5 text-right text-base font-extrabold num {{ 'text-rose-700' if t_eff < 0 else 'text-brand-700' }}">{{ peso(t_eff) }}</td>
+                    {% set op = account_balances|rejectattr('kind', 'equalto', 'white_gift')|list %}
+                    {% set wgr = account_balances|selectattr('kind', 'equalto', 'white_gift')|list %}
+                    <tfoot class="border-t border-slate-200 text-sm">
+                        {% for label, rows, tone in [('Total Held (excl. White Gift)', op, 'text-brand-700'), ('White Gift', wgr, 'text-sky-700'), ('All accounts', account_balances, 'text-slate-900')] if rows %}
+                        {% set r_eff = rows|sum(attribute='effective_balance') %}
+                        {% set r_pend = rows|sum(attribute='pending') %}
+                        <tr class="{{ 'bg-brand-50/50' if loop.first else 'bg-slate-50' }}">
+                            <td class="px-5 py-3 font-bold text-slate-700 whitespace-nowrap">{{ label }}</td>
+                            <td class="px-5 py-3 text-right font-semibold text-slate-700 num whitespace-nowrap">{{ peso(rows|sum(attribute='ledger_balance')) }}</td>
+                            <td class="px-5 py-3 text-right font-semibold text-rose-600 num whitespace-nowrap">− {{ peso(rows|sum(attribute='pending_deductions')) }}</td>
+                            <td class="px-5 py-3 text-right text-base font-extrabold num whitespace-nowrap {{ 'text-rose-700' if r_eff < 0 else tone }}">{{ peso(r_eff) }}</td>
+                            <td class="px-5 py-3 text-right font-semibold text-amber-600 num whitespace-nowrap">{{ ('− ' ~ peso(r_pend)) if r_pend else '—' }}</td>
+                            <td class="px-5 py-3 text-right font-bold num whitespace-nowrap {{ 'text-rose-700' if (r_eff - r_pend) < 0 else 'text-slate-800' }}">{{ peso(r_eff - r_pend) }}</td>
                         </tr>
+                        {% endfor %}
                     </tfoot>
                     {% endif %}
                 </table>
@@ -553,6 +748,8 @@
             openGroups: [],
             trendOpen: (() => { try { return JSON.parse(localStorage.getItem('fs_trend_open') ?? 'true'); } catch { return true; } })(),
             trendChart: null,
+            trendView: (() => { try { return localStorage.getItem('fs_trend_view') || 'general'; } catch { return 'general'; } })(),
+            trendRows: [],
             purposeChart: null,
             chartTries: 0,
             init() {
@@ -578,7 +775,7 @@
                     return;
                 }
 
-                const rows = JSON.parse(document.getElementById('trend-data').textContent);
+                const rows = this.trendRows = JSON.parse(document.getElementById('trend-data').textContent);
                 const peso = v => new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(v || 0);
                 const compact = v => Math.abs(v) >= 1e6 ? `₱${(v / 1e6).toFixed(1)}M`
                     : Math.abs(v) >= 1e3 ? `₱${Math.round(v / 1e3)}k` : `₱${v}`;
@@ -588,37 +785,8 @@
                 this.trendChart = new Chart(canvas, {
                     type: 'bar',
                     data: {
-                        labels: rows.map(r => r.month.slice(0, 3)),
-                        datasets: [
-                            {
-                                label: 'Collections',
-                                data: rows.map(r => r.collections),
-                                backgroundColor: '#059669',
-                                stack: 'in',
-                                maxBarThickness: 24,
-                                borderRadius: 4
-                            },
-                            {
-                                label: 'Claimed Disbursements',
-                                data: rows.map(r => r.claimed),
-                                backgroundColor: '#be123c',
-                                stack: 'out',
-                                maxBarThickness: 24,
-                                borderRadius: 0
-                            },
-                            {
-                                label: 'Unclaimed (Committed)',
-                                data: rows.map(r => r.unclaimed),
-                                backgroundColor: '#d97706',
-                                stack: 'out',
-                                maxBarThickness: 24,
-                                borderRadius: 4,
-                                // 2px surface gap between the stacked segments
-                                borderColor: '#ffffff',
-                                borderWidth: { bottom: 2 },
-                                borderSkipped: false
-                            }
-                        ]
+                        labels: this.trendLabels(rows),
+                        datasets: this.trendDatasets(rows)
                     },
                     options: {
                         responsive: true,
@@ -645,10 +813,25 @@
                                 labels: { color: '#475569', boxWidth: 12, boxHeight: 12 }
                             },
                             tooltip: {
+                                filter: item => item.raw != null,
                                 callbacks: {
                                     label: ctx => ` ${peso(ctx.parsed.y)}   ${ctx.dataset.label}`,
                                     footer: items => {
-                                        const r = rows[items[0].dataIndex];
+                                        const r = this.trendVisible(rows)[items[0].dataIndex];
+                                        if (r.forecast) {
+                                            return [`Expected, not actual${r.estimated ? ' — commitments at the monthly average' : ''}`,
+                                                    `Expected free to spend after ${r.month}: ${peso(r.g_forecast_free)}`];
+                                        }
+                                        if (this.trendView === 'general') {
+                                            if (r.g_forecast_free != null) {
+                                                return [`If all paid today: ${peso(r.g_free)}`,
+                                                        `Expected by end of ${r.month}: ${peso(r.g_forecast_free)}`];
+                                            }
+                                            return [
+                                                `Month net: ${peso((r.g_collections || 0) - (r.g_claimed || 0) - (r.g_unclaimed || 0))}`,
+                                                `Free to spend after ${r.month}: ${peso(r.g_free)}`
+                                            ];
+                                        }
                                         return `Net: ${peso((r.collections || 0) - (r.claimed || 0) - (r.unclaimed || 0))}`;
                                     }
                                 }
@@ -656,6 +839,53 @@
                         }
                     }
                 });
+            },
+            trendVisible(rows) {
+                // Forecast months only make sense for the General (usable) view
+                return this.trendView === 'general' ? rows : rows.filter(r => !r.forecast);
+            },
+            trendLabels(rows) {
+                return this.trendVisible(rows).map(r => r.month.slice(0, 3) + (r.forecast ? ' (est.)' : ''));
+            },
+            trendDatasets(allRows) {
+                const g = this.trendView === 'general';
+                const rows = this.trendVisible(allRows);
+                const val = (r, k) => r[k] ?? null;
+                const bar = { maxBarThickness: 24, order: 2 };
+                const sets = [
+                    { ...bar, label: g ? 'General Income' : 'Collections', data: rows.map(r => r.forecast ? null : (g ? r.g_collections : r.collections)), backgroundColor: '#059669', stack: 'in', borderRadius: 4 },
+                    { ...bar, label: 'Claimed Disbursements', data: rows.map(r => r.forecast ? null : (g ? r.g_claimed : r.claimed)), backgroundColor: '#be123c', stack: 'out', borderRadius: 0 },
+                    {
+                        ...bar, label: 'Unclaimed (Committed)', data: rows.map(r => r.forecast ? null : (g ? r.g_unclaimed : r.unclaimed)), backgroundColor: '#d97706', stack: 'out', borderRadius: 4,
+                        // 2px surface gap between the stacked segments
+                        borderColor: '#ffffff', borderWidth: { bottom: 2 }, borderSkipped: false
+                    }
+                ];
+                if (g) {
+                    sets.push(
+                        { ...bar, label: 'Expected Income', data: rows.map(r => val(r, 'g_expected_in')), backgroundColor: 'rgba(5,150,105,0.25)', borderColor: '#059669', borderWidth: 1, borderDash: [4, 3], stack: 'in', borderRadius: 4 },
+                        { ...bar, label: 'Expected Commitments', data: rows.map(r => val(r, 'g_expected_out')), backgroundColor: 'rgba(217,119,6,0.25)', borderColor: '#d97706', borderWidth: 1, stack: 'out', borderRadius: 4 },
+                        {
+                            type: 'line', label: 'Free to Spend (running)', data: rows.map(r => r.forecast ? null : r.g_free), stack: 'free', order: 1,
+                            borderColor: '#0f172a', backgroundColor: '#0f172a', borderWidth: 2, tension: 0.25,
+                            pointRadius: 3, pointBackgroundColor: rows.map(r => (r.g_free ?? 0) < 0 ? '#be123c' : '#0f172a')
+                        },
+                        {
+                            type: 'line', label: 'Expected Free to Spend', data: rows.map(r => val(r, 'g_forecast_free')), stack: 'forecast', order: 1,
+                            borderColor: '#475569', backgroundColor: '#ffffff', borderWidth: 2, borderDash: [6, 4], tension: 0.25,
+                            pointRadius: 4, pointBorderWidth: 2, pointStyle: 'circle', spanGaps: true
+                        }
+                    );
+                }
+                return sets;
+            },
+            setTrendView(view) {
+                this.trendView = view;
+                try { localStorage.setItem('fs_trend_view', view); } catch {}
+                if (!this.trendChart) return;
+                this.trendChart.data.labels = this.trendLabels(this.trendRows);
+                this.trendChart.data.datasets = this.trendDatasets(this.trendRows);
+                this.trendChart.update();
             },
             initPurposeChart(peso, compact) {
                 if (this.purposeChart) return;
