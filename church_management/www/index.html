@@ -6,6 +6,38 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Jezreel Baptist Church, Inc. — an independent Baptist church in NAPICO, Manggahan, Pasig City, Philippines. Join us for worship, discipleship, fellowship and evangelism — all for the glory of God.">
+<meta name="theme-color" content="#022c22">
+<link rel="canonical" href="https://jbc-pasig.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Jezreel Baptist Church Pasig">
+<meta property="og:url" content="https://jbc-pasig.com/">
+<meta property="og:title" content="Jezreel Baptist Church Pasig — All to the Glory of God">
+<meta property="og:description" content="An independent Baptist church in NAPICO, Manggahan, Pasig City. Sundays 9:00 AM &amp; 6:00 PM · Wednesday Prayer Meeting 6:30 PM.">
+<meta property="og:image" content="https://jbc-pasig.com/assets/church_management/images/jbc-community.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Church",
+  "name": "Jezreel Baptist Church, Inc.",
+  "alternateName": "JBC Pasig",
+  "url": "https://jbc-pasig.com/",
+  "logo": "https://jbc-pasig.com/assets/church_management/images/jbc-logo-512.png",
+  "image": "https://jbc-pasig.com/assets/church_management/images/jbc-community.jpg",
+  "foundingDate": "2000",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Bayabas Extension, NAPICO, Manggahan",
+    "addressLocality": "Pasig City",
+    "postalCode": "1611",
+    "addressCountry": "PH"
+  },
+  "sameAs": [
+    "https://www.facebook.com/p/Jezreel-Baptist-Church-Pasig-61552397885095/",
+    "https://www.instagram.com/jezreelbaptistchurch"
+  ]
+}
+</script>
 {% endblock %}
 
 {% block favicon %}
@@ -14,7 +46,7 @@
 
 {% block head_include %}
 <script src="https://cdn.tailwindcss.com"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -26,6 +58,8 @@
     @keyframes fade-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
     .fade-up { animation: fade-up 0.7s ease-out both; }
     .fade-up-delay { animation: fade-up 0.7s ease-out 0.15s both; }
+    /* Nav link of the section currently on screen */
+    header nav a[aria-current="true"] { color: #065f46; font-weight: 600; }
     @media (prefers-reduced-motion: reduce) {
         html { scroll-behavior: auto; }
         *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -57,7 +91,7 @@
 {% block footer %}{% endblock %}
 
 {% block content %}
-<div x-data="{ mobileOpen: false }" class="bg-white text-slate-700 antialiased">
+<div x-data="{ mobileOpen: false, scrolled: false }" @scroll.window.passive="scrolled = window.scrollY > 700" @keydown.escape.window="mobileOpen = false" class="bg-white text-slate-700 antialiased">
     <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:bg-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:text-pine-800 font-semibold">Skip to main content</a>
 
     <!-- ============ NAV ============ -->
@@ -101,7 +135,7 @@
         <!-- ============ HERO ============ -->
         <section class="relative overflow-hidden bg-pine-950 text-white" aria-label="Welcome">
             <!-- Community photo, blended into the pine background as a green duotone -->
-            <img src="/assets/church_management/images/jbc-community.jpg" alt="" aria-hidden="true"
+            <img src="/assets/church_management/images/jbc-community.jpg" alt="" aria-hidden="true" fetchpriority="high"
                  class="absolute inset-0 w-full h-full object-cover object-top grayscale mix-blend-luminosity opacity-100">
             <div class="absolute inset-0 bg-gradient-to-r from-pine-950/95 via-pine-950/80 to-pine-900/40" aria-hidden="true"></div>
             <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-pine-950/90 to-transparent" aria-hidden="true"></div>
@@ -117,7 +151,12 @@
                     <p class="mt-4 text-slate-300 leading-relaxed">
                         We are to be mature Christians committed to Discipleship, Worship, Intercession, Fellowship and Evangelism — all for the glory of God.
                     </p>
-                    <p class="mt-5 inline-flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium text-slate-200">
+                    <!-- Next service, worked out in Manila time; hidden without JavaScript (the times below still show) -->
+                    <p x-data="nextService()" x-show="label" x-cloak class="mt-5 inline-flex items-center gap-2.5 rounded-full bg-white/10 border border-white/15 pl-3 pr-4 py-1.5 text-sm text-white">
+                        <span class="w-2 h-2 rounded-full bg-gold-400" aria-hidden="true"></span>
+                        <span><span class="text-slate-300">Next service:</span> <b class="font-semibold" x-text="label"></b></span>
+                    </p>
+                    <p class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium text-slate-200">
                         <span class="inline-flex items-center gap-2"><svg class="w-4 h-4 text-gold-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Sundays 9:00 AM &amp; 6:00 PM</span>
                         <span class="inline-flex items-center gap-2"><svg class="w-4 h-4 text-gold-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Wednesday Prayer Meeting 6:30 PM</span>
                     </p>
@@ -132,7 +171,7 @@
                     </div>
                 </div>
                 <div class="fade-up-delay hidden lg:block">
-                    <img src="/assets/church_management/images/jbc-logo-512.png" alt="" width="320" height="320" class="w-80 h-80 rounded-full shadow-2xl ring-8 ring-white/10">
+                    <img src="/assets/church_management/images/jbc-logo-512.png" alt="" width="320" height="320" decoding="async" class="w-80 h-80 rounded-full shadow-2xl ring-8 ring-white/10">
                 </div>
             </div>
         </section>
@@ -363,6 +402,12 @@
                         </div>
                     </div>
                 </div>
+                <div class="lg:col-span-2 rounded-2xl overflow-hidden border border-white/10 bg-white/5">
+                    <iframe title="Map showing Jezreel Baptist Church, Bayabas Extension, NAPICO, Manggahan, Pasig City"
+                            src="https://www.google.com/maps?q=Jezreel+Baptist+Church,+Bayabas+Extension,+NAPICO,+Manggahan,+Pasig&amp;output=embed"
+                            loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen
+                            class="block w-full h-72 sm:h-80 border-0"></iframe>
+                </div>
             </div>
         </section>
     </main>
@@ -372,7 +417,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
             <div class="sm:col-span-2">
                 <div class="flex items-center gap-3">
-                    <img src="/assets/church_management/images/jbc-logo-192.png" alt="" width="44" height="44" class="w-11 h-11 rounded-full">
+                    <img src="/assets/church_management/images/jbc-logo-192.png" alt="" width="44" height="44" loading="lazy" class="w-11 h-11 rounded-full">
                     <div>
                         <p class="font-display font-bold text-white">Jezreel Baptist Church, Inc.</p>
                         <p class="text-xs">Pasig · Cainta · Hinigaran, Negros Occidental</p>
@@ -410,5 +455,52 @@
             <p class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 text-xs text-slate-500 text-center">&copy; {{ frappe.utils.nowdate()[:4] }} Jezreel Baptist Church, Inc. · Pasig City, Philippines · All to the glory of God</p>
         </div>
     </footer>
+
+    <a href="#main" x-show="scrolled" x-cloak x-transition.opacity aria-label="Back to top"
+       class="fixed bottom-5 right-5 z-40 w-11 h-11 rounded-full bg-pine-800 text-white shadow-lg flex items-center justify-center hover:bg-pine-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pine-600 transition-colors cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
+    </a>
 </div>
+
+<script>
+    // Next service, in Manila time (UTC+8, no daylight saving) whatever the visitor's own timezone.
+    function nextService() {
+        const services = [
+            { day: 0, h: 9, m: 0, name: 'Morning Worship' },
+            { day: 0, h: 18, m: 0, name: 'Evening Worship' },
+            { day: 3, h: 18, m: 30, name: 'Prayer Meeting' },
+        ];
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        return {
+            label: '',
+            init() {
+                const manila = new Date(Date.now() + 8 * 3600 * 1000);
+                const nowMin = manila.getUTCDay() * 1440 + manila.getUTCHours() * 60 + manila.getUTCMinutes();
+                let best = null;
+                for (const s of services) {
+                    const wait = (s.day * 1440 + s.h * 60 + s.m - nowMin + 10080) % 10080;
+                    if (!best || wait < best.wait) best = { ...s, wait };
+                }
+                const ahead = Math.floor((manila.getUTCHours() * 60 + manila.getUTCMinutes() + best.wait) / 1440);
+                const when = ahead === 0 ? 'today' : ahead === 1 ? 'tomorrow' : days[best.day];
+                const time = `${best.h % 12 || 12}:${String(best.m).padStart(2, '0')} ${best.h < 12 ? 'AM' : 'PM'}`;
+                this.label = `${best.name} · ${when}, ${time}`;
+            }
+        };
+    }
+
+    // Highlight the nav link of the section on screen.
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!('IntersectionObserver' in window)) return;
+        const links = [...document.querySelectorAll('header nav a[href^="#"]')];
+        const sections = [...new Set(links.map(a => a.getAttribute('href').slice(1)))]
+            .map(id => document.getElementById(id)).filter(Boolean);
+        const mark = id => links.forEach(a => a.getAttribute('href') === '#' + id
+            ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current'));
+        const io = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) mark(e.target.id); });
+        }, { rootMargin: '-45% 0px -50% 0px' });
+        sections.forEach(s => io.observe(s));
+    });
+</script>
 {% endblock %}
