@@ -57,5 +57,6 @@ def run(year=None):
             m: dict(p) for m, p in by_month_purpose.items()
         },
         "account_balances": ctx["account_balances"],
+        "planning_guide": ctx["plan"],
         "rule_based_insights": ctx["insights"],
     }, indent=1, default=str))

@@ -1,6 +1,7 @@
 import calendar
 import json
 from datetime import date, timedelta
+from statistics import mean, median, pstdev
 
 import frappe
 from frappe.utils import getdate, nowdate
@@ -24,6 +25,150 @@ def _due_date(year, month_idx, field):
         if w <= len(suns):
             return suns[w - 1]
     return date(year, month_idx, calendar.monthrange(year, month_idx)[1])
+
+
+# Allotments that are people's livelihoods — never suggest a blunt cut.
+SENSITIVE_PURPOSES = {'Allowance'}
+LEVEL_ORDER = {'action': 0, 'watch': 1, 'good': 2, 'info': 3}
+
+
+def _tip(level, title, text):
+    """One planning insight. level: action | watch | good | info."""
+    return {'level': level, 'title': title, 'text': text}
+
+
+def _build_plan(months, income_by_month, purpose_by_month, overdue_by_purpose, next_year):
+    """Per-allotment budget guide for the General (usable) fund.
+
+    Looks only at completed months so a half-collected current month does not
+    skew the averages. For each allotment it works out the usual monthly
+    level, whether that level has moved in the last three months, which months
+    were unusually big, and from that a suggested monthly budget for next year
+    plus a plain-language suggestion.
+    """
+    n = len(months)
+    if not n:
+        return None
+    incomes = [income_by_month.get(m, 0.0) for m in months]
+    avg_in, typical_in = mean(incomes), median(incomes)
+    # An unusually big month: more than double the usual level and at least 1% of income
+    material = avg_in * 0.01
+    recent_n = 3 if n >= 6 else 0
+
+    rows = []
+    for purpose, by_month in purpose_by_month.items():
+        series = [by_month.get(m, 0.0) for m in months]
+        total = sum(series)
+        if total <= 0:
+            continue
+        avg = total / n
+        active = [v for v in series if v > 0]
+        usual = median(active)
+        spikes = [
+            {'month': m, 'amount': v, 'extra': v - usual}
+            for m, v in zip(months, series)
+            if v > usual * 2 and v - usual >= material
+        ]
+        spike_months = {s['month'] for s in spikes}
+        normal = [v for m, v in zip(months, series) if v > 0 and m not in spike_months]
+        regular = len(active) / n >= 0.8
+        spread = (max(normal) - min(normal)) / usual if normal and usual else 0.0
+        variation = pstdev(normal) / mean(normal) if len(normal) > 1 and mean(normal) else 0.0
+        extras = sum(s['extra'] for s in spikes) / n
+
+        before = now = change = None
+        if regular and recent_n:
+            # Medians, so one big month does not read as a trend
+            before, now = median(series[:-recent_n]), median(series[-recent_n:])
+            if before:
+                change = (now - before) / before * 100
+        moved = change is not None and abs(change) >= 15 and abs(now - before) >= material / 2
+
+        share = avg / avg_in * 100 if avg_in else 0.0
+        spike_txt = ", ".join(f"{s['month'][:3]} ₱{s['amount']:,.0f}" for s in spikes)
+        if regular and spread <= 0.10 and not spikes:
+            kind, action, label = 'Fixed', 'hold', 'Hold'
+            suggested = active[-1]
+            reason = f"Same amount every month (₱{suggested:,.0f}). Budget it as is — it only changes if the arrangement itself is renegotiated."
+        elif not regular or variation > 0.5:
+            kind, suggested = 'Irregular', avg
+            if len(active) == 1:
+                pattern = f"Only once so far (₱{active[0]:,.0f})"
+            elif regular:
+                pattern = f"Paid most months, but the amount swings from ₱{min(active):,.0f} to ₱{max(active):,.0f}"
+            else:
+                pattern = f"Comes and goes: {len(active)} of {n} months, from ₱{min(active):,.0f} to ₱{max(active):,.0f}"
+            if avg < material:
+                action, label = 'minor', 'Keep as is'
+                reason = f"{pattern}. Small — setting aside ₱{avg:,.0f} a month covers it; no decision needed."
+            else:
+                action, label = 'envelope', 'Set a yearly budget'
+                reason = (
+                    f"{pattern}. Give it one yearly budget of about ₱{avg * 12:,.0f} (₱{avg:,.0f} set aside each month) "
+                    f"and approve requests against that, so big months stop being a surprise."
+                )
+        else:
+            kind = 'Recurring'
+            base = now if moved else (mean(normal) if normal else avg)
+            suggested = base + extras
+            if moved and change > 0:
+                action, label = 'review', 'Review — rising'
+                reason = (
+                    f"The usual month went from ₱{before:,.0f} to ₱{now:,.0f} in the last {recent_n} months ({change:+.0f}%). "
+                    f"Confirm what changed before it is carried into {next_year} — at the new level it costs ₱{(now - before) * 12:,.0f} more a year."
+                )
+            elif moved:
+                action, label = 'lower', 'Budget lower'
+                reason = (
+                    f"The usual month dropped from ₱{before:,.0f} to ₱{now:,.0f} in the last {recent_n} months ({change:+.0f}%). "
+                    f"Budget {next_year} at the new level — that frees about ₱{(avg - suggested) * 12:,.0f} a year against this year's average."
+                )
+            elif purpose in SENSITIVE_PURPOSES:
+                action, label = 'care', 'Hold — handle with care'
+                reason = (
+                    f"Takes {share:.0f}% of General income and has stayed level. Each 1% change is ₱{avg * 0.01:,.0f} a month, "
+                    f"but this is people's support — phase any change and discuss it first. Add new recipients only within the monthly headroom."
+                )
+            else:
+                action, label = 'hold', 'Hold'
+                reason = f"Steady at about ₱{suggested:,.0f} a month. No change needed."
+            if spikes:
+                if action == 'hold':
+                    action, label = 'spikes', 'Plan for the big months'
+                    reason = f"Usually ₱{usual:,.0f} a month."
+                reason += (
+                    f" Bigger months: {spike_txt} — ₱{sum(s['extra'] for s in spikes):,.0f} extra over the year. "
+                    f"The suggested budget sets aside ₱{extras:,.0f} a month for them."
+                )
+        suggested = round(suggested, -1)
+        rows.append({
+            'purpose': purpose, 'kind': kind, 'action': action, 'label': label, 'reason': reason,
+            'avg': avg, 'total': total, 'share': share, 'months_active': len(active),
+            'before': before, 'now': now, 'change': change if moved else None,
+            'suggested': suggested, 'delta': suggested - avg,
+            'overdue': overdue_by_purpose.get(purpose, 0.0),
+            'sensitive': purpose in SENSITIVE_PURPOSES,
+        })
+    rows.sort(key=lambda r: -r['avg'])
+
+    avg_out = sum(r['avg'] for r in rows)
+    headroom = avg_in - avg_out
+    headroom_pct = headroom / avg_in * 100 if avg_in else 0.0
+    status = 'deficit' if headroom < 0 else ('tight' if headroom_pct < 5 else 'healthy')
+    suggested_total = sum(r['suggested'] for r in rows)
+    return {
+        'months': n,
+        'period': months[0] if n == 1 else f"{months[0]}–{months[-1]}",
+        'next_year': next_year,
+        'avg_in': avg_in, 'typical_in': typical_in, 'avg_out': avg_out,
+        'headroom': headroom, 'headroom_pct': headroom_pct, 'status': status,
+        'used_pct': avg_out / avg_in * 100 if avg_in else 0.0,
+        'short_months': [m for m, v in zip(months, incomes) if v < sum(r_by.get(m, 0.0) for r_by in purpose_by_month.values())],
+        'rows': rows,
+        'suggested_total': suggested_total,
+        'suggested_headroom': avg_in - suggested_total,
+        'flexible': sum(r['avg'] for r in rows if r['kind'] != 'Fixed' and not r['sensitive']),
+    }
 
 
 def _require_admin():
@@ -84,6 +229,8 @@ def get_context(context):
         'trend_json': '[]',
         'purpose_totals': [],
         'purpose_json': '{}',
+        'plan': None,
+        'plan_json': 'null',
         'insights': []
     }
 
@@ -117,7 +264,14 @@ def get_context(context):
         year_int = int(selected_year)
         gen_due_now = 0.0
         gen_due_later = {}  # month_name -> amount not yet due
+        gen_overdue_by_purpose = {}  # unclaimed General items from months already past
         gen_service_days = set()
+        # Planning guide inputs: General commitments per purpose per month,
+        # 5th-week General items, and the set-aside funds' monthly flows
+        gen_purpose_month = {}
+        gen_week5 = {}
+        side_in = {'Mission': {}, 'Benevolence': {}}
+        side_out = {'Mission': {}, 'Benevolence': {}}
 
         for c in cols_query:
             # General Fund = Tithes + Offering + Loose + Sunday School
@@ -133,8 +287,13 @@ def get_context(context):
                 gen_in_by_month[c_month] = gen_in_by_month.get(c_month, 0.0) + general_in
                 if general_in:
                     gen_service_days.add(getdate(c.date))
-            fs['funds']['Mission']['collected'] += (c.mission_total or 0) + (c.mission_total_cls or 0)
-            fs['funds']['Benevolence']['collected'] += (c.benevolence_collection or 0) + (c.benevolence_collection_cls or 0)
+            mission_in = (c.mission_total or 0) + (c.mission_total_cls or 0)
+            benev_in = (c.benevolence_collection or 0) + (c.benevolence_collection_cls or 0)
+            fs['funds']['Mission']['collected'] += mission_in
+            fs['funds']['Benevolence']['collected'] += benev_in
+            if c.date:
+                side_in['Mission'][c_month] = side_in['Mission'].get(c_month, 0.0) + mission_in
+                side_in['Benevolence'][c_month] = side_in['Benevolence'].get(c_month, 0.0) + benev_in
             fs['cash_collected'] += c.grand_total or 0.0
             fs['cashless_collected'] += c.grand_total_cls or 0.0
 
@@ -167,6 +326,13 @@ def get_context(context):
                 else: mapped_fund = 'General'
 
                 purp_key = purp or 'No Purpose'
+                if mapped_fund == 'General':
+                    by_m = gen_purpose_month.setdefault(purp_key, {})
+                    by_m[d.month_recorded] = by_m.get(d.month_recorded, 0.0) + amt
+                    if field.endswith('_week_5'):
+                        gen_week5[d.month_recorded] = gen_week5.get(d.month_recorded, 0.0) + amt
+                elif mapped_fund in side_out:
+                    side_out[mapped_fund][d.month_recorded] = side_out[mapped_fund].get(d.month_recorded, 0.0) + amt
                 if item.get('status') != 'Claimed':
                     # Committed but not yet claimed — money already promised out.
                     # Feeds the projected view; excluded from claimed totals below.
@@ -181,6 +347,8 @@ def get_context(context):
                             gen_due_later[d.month_recorded] = gen_due_later.get(d.month_recorded, 0.0) + amt
                         else:
                             gen_due_now += amt
+                            if d_month_idx and year_int == today.year and d_month_idx < today.month:
+                                gen_overdue_by_purpose[purp_key] = gen_overdue_by_purpose.get(purp_key, 0.0) + amt
                     continue
 
                 claimed_by_purpose[purp_key] = claimed_by_purpose.get(purp_key, 0.0) + amt
@@ -256,46 +424,23 @@ def get_context(context):
             'months': len(res['trend']) or 1,
         })
 
+        # Averages use completed months only: the current month has all its
+        # commitments on record but only part of its collections, which would
+        # make every average look worse than it is.
+        full = [t for t in res['trend'] if not (year_int == today.year and month_names.index(t['month']) + 1 >= today.month)]
+        full = full or res['trend']
+        full_months = [t['month'] for t in full]
+
         # Rule-based planning insights — deterministic advice from this
         # year's numbers, recomputed on every load.
         insights = []
-        n_months = len(res['trend'])
-        total_coll_ytd = sum(t['collections'] for t in res['trend'])
-        if purpose_rows and grand_committed and n_months:
-            top = purpose_rows[0]
-            share = top['total'] / grand_committed * 100
-            per_month = top['total'] / n_months
-            insights.append(
-                f"{top['purpose']} is the largest allotment: ₱{top['total']:,.0f} "
-                f"({share:.0f}% of all {selected_year} commitments), averaging ₱{per_month:,.0f} per month. "
-                f"A 10% trim here frees about ₱{top['total'] * 0.1:,.0f} a year — more than most smaller allotments cost in total."
-            )
-            if len(purpose_rows) >= 3:
-                top3 = sum(r['total'] for r in purpose_rows[:3])
-                if top3 / grand_committed >= 0.7:
-                    names = ", ".join(r['purpose'] for r in purpose_rows[:3])
-                    insights.append(
-                        f"Spending is concentrated: {names} together make up "
-                        f"{top3 / grand_committed * 100:.0f}% of all commitments. Budget planning should start with these three."
-                    )
+        if purpose_rows and year_int != today.year:
+            # Past years have no due-date outlook, so point at the backlog directly
             backlog = max(purpose_rows, key=lambda r: r['unclaimed'])
             if backlog['unclaimed'] > 0:
-                insights.append(
-                    f"{backlog['purpose']} carries the largest unclaimed backlog (₱{backlog['unclaimed']:,.0f}). "
-                    f"Have these claimed — or release the ones no longer needed, which immediately improves the projected balance."
-                )
-            neg_months = [
-                t for t in res['trend']
-                if t['collections'] - t['claimed'] - t['unclaimed'] < 0
-            ]
-            if neg_months:
-                worst = min(neg_months, key=lambda t: t['collections'] - t['claimed'] - t['unclaimed'])
-                worst_gap = worst['collections'] - worst['claimed'] - worst['unclaimed']
-                insights.append(
-                    f"{len(neg_months)} of {n_months} months committed more than they collected "
-                    f"(worst: {worst['month']}, short ₱{abs(worst_gap):,.0f}). "
-                    f"Monthly collections average ₱{total_coll_ytd / n_months:,.0f} — keeping recurring allotments under that keeps every month funded."
-                )
+                insights.append(_tip('watch', f"{backlog['purpose']} has the largest unclaimed amount",
+                    f"₱{backlog['unclaimed']:,.0f} is scheduled but was never claimed. Have it claimed — or release what is no longer needed."
+                ))
         res['insights'] = insights
 
         # Build monthly highlights
@@ -448,9 +593,9 @@ def get_context(context):
         # comfortable amount keeps a reserve of RESERVE_WEEKS of General spending.
         RESERVE_WEEKS = 1
         gen = next(f for f in fund_cards if f['name'] == 'General')
-        n_months = len(res['trend'])
-        g_avg_in = sum(t['g_collections'] for t in res['trend']) / n_months if n_months else 0.0
-        g_avg_out = sum(t['g_claimed'] + t['g_unclaimed'] for t in res['trend']) / n_months if n_months else 0.0
+        n_months = len(full)
+        g_avg_in = sum(t['g_collections'] for t in full) / n_months if n_months else 0.0
+        g_avg_out = sum(t['g_claimed'] + t['g_unclaimed'] for t in full) / n_months if n_months else 0.0
         reserve = g_avg_out * 12 / 52 * RESERVE_WEEKS
         spend = {
             'usable': gen['available'],
@@ -462,6 +607,7 @@ def get_context(context):
             'avg_in': g_avg_in,
             'avg_out': g_avg_out,
             'avg_gap': g_avg_in - g_avg_out,
+            'avg_months': n_months,
             'restricted': [f for f in fund_cards if f['name'] in ('Mission', 'Benevolence')],
         }
         res['spend'] = spend
@@ -525,81 +671,160 @@ def get_context(context):
             res['trend_json'] = json.dumps(res['trend'] + forecast)
         res['outlook'] = outlook
 
+        # Planning guide: per-allotment budget suggestions for the General fund
+        plan = _build_plan(full_months, gen_in_by_month, gen_purpose_month, gen_overdue_by_purpose, year_int + 1)
+        res['plan'] = plan
+
         # Position insights go first — they're about money on hand today.
-        position_tips = []
+        tips = []
         verb = "are" if sum(1 for f in spend['restricted'] if f['available']) > 1 else "is"
         restricted_txt = " and ".join(f"{f['name']} ₱{f['available']:,.0f}" for f in spend['restricted'] if f['available'])
         ol = outlook
         if ol and spend['free'] < 0:
-            position_tips.append(
-                f"The ₱{abs(spend['free']):,.0f} shortfall is a timing gap, not a hole: it assumes every General commitment is paid today. "
+            tips.append(_tip('watch' if ol['end_of_month'] >= 0 else 'action',
+                f"Today's ₱{abs(spend['free']):,.0f} shortfall is a timing gap" if ol['end_of_month'] >= 0
+                else f"The General fund is expected to end {ol['month']} short",
+                f"The shortfall assumes every General commitment is paid today. "
                 f"Only ₱{ol['due_now']:,.0f} is due now, and Usable Funds (₱{spend['usable']:,.0f}) cover it with ₱{ol['after_due_now']:,.0f} left. "
                 f"The other ₱{ol['due_later_this_month']:,.0f} falls due over the next {ol['sundays_left']} Sunday{'s' if ol['sundays_left'] != 1 else ''}, "
                 f"when about ₱{ol['exp_in_this_month']:,.0f} more is expected — ending {ol['month']} near ₱{ol['end_of_month']:,.0f}"
                 f" and the year near ₱{ol['year_end']:,.0f}."
                 + (f" {restricted_txt} {verb} set aside and should not be used to bridge the gap." if restricted_txt else "")
-            )
+            ))
         elif spend['free'] >= 0:
-            position_tips.append(
-                f"Usable money is the General fund only: ₱{spend['usable']:,.0f}. After its ₱{spend['pending']:,.0f} of pending claims, "
-                f"₱{spend['free']:,.0f} is free to spend."
+            tips.append(_tip('good', f"₱{spend['free']:,.0f} is free to spend",
+                f"Usable money is the General fund only: ₱{spend['usable']:,.0f}, less ₱{spend['pending']:,.0f} of pending claims."
                 + (f" {restricted_txt} {verb} set aside and not part of this." if restricted_txt else "")
-            )
+            ))
         else:
-            position_tips.append(
-                f"There is no free money to spend right now. The General fund (₱{spend['usable']:,.0f}) is ₱{abs(spend['free']):,.0f} short "
+            tips.append(_tip('action', "No free money right now — hold new commitments",
+                f"The General fund (₱{spend['usable']:,.0f}) is ₱{abs(spend['free']):,.0f} short "
                 f"of its own ₱{spend['pending']:,.0f} in pending claims. Hold new commitments until collections catch up."
                 + (f" {restricted_txt} {verb} set aside for {'their' if verb == 'are' else 'its'} purpose and should not cover this gap." if restricted_txt else "")
-            )
+            ))
         if ol:
-            position_tips.append(
-                f"Comfortable new spending for the rest of the year: ₱{max(ol['comfortable'], 0):,.0f}. That is the lower of the end-of-{ol['month']} "
-                f"and year-end outlooks, minus a {RESERVE_WEEKS}-week reserve (₱{reserve:,.0f}). "
-                f"The outlook assumes about ₱{ol['per_sunday']:,.0f} of General income per Sunday and ₱{g_avg_out:,.0f} of General commitments per month "
-                f"for months not yet scheduled."
-            )
+            roomy = ol['comfortable'] > 0
+            tips.append(_tip('info' if roomy else 'watch',
+                f"Comfortable new spending for the rest of {selected_year}: ₱{ol['comfortable']:,.0f}" if roomy
+                else f"No room for extra spending in the rest of {selected_year}",
+                f"The comfortable amount is the lower of the end-of-{ol['month']} and year-end outlooks, minus a {RESERVE_WEEKS}-week reserve (₱{reserve:,.0f}). "
+                f"The outlook assumes about ₱{ol['per_sunday']:,.0f} of General income per Sunday and ₱{g_avg_out:,.0f} of General commitments "
+                f"a month for months not yet scheduled."
+            ))
         if ol and ol['overdue_past'] >= 1:
-            position_tips.append(
-                f"₱{ol['overdue_past']:,.0f} of General commitments from past months is still unclaimed. If they will still be paid, keep them; "
-                f"if not, release them — each one released raises the free-to-spend balance."
-            )
-        if n_months:
-            if spend['avg_gap'] < 0:
-                position_tips.append(
-                    f"General income averages ₱{g_avg_in:,.0f} a month, but General commitments average ₱{g_avg_out:,.0f} — "
-                    f"₱{abs(spend['avg_gap']):,.0f} more goes out than comes in each month. Recurring allotments need to drop by about that much "
-                    f"for the usable balance to stop shrinking."
+            worst = sorted(gen_overdue_by_purpose.items(), key=lambda kv: -kv[1])[:3]
+            tips.append(_tip('action', f"₱{ol['overdue_past']:,.0f} from past months is still unclaimed",
+                (f"Mostly {', '.join(f'{k} ₱{v:,.0f}' for k, v in worst)}. " if worst else "")
+                + "These General commitments are past their month. If they will still be paid, have them claimed; "
+                "if not, release them — each one released raises the free-to-spend balance."
+            ))
+
+        if plan:
+            p = plan
+            span = f"{p['period']} ({p['months']} completed month{'s' if p['months'] != 1 else ''})"
+            if p['status'] == 'deficit':
+                gap = -p['headroom']
+                flex_txt = (
+                    f"The flexible allotments (everything except fixed costs and allowances) total ₱{p['flexible']:,.0f} a month, "
+                    + (f"so trimming them by {gap / p['flexible'] * 100:.0f}% closes the gap without touching allowances."
+                       if p['flexible'] and gap <= p['flexible'] * 0.3
+                       else "so they cannot close the gap alone — the larger recurring allotments need a phased review too.")
                 )
+                tips.append(_tip('action', f"Recurring spending is ₱{gap:,.0f} a month above income",
+                    f"Over {span}, General income averaged ₱{p['avg_in']:,.0f} a month against ₱{p['avg_out']:,.0f} of commitments. "
+                    f"Usable Funds shrink by that gap every month until allotments come down or giving rises. {flex_txt}"
+                ))
+            elif p['status'] == 'tight':
+                tips.append(_tip('watch', f"Only ₱{p['headroom']:,.0f} a month of headroom",
+                    f"Over {span}, General income averaged ₱{p['avg_in']:,.0f} a month and ₱{p['avg_out']:,.0f} was committed — "
+                    f"{p['used_pct']:.0f}% of income. That is the most new recurring spending the budget can take; "
+                    f"anything above it has to come from trimming another allotment."
+                ))
             else:
-                position_tips.append(
-                    f"General income averages ₱{g_avg_in:,.0f} a month against ₱{g_avg_out:,.0f} of commitments, so the usable balance grows by "
-                    f"about ₱{spend['avg_gap']:,.0f} a month. That is the amount new recurring spending could take on without eating into savings."
-                )
+                tips.append(_tip('good', f"₱{p['headroom']:,.0f} a month of headroom",
+                    f"Over {span}, General income averaged ₱{p['avg_in']:,.0f} a month and ₱{p['avg_out']:,.0f} was committed — "
+                    f"{p['used_pct']:.0f}% of income. New recurring spending up to the headroom does not eat into savings."
+                ))
+            if p['typical_in'] < p['avg_out'] <= p['avg_in'] and p['short_months']:
+                tips.append(_tip('watch', "A typical month does not cover its own commitments",
+                    f"The middle month brought in ₱{p['typical_in']:,.0f}, below the ₱{p['avg_out']:,.0f} committed. "
+                    f"The surplus comes from a few strong months; {len(p['short_months'])} of {p['months']} "
+                    f"({', '.join(m[:3] for m in p['short_months'])}) fell short. Plan {p['next_year']} on the typical month, not the best ones."
+                ))
+            # Income direction: last three completed months vs the months before
+            if p['months'] >= 6:
+                ins = [gen_in_by_month.get(m, 0.0) for m in full_months]
+                early, late = mean(ins[:-3]), mean(ins[-3:])
+                if early and abs(late - early) / early >= 0.1:
+                    up = late > early
+                    tips.append(_tip('info' if up else 'watch',
+                        f"General income is {'up' if up else 'down'} {abs(late - early) / early * 100:.0f}% in the last 3 months",
+                        f"₱{late:,.0f} a month in {full_months[-3]}–{full_months[-1]} against ₱{early:,.0f} before. "
+                        + ("Good news, but wait for it to hold before committing it to recurring allotments."
+                           if up else "If this holds, the monthly headroom shrinks by the same amount — delay new recurring commitments.")
+                    ))
+            # Weekly items make 5-Sunday months cost more
+            w5 = [gen_week5[m] for m in full_months if gen_week5.get(m)]
+            if w5:
+                ny = p['next_year']
+                five = [month_names[i - 1] for i in range(1, 13) if len(_sundays(ny, i)) == 5]
+                tips.append(_tip('info', f"A fifth Sunday costs about ₱{mean(w5):,.0f} extra",
+                    f"{len(w5)} month{'s' if len(w5) != 1 else ''} so far had a week-5 tab of weekly General items. "
+                    f"In {ny} the five-Sunday months are {', '.join(five)} — budget that much more for each."
+                ))
+            movers = [r for r in p['rows'] if r['action'] in ('review', 'lower', 'spikes', 'envelope')]
+            tips.append(_tip('info', f"Suggested {p['next_year']} budget: ₱{p['suggested_total']:,.0f} a month",
+                f"Built allotment by allotment in the table above — ₱{abs(p['suggested_headroom']):,.0f} a month "
+                f"{'under' if p['suggested_headroom'] >= 0 else 'over'} this year's average income. "
+                + (f"Worth a decision: {', '.join(r['purpose'] for r in movers[:5])}." if movers else "Every allotment can simply be held.")
+            ))
+
+        # Set-aside funds: does each one's own collection cover what it pays out?
+        n_full = len(full_months)
         for f in spend['restricted']:
+            f_in = sum(side_in[f['name']].get(m, 0.0) for m in full_months) / n_full if n_full else 0.0
+            f_out = sum(side_out[f['name']].get(m, 0.0) for m in full_months) / n_full if n_full else 0.0
             if f['projected'] < 0:
-                position_tips.append(
-                    f"The {f['name']} Fund cannot cover its own pending claims: ₱{f['available']:,.0f} available against "
-                    f"₱{f['pending']:,.0f} pending leaves it ₱{abs(f['projected']):,.0f} short."
-                )
+                tips.append(_tip('action', f"The {f['name']} Fund cannot cover its pending claims",
+                    f"₱{f['available']:,.0f} available against ₱{f['pending']:,.0f} pending leaves it ₱{abs(f['projected']):,.0f} short."
+                ))
+            elif f_out > f_in and f_out:
+                left = f['projected'] / (f_out - f_in)
+                tips.append(_tip('watch', f"{f['name']} pays out more than it collects",
+                    f"About ₱{f_out:,.0f} a month goes out against ₱{f_in:,.0f} collected. "
+                    f"Its ₱{f['projected']:,.0f} balance covers the difference for about {left:.0f} more month{'s' if round(left) != 1 else ''}."
+                ))
+            elif f_out:
+                tips.append(_tip('good', f"{f['name']} collections cover its payouts",
+                    f"About ₱{f_in:,.0f} a month comes in against ₱{f_out:,.0f} going out, so the fund grows by ₱{f_in - f_out:,.0f} a month. "
+                    f"It stays set aside — not available for General spending."
+                ))
         for a in res['account_balances']:
             if a.get('fund') and a['effective_balance'] < 0:
-                position_tips.append(
-                    f"{a['name']} is overdrawn by ₱{abs(a['effective_balance']):,.0f}: ₱{a['pending_deductions']:,.0f} was claimed from it "
-                    f"but only ₱{a['ledger_balance']:,.0f} came in. Re-source those claims to the account that actually paid, or record the missing deposit."
-                )
+                tips.append(_tip('action', f"{a['name']} is overdrawn by ₱{abs(a['effective_balance']):,.0f}",
+                    f"₱{a['pending_deductions']:,.0f} was claimed from it but only ₱{a['ledger_balance']:,.0f} came in. "
+                    f"Re-source those claims to the account that actually paid, or record the missing deposit."
+                ))
         stray = sum(f['other_postings'] for f in fund_cards if f['name'] in ('General', 'Benevolence'))
         if abs(stray) >= 1:
-            position_tips.append(
-                f"₱{stray:,.2f} in the General/Benevolence ledgers did not come from a submitted collection. "
-                f"Check for journal entries left behind by deleted or cancelled collections — they inflate the usable balance."
-            )
+            tips.append(_tip('watch', f"₱{stray:,.2f} in the ledgers did not come from a collection",
+                "The General/Benevolence ledgers hold postings with no submitted collection behind them. "
+                "Check for journal entries left behind by deleted or cancelled collections — they inflate the usable balance."
+            ))
         wg = next(f for f in fund_cards if f['name'] == 'White Gift')
         if wg['received']:
-            position_tips.append(
-                f"White Gift has ₱{wg['available']:,.0f} left of ₱{wg['received']:,.0f} received "
-                f"({wg['available'] / wg['received'] * 100:.0f}%). It is kept separate, so spending it doesn't affect operations."
-            )
-        res['insights'] = position_tips + res['insights']
+            tips.append(_tip('info', f"White Gift has ₱{wg['available']:,.0f} left",
+                f"That is {wg['available'] / wg['received'] * 100:.0f}% of the ₱{wg['received']:,.0f} received. "
+                f"It is kept separate, so spending it does not affect operations."
+            ))
+        # Sort is stable: within a level, position tips stay ahead of allotment tips
+        res['insights'] = sorted(tips + res['insights'], key=lambda t: LEVEL_ORDER[t['level']])
+        if plan:
+            res['plan_json'] = json.dumps({
+                'year': selected_year, 'next_year': plan['next_year'],
+                'avg_in': plan['avg_in'], 'typical_in': plan['typical_in'],
+                'rows': [{'purpose': r['purpose'], 'avg': round(r['avg'], 2), 'suggested': r['suggested']} for r in plan['rows']],
+            })
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "Financial Statement Error")
     

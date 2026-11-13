@@ -24,6 +24,7 @@ This prints one JSON document (aggregates only — no donor/member records):
 - `purpose_totals` — per allotment: claimed, unclaimed, total (sorted desc)
 - `monthly_commitments_by_purpose` — month → purpose → committed amount (for trend/growth analysis)
 - `account_balances` — ledger vs available per cash/bank account
+- `planning_guide` — General fund only, completed months only: average vs typical (median) monthly income, headroom, and per allotment its monthly average, type (Fixed / Recurring / Irregular), suggestion and suggested next-year monthly budget (the table shown on the statement page)
 - `rule_based_insights` — the deterministic tips already shown on the statement page; do not merely repeat these — go deeper
 
 Domain notes:

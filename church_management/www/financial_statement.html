@@ -18,6 +18,10 @@
     body { font-family: 'Work Sans', ui-sans-serif, system-ui, sans-serif; }
     h1, h2, h3, .font-display { font-family: 'Outfit', ui-sans-serif, system-ui, sans-serif; }
     .num { font-variant-numeric: tabular-nums; }
+    html { scroll-behavior: smooth; }
+    section[id] { scroll-margin-top: 7.5rem; }
+    .plan-input::-webkit-outer-spin-button, .plan-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .plan-input { -moz-appearance: textfield; }
     /* KPI explanations: shown on hover, keyboard focus, or tap (tap focuses the ⓘ button) */
     .kpi-tip { opacity: 0; visibility: hidden; transform: translateY(-4px); transition: opacity .15s, transform .15s, visibility .15s; pointer-events: none; }
     .kpi:has(.kpi-tip-btn:hover) .kpi-tip, .kpi:has(.kpi-tip-btn:focus) .kpi-tip { opacity: 1; visibility: visible; transform: none; }
@@ -74,6 +78,15 @@
         </nav>
     </header>
 
+    <!-- Jump links: the page is long, so every section is one tap away -->
+    <nav aria-label="Sections of this page" class="sticky top-16 z-40 bg-slate-50/95 backdrop-blur border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex gap-1 overflow-x-auto text-sm font-medium whitespace-nowrap">
+            {% for href, label in [('#today', 'Today'), ('#planning', 'Planning guide'), ('#trend', 'Trend'), ('#funds', 'Funds'), ('#accounts', 'Accounts'), ('#monthly-breakdown', 'Monthly details')] %}
+            <a href="{{ href }}" class="px-3 py-2.5 border-b-2 border-transparent text-slate-500 hover:text-brand-700 hover:border-brand-500 focus:outline-none focus-visible:text-brand-700 focus-visible:border-brand-500 transition-colors {{ 'text-brand-700 font-semibold' if href == '#planning' }}">{{ label }}</a>
+            {% endfor %}
+        </div>
+    </nav>
+
     <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
         <!-- Header -->
         <header class="text-center mb-10">
@@ -83,7 +96,7 @@
                 <span class="inline-block align-middle ml-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-base font-bold num">{{ selected_year }}</span>
             </h1>
             <p class="mt-3 text-slate-500 max-w-2xl mx-auto text-sm sm:text-base">
-                Yearly overview of collections, disbursements, and fund balances.
+Where the money stands today, what to adjust in the budget, and the full record behind both.
             </p>
         </header>
 
@@ -136,7 +149,7 @@
         {% set ol = outlook %}
         {% macro pill(text, tone='slate') %}<span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full num {{ {'slate': 'bg-slate-100 text-slate-600', 'green': 'bg-emerald-50 text-emerald-700', 'amber': 'bg-amber-50 text-amber-700', 'rose': 'bg-rose-50 text-rose-700'}[tone] }}">{{ text }}</span>{% endmacro %}
         {% if sp %}
-        <section aria-labelledby="standing-heading" class="mb-6">
+        <section id="today" aria-labelledby="standing-heading" class="mb-6">
             <h2 id="standing-heading" class="text-sm font-semibold text-slate-700 mb-3">Where the money stands today</h2>
 
             <!-- What we can spend: General fund only -->
@@ -258,7 +271,7 @@
                     tone='text-amber-600') }}
                 {% if sp %}
                 {{ kpi('Monthly General Surplus' if sp.avg_gap >= 0 else 'Monthly General Deficit', sp.avg_gap,
-                    '<p>On average, how much more the General fund takes in each month than it commits to spending. A deficit means recurring spending is eating into Usable Funds.</p><div class="pt-1.5 border-t border-white/15 text-slate-300">'
+                    '<p>On average, how much more the General fund takes in each month than it commits to spending. A deficit means recurring spending is eating into Usable Funds.</p>' ~ ('<p class="text-slate-300">Averaged over the ' ~ sp.avg_months ~ ' completed month' ~ ('s' if sp.avg_months != 1 else '') ~ ' — the current month is left out because its collections are not all in yet.</p>' if sp.avg_months else '') ~ '<div class="pt-1.5 border-t border-white/15 text-slate-300">'
                     ~ line('Average General income', peso(sp.avg_in) ~ '/mo')
                     ~ line('Average General commitments', '− ' ~ peso(sp.avg_out) ~ '/mo', 'text-amber-300')
                     ~ line('Average per month', peso(sp.avg_gap), 'mt-1 pt-1 border-t border-white/15 font-semibold text-white') ~ '</div>',
@@ -267,9 +280,180 @@
             </div>
         </section>
 
+        <!-- Planning guide: verdict, per-allotment suggestions, try-a-budget, insights -->
+        {% if plan or insights %}
+        {% set pl = plan %}
+        {% macro p0(v) %}₱{{ "{:,.0f}".format(v or 0) }}{% endmacro %}
+        {% set action_tone = {
+            'review': 'bg-amber-100 text-amber-800 border-amber-200',
+            'spikes': 'bg-amber-50 text-amber-800 border-amber-200',
+            'lower': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+            'envelope': 'bg-sky-50 text-sky-700 border-sky-200',
+            'care': 'bg-slate-100 text-slate-700 border-slate-300',
+            'hold': 'bg-slate-50 text-slate-600 border-slate-200',
+            'minor': 'bg-slate-50 text-slate-500 border-slate-200',
+        } %}
+        {% macro plan_row(r, i) %}
+        <li class="grid grid-cols-1 md:grid-cols-[13rem_minmax(0,1fr)_11rem] gap-x-6 gap-y-3 px-5 sm:px-6 py-4">
+            <div>
+                <p class="font-bold text-slate-900">{{ r.purpose }}</p>
+                <p class="mt-0.5 text-sm text-slate-600 num"><b class="text-slate-800">{{ p0(r.avg) }}</b> a month</p>
+                <p class="text-xs text-slate-400 num">{{ '%.1f'|format(r.share) if r.share < 10 else '%.0f'|format(r.share) }}% of income · {{ r.kind|lower }}</p>
+            </div>
+            <div>
+                <span class="inline-flex items-center text-[11px] font-semibold px-2 py-0.5 rounded-full border {{ action_tone[r.action] }}">{{ r.label }}</span>
+                <p class="mt-1.5 text-sm text-slate-600 leading-relaxed num">{{ r.reason }}</p>
+                {% if r.overdue %}<p class="mt-1 text-xs font-medium text-amber-700 num">{{ p0(r.overdue) }} from past months is still unclaimed — claim it or release it.</p>{% endif %}
+            </div>
+            <div>
+                <label for="plan-{{ i }}" class="block text-[11px] font-semibold uppercase tracking-wide text-slate-500">{{ pl.next_year }} plan / month</label>
+                <div class="mt-1 flex items-center rounded-lg border border-slate-300 bg-white focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brand-200 transition-colors">
+                    <span class="pl-2.5 text-sm text-slate-400" aria-hidden="true">₱</span>
+                    <input id="plan-{{ i }}" type="number" inputmode="numeric" min="0" step="10" x-model.number="planned[{{ i }}]" @input="savePlan()" class="plan-input w-full bg-transparent border-0 p-2 text-sm font-semibold text-slate-900 text-right num focus:outline-none focus:ring-0">
+                </div>
+                <p class="mt-1 text-xs text-right num" :class="planDelta({{ i }}) > 0.5 ? 'text-rose-600' : (planDelta({{ i }}) < -0.5 ? 'text-emerald-700' : 'text-slate-400')" x-text="deltaText(planDelta({{ i }}))">&nbsp;</p>
+            </div>
+        </li>
+        {% endmacro %}
+        <section id="planning" aria-labelledby="planning-heading" class="mb-10">
+            <div class="bg-white rounded-2xl shadow-sm border border-brand-200 ring-1 ring-brand-100 overflow-hidden">
+                <div class="px-5 sm:px-6 pt-5 pb-4">
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand-600">Planning guide</p>
+                    <h2 id="planning-heading" class="mt-1 font-display text-xl sm:text-2xl font-bold text-slate-900">What to adjust{% if pl %} for {{ pl.next_year }}{% endif %}</h2>
+                    {% if pl %}
+                    <p class="mt-1 text-sm text-slate-500">
+                        Built from {{ pl.period }} {{ selected_year }} — the General fund only, because that is the money the church can budget.
+                        {{ info('how the guide is worked out',
+                            '<p>Only <b>completed months</b> are used, so a month whose collections are still coming in does not drag the averages down.</p><div class="pt-1.5 border-t border-white/15 text-slate-300 space-y-1"><p><b class="text-white">Fixed</b> — the same amount every month.</p><p><b class="text-white">Recurring</b> — paid most months at a similar level. The last 3 months are compared with the months before to see if the level has moved.</p><p><b class="text-white">Irregular</b> — comes and goes, or swings widely.</p></div><p class="text-slate-300">A month counts as unusually big when it is more than double the usual amount. The suggested plan spreads those big months across the year.</p><p class="text-slate-400">Suggestions are rules applied to the records, not decisions — the finance team decides.</p>',
+                            pos='left-0 top-8 w-80') }}
+                    </p>
+                    {% endif %}
+                </div>
+
+                {% if pl %}
+                <!-- Verdict -->
+                {% set v = {
+                    'deficit': ('bg-rose-50 border-rose-200', 'text-rose-700', 'bg-rose-500', 'Spending more than comes in', p0(-pl.headroom) ~ ' a month over income'),
+                    'tight': ('bg-amber-50 border-amber-200', 'text-amber-700', 'bg-amber-500', 'Balanced, but tight', p0(pl.headroom) ~ ' a month of headroom'),
+                    'healthy': ('bg-emerald-50 border-emerald-200', 'text-emerald-700', 'bg-brand-500', 'Healthy', p0(pl.headroom) ~ ' a month of headroom'),
+                }[pl.status] %}
+                <div class="mx-5 sm:mx-6 mb-5 rounded-xl border {{ v[0] }} p-4 sm:p-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wide {{ v[1] }}">{{ v[3] }}</p>
+                        <p class="mt-1 font-display text-2xl sm:text-3xl font-extrabold text-slate-900 num">{{ v[4] }}</p>
+                        <div class="mt-3 h-2.5 rounded-full bg-white border border-slate-200 overflow-hidden" role="img" aria-label="{{ '%.0f'|format(pl.used_pct) }} percent of General income is already committed">
+                            <div class="h-full {{ v[2] }}" style="width: {{ [pl.used_pct, 100]|min }}%"></div>
+                        </div>
+                        <p class="mt-1.5 text-sm text-slate-600 num"><b class="text-slate-900">{{ '%.0f'|format(pl.used_pct) }}%</b> of General income is already committed each month.</p>
+                    </div>
+                    <dl class="grid grid-cols-3 gap-x-6 gap-y-1 text-sm">
+                        <div>
+                            <dt class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Income, average</dt>
+                            <dd class="mt-0.5 text-lg font-extrabold text-slate-900 num">{{ p0(pl.avg_in) }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Income, typical month</dt>
+                            <dd class="mt-0.5 text-lg font-extrabold num {{ 'text-rose-700' if pl.typical_in < pl.avg_out else 'text-slate-900' }}">{{ p0(pl.typical_in) }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Committed</dt>
+                            <dd class="mt-0.5 text-lg font-extrabold text-slate-900 num">{{ p0(pl.avg_out) }}</dd>
+                        </div>
+                        <p class="col-span-3 text-xs text-slate-500">Per month. The typical month is the middle one — half the months brought in less.</p>
+                    </dl>
+                </div>
+
+                <!-- Allotment by allotment -->
+                <div class="border-t border-slate-100">
+                    <div class="px-5 sm:px-6 pt-5 pb-1 flex flex-wrap items-end justify-between gap-3">
+                        <div>
+                            <h3 class="font-display text-base sm:text-lg font-bold text-slate-900">Allotment by allotment</h3>
+                            <p class="text-xs text-slate-500 mt-0.5">Largest first. Each plan box starts at the suggested amount — change any of them and the total below updates.</p>
+                        </div>
+                        <div class="flex flex-wrap gap-2 text-xs font-semibold">
+                            <button type="button" @click="setPlan('suggested')" class="px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:border-brand-500 hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 cursor-pointer transition-colors">Use suggested</button>
+                            <button type="button" @click="setPlan('avg')" class="px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 hover:border-brand-500 hover:text-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 cursor-pointer transition-colors">Use this year's amounts</button>
+                        </div>
+                    </div>
+                    <ul role="list" class="divide-y divide-slate-100">
+                        {% for r in pl.rows %}{% if r.action != 'minor' %}{{ plan_row(r, loop.index0) }}{% endif %}{% endfor %}
+                    </ul>
+                    {% set minor = pl.rows|selectattr('action', 'equalto', 'minor')|list %}
+                    {% if minor %}
+                    <details class="border-t border-slate-100">
+                        <summary class="px-5 sm:px-6 py-3 cursor-pointer text-sm font-medium text-slate-500 hover:text-slate-700 num">
+                            {{ minor|length }} small allotment{{ 's' if minor|length != 1 }} — {{ p0(minor|sum(attribute='avg')) }} a month together, no decision needed
+                        </summary>
+                        <ul role="list" class="divide-y divide-slate-100 border-t border-slate-100">
+                            {% for r in pl.rows %}{% if r.action == 'minor' %}{{ plan_row(r, loop.index0) }}{% endif %}{% endfor %}
+                        </ul>
+                    </details>
+                    {% endif %}
+
+                    <!-- Live result of the plan boxes -->
+                    <div class="border-t border-slate-200 bg-slate-50 px-5 sm:px-6 py-4 grid gap-4 sm:grid-cols-3" aria-live="polite">
+                        <div>
+                            <p class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Your {{ pl.next_year }} plan</p>
+                            <p class="mt-0.5 text-2xl font-extrabold text-slate-900 num"><span x-text="fmt(planTotal())">{{ p0(pl.suggested_total) }}</span> <span class="text-sm font-semibold text-slate-500">a month</span></p>
+                            <p class="text-xs text-slate-500 num"><span x-text="fmt(planTotal() * 12)">{{ p0(pl.suggested_total * 12) }}</span> for the year · this year runs at {{ p0(pl.avg_out) }} a month</p>
+                        </div>
+                        <div>
+                            <p class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Against average income</p>
+                            <p class="mt-0.5 text-2xl font-extrabold num" :class="planGap('avg_in') < 0 ? 'text-rose-700' : 'text-brand-700'" x-text="gapText(planGap('avg_in'))">{{ p0(pl.suggested_headroom) }}</p>
+                            <p class="text-xs text-slate-500 num">a month · <span x-text="gapText(planGap('avg_in') * 12)"></span> over the year</p>
+                        </div>
+                        <div>
+                            <p class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Against a typical month</p>
+                            <p class="mt-0.5 text-2xl font-extrabold num" :class="planGap('typical_in') < 0 ? 'text-rose-700' : 'text-brand-700'" x-text="gapText(planGap('typical_in'))">{{ p0(pl.typical_in - pl.suggested_total) }}</p>
+                            <p class="text-xs text-slate-500">a month — the safer test. Aim to keep this one from going short.</p>
+                        </div>
+                    </div>
+                    <p class="px-5 sm:px-6 py-2.5 text-[11px] text-slate-400 border-t border-slate-100">
+                        The plan boxes are a scratchpad saved on this device only — they do not change any disbursement template or record.
+                        Mission Support and Benevolence are paid from their own funds and are not part of this budget.
+                    </p>
+                </div>
+                {% endif %}
+
+                {% if insights %}
+                <!-- Insights: decisions first, then context -->
+                {% set lv = {
+                    'action': ('Act on this', 'bg-rose-50 border-rose-200', 'bg-rose-100 text-rose-800'),
+                    'watch': ('Keep an eye on', 'bg-amber-50/70 border-amber-200', 'bg-amber-100 text-amber-800'),
+                    'good': ('Going well', 'bg-emerald-50/60 border-emerald-200', 'bg-emerald-100 text-emerald-800'),
+                    'info': ('Good to know', 'bg-white border-slate-200', 'bg-slate-100 text-slate-600'),
+                } %}
+                {#- Until the web workers restart they still run the previous controller, which
+                    sends insights as plain strings and no plan — render those too. -#}
+                {% set n_urgent = insights|select('mapping')|selectattr('level', 'in', ['action', 'watch'])|list|length %}
+                <div class="border-t border-slate-200 px-5 sm:px-6 py-5">
+                    <h3 class="font-display text-base sm:text-lg font-bold text-slate-900">Insights</h3>
+                    <p class="text-xs text-slate-500 mt-0.5 mb-4">
+                        Recomputed from the records on every load.
+                        {% if n_urgent %}{{ n_urgent }} need{{ 's' if n_urgent == 1 }} attention, listed first.{% else %}Nothing needs attention right now.{% endif %}
+                    </p>
+                    <ul role="list" class="grid gap-3 lg:grid-cols-2">
+                        {% for tip in insights %}
+                        {% set structured = tip is mapping %}
+                        {% set l = lv[tip.level if structured else 'info'] %}
+                        <li class="rounded-xl border {{ l[1] }} p-3.5">
+                            {% if structured %}
+                            <span class="inline-block text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full {{ l[2] }}">{{ l[0] }}</span>
+                            <p class="mt-1.5 font-semibold text-slate-900 leading-snug num">{{ tip.title }}</p>
+                            {% endif %}
+                            <p class="{{ 'mt-1' if structured }} text-sm text-slate-600 leading-relaxed num">{{ tip.text if structured else tip }}</p>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+        {% endif %}
+
         <!-- Collections vs Disbursements trend (whole year, collapsible) -->
         {% if trend and trend|length > 1 %}
-        <section aria-labelledby="trend-heading" class="mb-10">
+        <section id="trend" aria-labelledby="trend-heading" class="mb-10">
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                 <button
                     type="button"
@@ -425,28 +609,6 @@
                     </div>
                     {% endif %}
 
-                    {% if insights %}
-                    <!-- Planning insights -->
-                    <div class="mt-8 pt-6 border-t border-slate-100">
-                        <h3 class="font-display text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
-                            </svg>
-                            Planning Insights
-                        </h3>
-                        <p class="text-xs text-slate-500 mt-0.5 mb-4">
-                            Recomputed on every load — today's fund position first, then which allotments to look at.
-                        </p>
-                        <ul class="space-y-2.5" role="list">
-                            {% for tip in insights %}
-                            <li class="flex items-start gap-2.5 p-3 rounded-xl bg-amber-50/70 border border-amber-100 text-sm text-slate-700 leading-relaxed">
-                                <span class="mt-0.5 shrink-0 w-5 h-5 rounded-full bg-amber-100 text-amber-700 text-[11px] font-bold flex items-center justify-center num">{{ loop.index }}</span>
-                                <span class="num">{{ tip }}</span>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    {% endif %}
                 </div>
             </div>
         </section>
@@ -491,7 +653,7 @@
 
 
         <!-- Funds: ledger-based, reconciles with "Where the money stands today" -->
-        <section aria-labelledby="funds-heading" class="mb-12">
+        <section id="funds" aria-labelledby="funds-heading" class="mb-12">
             <h2 id="funds-heading" class="font-display text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-1.5 mb-5">
                 Funds
                 {{ info('Funds',
@@ -573,7 +735,7 @@
         </section>
 
         <!-- Account balances -->
-        <section aria-labelledby="accounts-heading" class="mb-12">
+        <section id="accounts" aria-labelledby="accounts-heading" class="mb-12">
             <h2 id="accounts-heading" class="font-display text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-1.5 mb-5">
                 Account Balances
                 {{ info('Account Balances',
@@ -760,6 +922,7 @@
 
 <script type="application/json" id="trend-data">{{ trend_json }}</script>
 <script type="application/json" id="purpose-data">{{ purpose_json }}</script>
+<script type="application/json" id="plan-data">{{ plan_json }}</script>
 <script>
     function financialStatement() {
         return {
@@ -770,9 +933,31 @@
             trendRows: [],
             purposeChart: null,
             chartTries: 0,
+            // Planning scratchpad: one editable monthly amount per allotment
+            planData: (() => { try { return JSON.parse(document.getElementById('plan-data').textContent); } catch { return null; } })(),
+            planned: [],
             init() {
+                if (this.planData) {
+                    let saved = null;
+                    try { saved = JSON.parse(localStorage.getItem(this.planKey())); } catch {}
+                    this.planned = this.planData.rows.map(r => (saved && typeof saved[r.purpose] === 'number') ? saved[r.purpose] : r.suggested);
+                }
                 if (this.trendOpen) this.$nextTick(() => this.initTrendChart());
             },
+            planKey() { return 'fs_plan_' + this.planData.year; },
+            planTotal() { return this.planned.reduce((a, v) => a + (Number(v) || 0), 0); },
+            planGap(base) { return this.planData ? this.planData[base] - this.planTotal() : 0; },
+            planDelta(i) { return (Number(this.planned[i]) || 0) - this.planData.rows[i].avg; },
+            setPlan(key) { this.planned = this.planData.rows.map(r => Math.round(r[key])); this.savePlan(); },
+            savePlan() {
+                try {
+                    localStorage.setItem(this.planKey(), JSON.stringify(Object.fromEntries(
+                        this.planData.rows.map((r, i) => [r.purpose, Number(this.planned[i]) || 0]))));
+                } catch {}
+            },
+            fmt(v) { return '₱' + Math.round(Math.abs(v)).toLocaleString('en-PH'); },
+            gapText(v) { return (v < 0 ? this.fmt(v) + ' short' : this.fmt(v) + ' spare'); },
+            deltaText(v) { return Math.abs(v) <= 0.5 ? 'same as this year' : this.fmt(v) + (v > 0 ? ' more than this year' : ' less than this year'); },
             toggleGroup(id) {
                 this.openGroups.includes(id) ? this.openGroups = this.openGroups.filter(g => g !== id) : this.openGroups.push(id);
             },
