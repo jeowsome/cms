@@ -100,6 +100,15 @@ class Collection(Document):
 
 	def on_submit(self):
 		self.make_journal_entry()
+		# A resubmit after "reopen for correction" completes the audit record
+		from church_management.church_management.doctype.collection import corrections
+		corrections.close(self)
+
+	def on_trash(self):
+		# A reopened collection was once on the books — it must be resubmitted, never deleted
+		from church_management.church_management.doctype.collection import corrections
+		if corrections.open_correction(self.name):
+			frappe.throw(frappe._("This collection is being corrected. Submit it again instead of deleting it."))
 
 	def make_journal_entry(self):
 		settings = frappe.get_single("Church Management Settings")

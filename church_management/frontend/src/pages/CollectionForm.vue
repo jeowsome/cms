@@ -352,6 +352,82 @@ async function doDelete() {
 const status = computed(() =>
   form.docstatus === 1 ? "Submitted" : form.docstatus === 2 ? "Cancelled" : "Draft"
 );
+
+// ---------------------------------------------------------------------------
+// Corrections: reopen a submitted collection, fix it, submit again.
+// The server keeps the audit trail (who, when, why, what changed).
+// ---------------------------------------------------------------------------
+const { data: correctionData, refetch: refetchCorrections } = useQuery({
+  key: () => ["collection-corrections", route.params.name],
+  // null = the server does not offer corrections (older backend) — hide the feature
+  query: () => call("church_management.api.collection.get_corrections", { name: route.params.name }).catch(() => null),
+  enabled: () => !isNew.value,
+  refetchOnWindowFocus: false,
+});
+const correctionsAvailable = computed(() => Array.isArray(correctionData.value));
+const corrections = computed(() => (correctionsAvailable.value ? correctionData.value : []));
+const openCorrection = computed(() => corrections.value.find((c) => c.status === "open") || null);
+
+const showCorrect = ref(false);
+const correctReason = ref("");
+const reopening = ref(false);
+const correctError = ref("");
+
+// Reopened or resubmitted — here or on another device — changes the history
+watch(
+  () => form.docstatus,
+  (now, before) => {
+    if (!isNew.value && before !== undefined && now !== before) refetchCorrections();
+  }
+);
+
+function askCorrect() {
+  correctReason.value = "";
+  correctError.value = "";
+  showCorrect.value = true;
+}
+
+async function doReopen() {
+  const reason = correctReason.value.trim();
+  if (reason.length < 5) {
+    correctError.value = "Please say what is being corrected and why.";
+    return;
+  }
+  reopening.value = true;
+  correctError.value = "";
+  try {
+    const doc = await call("church_management.api.collection.reopen_for_correction", {
+      name: form.name,
+      reason,
+      client_id: sync.clientId,
+    });
+    sync.merge(doc);
+    showCorrect.value = false;
+    errorMsg.value = "";
+  } catch (e) {
+    correctError.value = e.message || "Could not reopen this collection.";
+  } finally {
+    reopening.value = false;
+  }
+}
+
+const pesoFmt = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP" });
+function fmtWhen(ts) {
+  if (!ts) return "";
+  const d = new Date(String(ts).slice(0, 19).replace(" ", "T"));
+  return Number.isNaN(d.getTime())
+    ? ts
+    : d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
+}
+function fmtChangeValue(change, v) {
+  if (v === null || v === undefined || v === "") return "—";
+  const money = typeof v === "number" && !change.count && change.field !== "Attendees";
+  return money ? pesoFmt.format(v) : String(v);
+}
+function changeSubject(c) {
+  const who = c.who ? `${c.who}${c.envelope ? ` (envelope ${c.envelope})` : ""}` : c.envelope ? `Envelope ${c.envelope}` : "";
+  return [c.section, who].filter(Boolean).join(" · ");
+}
 </script>
 
 <template>
@@ -431,6 +507,19 @@ const status = computed(() =>
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
         </svg>
         <span class="whitespace-pre-line">{{ errorMsg }}</span>
+      </div>
+
+      <!-- Reopened for correction: out of the books until submitted again -->
+      <div v-if="openCorrection && !readOnly" class="mb-4 p-3 bg-amber-50 border border-amber-200 text-amber-900 rounded-xl text-sm">
+        <p class="font-bold">Being corrected — submit again when you are done</p>
+        <p class="mt-1">
+          Reopened by <b>{{ openCorrection.opened_by }}</b> on {{ fmtWhen(openCorrection.opened_on) }}:
+          <span class="italic">“{{ openCorrection.reason }}”</span>
+        </p>
+        <p class="mt-1 text-xs text-amber-800">
+          <template v-if="openCorrection.old_journal_entry">Journal entry {{ openCorrection.old_journal_entry }} was cancelled. </template>
+          This collection is left out of the totals and the ledger until it is submitted again; every change is recorded in the correction history.
+        </p>
       </div>
 
       <!-- Journal entry banner (after submit) -->
@@ -764,10 +853,84 @@ const status = computed(() =>
         </div>
       </div>
 
+      <!-- Correction history (audit trail) -->
+      <section v-if="corrections.length" aria-labelledby="corrections-heading" class="mt-5 bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div class="px-4 sm:px-5 py-3 border-b border-gray-100 bg-gray-50/60">
+          <h2 id="corrections-heading" class="text-sm font-bold text-gray-900">Correction history</h2>
+          <p class="text-xs text-gray-500 mt-0.5">Every time this collection was reopened after submitting — who, when, why and what changed. This record cannot be edited.</p>
+        </div>
+        <ol class="divide-y divide-gray-100">
+          <li v-for="c in corrections" :key="c.id" class="px-4 sm:px-5 py-4">
+            <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <span
+                class="text-[11px] font-semibold px-2 py-0.5 rounded-full"
+                :class="c.status === 'open' ? 'bg-amber-100 text-amber-800' : 'bg-green-50 text-green-700'"
+              >{{ c.status === "open" ? "In progress" : "Corrected" }}</span>
+              <span class="text-sm font-semibold text-gray-900">{{ fmtWhen(c.closed_on || c.opened_on) }}</span>
+              <span class="text-sm text-gray-500">
+                · reopened by {{ c.opened_by }}<template v-if="c.closed_by && c.closed_by !== c.opened_by">, resubmitted by {{ c.closed_by }}</template>
+              </span>
+            </div>
+            <p class="mt-1.5 text-sm text-gray-700"><span class="text-gray-400">Reason:</span> {{ c.reason }}</p>
+
+            <ul v-if="c.changes.length" class="mt-2.5 space-y-1.5">
+              <li v-for="(ch, i) in c.changes" :key="i" class="text-sm rounded-lg bg-gray-50 px-3 py-2">
+                <span class="font-medium text-gray-900">{{ changeSubject(ch) }}</span>
+                <template v-if="ch.kind === 'added'">
+                  <span class="text-gray-500"> — added </span>
+                  <b class="text-green-700">{{ fmtChangeValue(ch, ch.new) }}</b>
+                  <span class="text-gray-500"> ({{ ch.account_type }})</span>
+                </template>
+                <template v-else-if="ch.kind === 'removed'">
+                  <span class="text-gray-500"> — removed </span>
+                  <b class="text-red-700 line-through">{{ fmtChangeValue(ch, ch.old) }}</b>
+                  <span class="text-gray-500"> ({{ ch.account_type }})</span>
+                </template>
+                <template v-else>
+                  <span class="text-gray-500"> — {{ ch.field }}: </span>
+                  <span class="text-gray-500 line-through">{{ fmtChangeValue(ch, ch.old) }}</span>
+                  <span class="text-gray-400"> → </span>
+                  <b class="text-gray-900">{{ fmtChangeValue(ch, ch.new) }}</b>
+                </template>
+              </li>
+            </ul>
+            <p v-else-if="c.status === 'done'" class="mt-2 text-sm text-gray-500">Resubmitted with no changes.</p>
+            <p v-else class="mt-2 text-sm text-amber-700">Changes will be listed here once it is submitted again.</p>
+
+            <p v-if="c.status === 'done' && c.totals_before && c.totals_after" class="mt-2.5 text-xs text-gray-500">
+              Grand total {{ pesoFmt.format(c.totals_before.all_grand_total) }} → <b class="text-gray-800">{{ pesoFmt.format(c.totals_after.all_grand_total) }}</b>
+              <template v-if="c.old_journal_entry || c.new_journal_entry">
+                · journal entry {{ c.old_journal_entry || "none" }} (cancelled) → {{ c.new_journal_entry || "none" }}
+              </template>
+            </p>
+          </li>
+        </ol>
+      </section>
+
+      <!-- Submitted: locked, but a mistake can still be corrected -->
+      <div
+        v-if="form.docstatus === 1 && correctionsAvailable"
+        class="mt-5 p-3 sm:p-4 bg-white rounded-2xl border border-gray-100 flex flex-wrap items-center justify-between gap-3"
+      >
+        <p class="text-sm text-gray-600">
+          <b class="text-gray-900">Submitted and locked.</b>
+          Found a mistake? Reopen it to make the change — the reason and every change are kept in the correction history.
+        </p>
+        <AppButton variant="secondary" size="sm" @click="askCorrect">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zM19.5 7.125L16.862 4.487" />
+          </svg>
+          Edit / correct
+        </AppButton>
+      </div>
+
       <!-- Action bar -->
       <div v-if="!readOnly" class="sticky bottom-0 z-30 mt-5 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 bg-gray-50/90 backdrop-blur border-t border-gray-200 flex items-center justify-between gap-3">
+        <span v-if="openCorrection" class="text-xs text-amber-700 font-medium">
+          Correction in progress — submitting posts a new Journal Entry.
+        </span>
         <AppButton
-          v-if="form.name"
+          v-else-if="form.name"
           variant="ghost" size="sm"
           class="!text-red-600 hover:!bg-red-50"
           :disabled="submitting"
@@ -829,6 +992,36 @@ const status = computed(() =>
       @close="showMemberModal = false"
       @saved="onMemberSaved"
     />
+
+    <!-- Reopen for correction -->
+    <Teleport to="body">
+      <div v-if="showCorrect" class="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="correct-title">
+        <div class="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" @click="!reopening && (showCorrect = false)" />
+        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-5 anim-pop">
+          <h3 id="correct-title" class="text-base font-bold text-gray-900">Correct this collection?</h3>
+          <ul class="mt-2 text-sm text-gray-600 space-y-1 list-disc pl-5">
+            <li>The collection reopens as a draft so you can change it.</li>
+            <li v-if="form.journal_entry">Journal entry <b>{{ form.journal_entry }}</b> is cancelled, which reverses it in the books.</li>
+            <li>It stays out of the totals until you <b>submit it again</b>, which posts a new journal entry.</li>
+            <li>Who, when, why and what changed is saved in the correction history.</li>
+          </ul>
+          <label for="correct-reason" class="block mt-4 text-xs font-semibold text-gray-700">What is being corrected, and why? <span class="text-red-600">*</span></label>
+          <textarea
+            id="correct-reason"
+            v-model="correctReason"
+            rows="3"
+            class="cm-field mt-1"
+            placeholder="e.g. Tithes for envelope 80 was typed as 1,105 — it should be 1,005"
+            :disabled="reopening"
+          />
+          <p v-if="correctError" class="mt-2 text-sm text-red-700">{{ correctError }}</p>
+          <div class="mt-5 flex justify-end gap-2">
+            <AppButton variant="secondary" size="sm" :disabled="reopening" @click="showCorrect = false">Cancel</AppButton>
+            <AppButton size="sm" :loading="reopening" @click="doReopen">Reopen for correction</AppButton>
+          </div>
+        </div>
+      </div>
+    </Teleport>
 
     <!-- Delete confirmation -->
     <Teleport to="body">

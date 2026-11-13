@@ -4,6 +4,7 @@ import frappe
 from frappe import _
 
 from church_management.api import permissions as perms
+from church_management.church_management.doctype.collection import corrections
 
 # Records before this year are stale historical data kept for reference only —
 # the SPA never lists or edits them.
@@ -187,6 +188,33 @@ def delete_collection(name, client_id=None):
     doc.delete()
     _broadcast(name, "deleted", client_id)
     return {"deleted": name}
+
+
+# ---------------------------------------------------------------------------
+# Corrections to a submitted collection (see doctype/collection/corrections.py)
+# ---------------------------------------------------------------------------
+
+@frappe.whitelist()
+def reopen_for_correction(name, reason, client_id=None):
+    """Reopen a submitted collection so a mistake can be fixed.
+
+    Cancels its Journal Entry and returns the collection to draft; the reason
+    and every change are kept in the correction history. Submitting again
+    posts a new Journal Entry.
+    """
+    perms.require_finance()
+    frappe.has_permission("Collection", doc=name, ptype="submit", throw=True)
+    doc = corrections.reopen(name, reason)
+    _broadcast(name, "reload", client_id)
+    return doc.as_dict()
+
+
+@frappe.whitelist()
+def get_corrections(name):
+    """Correction history (audit trail) of a collection, newest first."""
+    perms.require_finance()
+    frappe.has_permission("Collection", doc=name, throw=True)
+    return corrections.history(name)
 
 
 # ---------------------------------------------------------------------------
