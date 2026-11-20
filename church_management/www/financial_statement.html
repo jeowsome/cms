@@ -643,9 +643,9 @@ Where the money stands today, what to adjust in the budget, and the full record 
                     </select>
                 </div>
                 <div class="flex-1 flex sm:justify-end">
-                    <button type="button" @click="downloadExcel()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
+                    <button type="button" @click="downloadExcel()" title="Workbook for the accountant: summary, monthly cash flow, every collection and disbursement item (drafts and unclaimed included, with status) and ledger postings" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        Download Ledger (Excel)
+                        Download Excel ({% if selected_month %}{{ selected_month }} {% endif %}{{ selected_year }})
                     </button>
                 </div>
             </form>
@@ -1165,8 +1165,8 @@ Where the money stands today, what to adjust in the budget, and the full record 
                 });
             },
             downloadExcel() {
-                const year = '{{ selected_year }}';
-                window.location.href = `/api/method/church_management.www.financial_statement.download_disbursements_excel?year=${year}`;
+                const params = new URLSearchParams({ year: '{{ selected_year }}', month: '{{ selected_month }}' });
+                window.location.href = `/api/method/church_management.www.financial_statement.download_disbursements_excel?${params}`;
             }
         }
     }

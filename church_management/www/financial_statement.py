@@ -7,6 +7,22 @@ import frappe
 from frappe.utils import getdate, nowdate
 
 
+MONTH_NAMES = list(calendar.month_name)[1:]
+
+
+def fund_for_source(src):
+    """Fund a disbursement item draws from, by its source account.
+    Items without a source fall into General so fund totals reconcile."""
+    s = (src or '').lower()
+    if 'white gift' in s:
+        return 'White Gift'
+    if 'mission' in s:
+        return 'Mission'
+    if 'benevolence' in s:
+        return 'Benevolence'
+    return 'General'
+
+
 def _sundays(year, month):
     first = date(year, month, 1)
     d = first + timedelta(days=(6 - first.weekday()) % 7)
@@ -240,7 +256,8 @@ def get_context(context):
         cols_query = frappe.get_all('Collection',
             fields=['name', 'date', 'grand_total', 'grand_total_cls', 'tithes_total', 'mission_total', 'offering_total', 'benevolence_collection', 'loose_collection', 'sunday_school_collection',
                     'tithes_total_cls', 'mission_total_cls', 'offering_total_cls', 'benevolence_collection_cls', 'loose_collection_cls'],
-            filters=[['Collection', 'date', '>=', f'{selected_year}-01-01'], ['Collection', 'date', '<=', f'{selected_year}-12-31'], ['Collection', 'docstatus', '=', 1]])
+            # `date` is a Datetime: use "< next Jan 1" so Dec 31 evening services count
+            filters=[['Collection', 'date', '>=', f'{selected_year}-01-01'], ['Collection', 'date', '<', f'{int(selected_year) + 1}-01-01'], ['Collection', 'docstatus', '=', 1]])
         
         disb_query = frappe.get_all('Disbursement', fields=['name', 'month_recorded', 'year_recorded'], filters={'year_recorded': selected_year, 'docstatus': ['<', 2]})
         
@@ -319,11 +336,7 @@ def get_context(context):
                 purp, src = item.get('purpose'), item.get('source')
                 # Map amounts to funds by source account.
                 # Items without a source fall into General so fund totals reconcile with total_disbursed.
-                src_lower = (src or '').lower()
-                if 'white gift' in src_lower: mapped_fund = 'White Gift'
-                elif 'mission' in src_lower: mapped_fund = 'Mission'
-                elif 'benevolence' in src_lower: mapped_fund = 'Benevolence'
-                else: mapped_fund = 'General'
+                mapped_fund = fund_for_source(src)
 
                 purp_key = purp or 'No Purpose'
                 if mapped_fund == 'General':
@@ -538,6 +551,9 @@ def get_context(context):
                     'kind': kind,
                     'fund': fund,
                     'channel': 'cashless' if 'Cashless' in label else 'cash',
+                    # For the Excel export's ledger sheet
+                    'ledgers': [a for a in ledger_accounts if a],
+                    'cumulative': cumulative,
                 })
 
         # Claimed items whose source is empty or matches no display account above —
@@ -832,29 +848,18 @@ def get_context(context):
     return context
 
 @frappe.whitelist()
-def download_disbursements_excel(year):
+def download_disbursements_excel(year, month=None):
+    """Statement workbook for the accountant: summary, monthly cash flow,
+    every collection and disbursement item (drafts included, with status)
+    and the ledger postings behind the account balances."""
     if "System Manager" not in frappe.get_roles():
         frappe.throw(
             frappe._("You are not permitted to download the financial statement."),
             frappe.PermissionError,
         )
-    from frappe.utils.xlsxutils import make_xlsx
-    disbursements = frappe.get_all('Disbursement', filters={'year_recorded': year, 'docstatus': ['<', 2]}, fields=['name', 'month_recorded'])
-    data = [["Month", "Date", "Source", "Purpose", "Department", "Description/Remarks", "Received By", "Amount"]]
-    for d in disbursements:
-        doc = frappe.get_doc('Disbursement', d.name)
-        items = []
-        for w in range(1, 6):
-            items.extend(doc.get(f'disbursement_item_week_{w}') or [])
-            items.extend(doc.get(f'expense_item_week_{w}') or [])
-        items.extend(doc.get('monthly_expense_items') or [])
-        items.extend(doc.get('monthly_disbursement_items') or [])
-        for item in items:
-            if item.get('status') == 'Claimed':
-                amt = item.get('amount') or 0.0
-                desc = item.get('description') or item.get('remarks') or item.get('worker') or item.get('purpose') or ""
-                data.append([d.month_recorded, item.get('received_date'), item.get('source'), item.get('purpose'), item.get('department'), desc, item.get('received_by'), amt])
-    xlsx_file = make_xlsx(data, "Disbursements")
-    frappe.response['filename'] = f"Disbursements_{year}.xlsx"
-    frappe.response['filecontent'] = xlsx_file.getvalue()
+    from church_management.church_management.financial_statement_export import build_workbook
+
+    content, filename = build_workbook(year, month)
+    frappe.response['filename'] = filename
+    frappe.response['filecontent'] = content
     frappe.response['type'] = 'binary'
