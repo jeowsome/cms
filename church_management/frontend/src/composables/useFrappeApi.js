@@ -11,6 +11,37 @@ function getCsrfToken() {
   return "";
 }
 
+/** Text of an HTML message; for <details><summary>…</summary>…</details> only the summary. */
+function plainText(html) {
+  if (!html) return "";
+  const div = document.createElement("div");
+  div.innerHTML = html;
+  const summary = div.querySelector("summary");
+  return (summary || div).textContent.trim();
+}
+
+/**
+ * The messages Frappe sends with an error (frappe.throw / msgprint): a JSON
+ * list of JSON-encoded {message, title, ...} objects in `_server_messages`.
+ * Tracebacks are switched off on the server, so these are what users see.
+ */
+function serverMessages(error) {
+  try {
+    return JSON.parse(error._server_messages || "[]")
+      .map((m) => {
+        try {
+          const o = JSON.parse(m);
+          return plainText(typeof o === "string" ? o : o.message);
+        } catch {
+          return plainText(m);
+        }
+      })
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
 async function request(url, options = {}) {
   const headers = {
     Accept: "application/json",
@@ -23,8 +54,12 @@ async function request(url, options = {}) {
 
   if (!res.ok) {
     const error = await res.json().catch(() => ({ message: res.statusText }));
-    const err = new Error(error.message || error.exc || `HTTP ${res.status}`);
+    const messages = serverMessages(error);
+    const exception = (error.exception || "").replace(/^[\w.]+:\s*/, "");
+    const err = new Error(messages[0] || error.message || plainText(exception) || `HTTP ${res.status}`);
     err.status = res.status;
+    err.messages = messages;
+    err.excType = error.exc_type;
     throw err;
   }
 

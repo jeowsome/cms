@@ -222,19 +222,6 @@ fixtures = [
         ]
     },
     {
-        "dt": "DocType",
-        "filters": [
-            [
-                "name", "in", [
-                    "Donation Item",
-                    "Donation Expense Item",
-                    "Donation Assignee",
-                    "Donation"
-                ]
-            ]
-        ]
-    },
-    {
         "dt": "Church Management Settings"
     },
     {

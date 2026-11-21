@@ -80,7 +80,11 @@ Files in `church_management/church_management/` (e.g., `add_claim_button.py`, `a
 
 ### Fixtures
 
-Exported via hooks.py: `Role` (Donation Creator/Editor), `Workspace` (JBC CMS), `DocType` (Donation/Donation Item), `Church Management Settings`, and specific `Account` records.
+Exported via hooks.py: `Role` (Donation Creator/Editor), `Workspace` (JBC CMS), `Church Management Settings`, and specific `Account` records. Never add `DocType` to fixtures: standard DocTypes live in their own `doctype/` folders, and a DocType fixture fails to import without developer mode.
+
+### Developer mode
+
+Developer mode is OFF on the live site (since 2026-11-21), so standard DocTypes, Reports and Workspaces cannot be created or edited there. Make schema changes by editing the DocType JSON files in the app (bump `modified`) and running `migrate`, or on a separate development site with developer mode on. The one-off schema scripts in `church_management/church_management/` (e.g. `add_claim_button.py`) need developer mode and are not for the live site.
 
 ## Key Patterns
 
