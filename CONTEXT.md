@@ -1,16 +1,17 @@
 ## Current Task
-Financial statement: usable (General) funds, due-date outlook, ledger-based Funds/Account Balances; Collections live sync.
+Finance upgrades (departments, voids, creditors, claim corrections, audit log, Fund Summary) live on jbc-pasig.com since 2026-11-21; server hardened.
 
 ## Key Decisions
-- Only General fund is "usable"; Mission/Benevolence shown as set aside, White Gift separate
-- Pending split by due date (week N = Nth Sunday, monthly = month end); outlook uses avg General per Sunday
-- Comfortable to spend = min(end-of-month, year-end outlook) − RESERVE_WEEKS (1) of avg General spending
+- Creditor payables/reimbursements are off-GL like claims; reimburse only from a same-fund account
+- Live: developer_mode 0, allow_error_traceback 0, all supervisor programs run as `frappe`, HRMS removed
+- Repo is public: no names in commits; patch names in git-ignored `patches/*/people_*.json`; `data/` and `notes/` ignored
 
 ## Next Steps
-- Deploys need: npm run build + `sudo supervisorctl restart frappe-bench-web:` (own SSH, needs password)
-- Mission Cashless overdrawn −₱10,200; May-2026 PhilHealth ₱1,100 has receiver but Unclaimed — confirm
-- JV-00054 cancelled 2026-10-17 (orphan from deleted test collection)
+- Make GitHub repo private (old commits still hold church_management/data member/tithe exports)
+- Deploy = backup → migrate (once) → `npm run build` → `sudo supervisorctl restart frappe-bench-web: frappe-bench-workers:`
+- Runbooks: notes/2026-11-21-finance-go-live-and-server-hardening.md (dev on live site, restore, backups)
 
-## Server Notes (2026-11-13)
-- VS Code rg-storm guard: ~/.vscode-server/data/Machine/settings.json (python envs ext off, watcher excludes)
-- Old npm Claude removed; native install at ~/.local/bin; PATH deduped at end of .bashrc/.profile
+## Server Notes
+- Daily full backup 02:30 Manila → ~/backups/jbc-pasig.com (30 days); restore: ~/frappe-bench/restore_site_db.sh
+- Live scheduler disabled (enable_scheduler 0), as before; run tests only on a temporary test site
+- Older open checks (from 2026-11-13, not re-verified): Mission Cashless −₱10,200; May-2026 PhilHealth ₱1,100 Unclaimed
