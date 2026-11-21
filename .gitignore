@@ -16,3 +16,6 @@ church_management/patches/*/people_*.json
 
 # exported site data (member names, tithes, collections) — never commit, repository is public
 church_management/data/
+
+# Foam notes (server runbooks, kept off the public repo)
+notes/
