@@ -13,3 +13,6 @@ church_management/data/*.dual-graph/
 
 # names for one-time data patches (repository is public)
 church_management/patches/*/people_*.json
+
+# exported site data (member names, tithes, collections) — never commit, repository is public
+church_management/data/
