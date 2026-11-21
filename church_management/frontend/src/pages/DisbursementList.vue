@@ -153,6 +153,19 @@ function goTo(row) {
       </template>
     </PageHeader>
 
+    <!-- Finance tools -->
+    <nav class="flex flex-wrap gap-2 mb-4 -mt-1" aria-label="Finance tools">
+      <RouterLink v-for="l in [
+          { to: '/overdue', label: 'Overdue review' },
+          { to: '/creditors', label: 'Creditors' },
+          { to: '/fund-summary', label: 'Fund summary' },
+          { to: '/audit-log', label: 'Audit log' },
+        ]" :key="l.to" :to="l.to"
+        class="text-[11px] font-bold uppercase tracking-wider text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-100 px-3 py-1.5 rounded-lg">
+        {{ l.label }}
+      </RouterLink>
+    </nav>
+
     <!-- Year at a glance -->
     <div v-if="yearRows.length" class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
       <div class="rounded-2xl p-3.5 border border-gray-100 bg-white">

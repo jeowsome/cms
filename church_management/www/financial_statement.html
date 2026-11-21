@@ -220,7 +220,8 @@ Where the money stands today, what to adjust in the budget, and the full record 
                     '<p>' ~ fund_info[f.name] ~ '</p><div class="pt-1.5 border-t border-white/15 text-slate-300">'
                     ~ line('Available', peso(f.available))
                     ~ line('Pending claims', '− ' ~ peso(f.pending), 'text-amber-300')
-                    ~ line('Free after claims', peso(f.projected), 'mt-1 pt-1 border-t border-white/15 font-semibold text-white') ~ '</div>'
+                    ~ (line('Owed to creditors', '− ' ~ peso(f.get('owed', 0)), 'text-amber-300') if f.get('owed', 0) else '')
+                    ~ line('Free after claims' ~ (' & payables' if f.get('owed', 0) else ''), peso(f.projected), 'mt-1 pt-1 border-t border-white/15 font-semibold text-white') ~ '</div>'
                     ~ '<div class="pt-1.5 border-t border-white/15 text-slate-300">' ~ acct_lines(f.name, 'fund') ~ '</div>',
                     tone=('text-slate-900' if f.available >= 0 else 'text-rose-700'), compact=True, chip=f_chip,
                     ring=('border-amber-300' if fund_warning(f)|trim else 'border-slate-200'), warn=fund_warning(f)|trim) }}
@@ -704,8 +705,14 @@ Where the money stands today, what to adjust in the budget, and the full record 
                             <span class="text-slate-500">Pending claims</span>
                             <span class="font-semibold text-amber-600 num">− {{ peso(f.pending) }}</span>
                         </div>
+                        {% if f.get('owed', 0) %}
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-500">Owed to creditors</span>
+                            <span class="font-semibold text-amber-600 num">− {{ peso(f.owed) }}</span>
+                        </div>
+                        {% endif %}
                         <div class="pt-2.5 border-t border-slate-100 flex justify-between items-end">
-                            <span class="text-xs font-medium text-amber-600 uppercase tracking-wide">After pending claims</span>
+                            <span class="text-xs font-medium text-amber-600 uppercase tracking-wide">{{ 'After pending & payables' if f.get('owed', 0) else 'After pending claims' }}</span>
                             <span class="text-base font-bold num {{ 'text-rose-700' if f.projected < 0 else 'text-slate-800' }}">{{ peso(f.projected) }}</span>
                         </div>
                         {% if f_warn %}

@@ -4,43 +4,16 @@ from datetime import date, timedelta
 from statistics import mean, median, pstdev
 
 import frappe
-from frappe.utils import getdate, nowdate
+from frappe.utils import flt, getdate, nowdate
 
 
-MONTH_NAMES = list(calendar.month_name)[1:]
+from church_management.church_management import creditors as cred
+from church_management.church_management import finance as fin
 
-
-def fund_for_source(src):
-    """Fund a disbursement item draws from, by its source account.
-    Items without a source fall into General so fund totals reconcile."""
-    s = (src or '').lower()
-    if 'white gift' in s:
-        return 'White Gift'
-    if 'mission' in s:
-        return 'Mission'
-    if 'benevolence' in s:
-        return 'Benevolence'
-    return 'General'
-
-
-def _sundays(year, month):
-    first = date(year, month, 1)
-    d = first + timedelta(days=(6 - first.weekday()) % 7)
-    out = []
-    while d.month == month:
-        out.append(d)
-        d += timedelta(days=7)
-    return out
-
-
-def _due_date(year, month_idx, field):
-    """Week N items fall due on the month's Nth Sunday; monthly items by month end."""
-    if field.startswith(('disbursement_item_week_', 'expense_item_week_')):
-        suns = _sundays(year, month_idx)
-        w = int(field.rsplit('_', 1)[1])
-        if w <= len(suns):
-            return suns[w - 1]
-    return date(year, month_idx, calendar.monthrange(year, month_idx)[1])
+MONTH_NAMES = fin.MONTH_NAMES
+fund_for_source = fin.fund_for_source
+_sundays = fin.sundays
+_due_date = fin.due_date
 
 
 # Allotments that are people's livelihoods — never suggest a blunt cut.
@@ -239,7 +212,7 @@ def get_context(context):
         'spend': None,
         'outlook': None,
         'position': {'cash': 0.0, 'cashless': 0.0, 'unassigned': 0.0, 'available': 0.0,
-                     'white_gift': 0.0, 'unclaimed_operating': 0.0, 'projected': 0.0},
+                     'white_gift': 0.0, 'unclaimed_operating': 0.0, 'owed_operating': 0.0, 'projected': 0.0},
         'available_months': [],
         'trend': [],
         'trend_json': '[]',
@@ -323,64 +296,73 @@ def get_context(context):
                 )[0][0] or 0.0
                 fs['funds']['White Gift']['collected'] += wg_bal
 
-        # Pre-process all disbursements once for deductions and fund summary
-        disb_items_by_month = {}  # month_name -> list of (item_dict, disb_name)
-        for d in disb_query:
-            doc = frappe.get_doc('Disbursement', d.name)
-            fields = [f'{t}_{w}' for w in range(1, 6) for t in ('disbursement_item_week', 'expense_item_week')]
-            fields += ['monthly_expense_items', 'monthly_disbursement_items']
-            d_month_idx = month_names.index(d.month_recorded) + 1 if d.month_recorded in month_names else None
-
-            for field, item in ((f, it) for f in fields for it in (doc.get(f) or [])):
-                amt = item.get('amount') or 0.0
-                purp, src = item.get('purpose'), item.get('source')
-                # Map amounts to funds by source account.
-                # Items without a source fall into General so fund totals reconcile with total_disbursed.
-                mapped_fund = fund_for_source(src)
-
-                purp_key = purp or 'No Purpose'
+        # Pre-process all disbursement lines once for deductions and fund summary.
+        # Voided lines are discontinued and counted nowhere. Lines a creditor
+        # paid are real expenses but take no money from a church account;
+        # direct creditor payables count like them.
+        disb_items_by_month = {}  # month_name -> list of claimed item dicts
+        for ln in fin.collect_lines(year=int(selected_year), include_cancelled=False):
+            if not ln.counted or ln.year != int(selected_year):
+                continue
+            field = ln.field
+            amt, purp, src = ln.amount, ln.purpose, ln.source
+            mapped_fund = ln.fund
+            month = ln.month
+            purp_key = purp or 'No Purpose'
+            if mapped_fund == 'General':
+                by_m = gen_purpose_month.setdefault(purp_key, {})
+                by_m[month] = by_m.get(month, 0.0) + amt
+                if field.endswith('_week_5'):
+                    gen_week5[month] = gen_week5.get(month, 0.0) + amt
+            elif mapped_fund in side_out:
+                side_out[mapped_fund][month] = side_out[mapped_fund].get(month, 0.0) + amt
+            if ln.pending:
+                # Committed but not yet claimed — money already promised out.
+                # Feeds the projected view; excluded from claimed totals below.
+                fs['funds'][mapped_fund]['unclaimed'] += amt
+                fs['total_unclaimed'] += amt
+                unclaimed_by_month[month] = unclaimed_by_month.get(month, 0.0) + amt
+                unclaimed_by_purpose[purp_key] = unclaimed_by_purpose.get(purp_key, 0.0) + amt
+                account_unclaimed[src or ''] = account_unclaimed.get(src or '', 0.0) + amt
                 if mapped_fund == 'General':
-                    by_m = gen_purpose_month.setdefault(purp_key, {})
-                    by_m[d.month_recorded] = by_m.get(d.month_recorded, 0.0) + amt
-                    if field.endswith('_week_5'):
-                        gen_week5[d.month_recorded] = gen_week5.get(d.month_recorded, 0.0) + amt
-                elif mapped_fund in side_out:
-                    side_out[mapped_fund][d.month_recorded] = side_out[mapped_fund].get(d.month_recorded, 0.0) + amt
-                if item.get('status') != 'Claimed':
-                    # Committed but not yet claimed — money already promised out.
-                    # Feeds the projected view; excluded from claimed totals below.
-                    fs['funds'][mapped_fund]['unclaimed'] += amt
-                    fs['total_unclaimed'] += amt
-                    unclaimed_by_month[d.month_recorded] = unclaimed_by_month.get(d.month_recorded, 0.0) + amt
-                    unclaimed_by_purpose[purp_key] = unclaimed_by_purpose.get(purp_key, 0.0) + amt
-                    account_unclaimed[src or ''] = account_unclaimed.get(src or '', 0.0) + amt
-                    if mapped_fund == 'General':
-                        gen_unclaimed_by_month[d.month_recorded] = gen_unclaimed_by_month.get(d.month_recorded, 0.0) + amt
-                        if d_month_idx and _due_date(year_int, d_month_idx, field) > today:
-                            gen_due_later[d.month_recorded] = gen_due_later.get(d.month_recorded, 0.0) + amt
-                        else:
-                            gen_due_now += amt
-                            if d_month_idx and year_int == today.year and d_month_idx < today.month:
-                                gen_overdue_by_purpose[purp_key] = gen_overdue_by_purpose.get(purp_key, 0.0) + amt
-                    continue
+                    gen_unclaimed_by_month[month] = gen_unclaimed_by_month.get(month, 0.0) + amt
+                    if ln.due and ln.due > today:
+                        gen_due_later[month] = gen_due_later.get(month, 0.0) + amt
+                    else:
+                        gen_due_now += amt
+                        if year_int == today.year and ln.m_idx < today.month:
+                            gen_overdue_by_purpose[purp_key] = gen_overdue_by_purpose.get(purp_key, 0.0) + amt
+                continue
 
-                claimed_by_purpose[purp_key] = claimed_by_purpose.get(purp_key, 0.0) + amt
+            claimed_by_purpose[purp_key] = claimed_by_purpose.get(purp_key, 0.0) + amt
+            if ln.cash_out:
                 account_deductions[src or ''] = account_deductions.get(src or '', 0.0) + amt
-                fs['funds'][mapped_fund]['disbursed'] += amt
-                fs['total_disbursed'] += amt
-                if mapped_fund == 'General':
-                    gen_claimed_by_month[d.month_recorded] = gen_claimed_by_month.get(d.month_recorded, 0.0) + amt
-                # Store for monthly breakdown. Allowance rows have no description field —
-                # fall back to remarks, then purpose + worker.
-                worker = item.get('worker')
-                fallback = f"{purp} — {worker}" if (purp and worker) else (purp or worker)
-                disb_items_by_month.setdefault(d.month_recorded, []).append({
-                    'amount': amt, 'source': src, 'purpose': purp,
-                    'description': item.get('description') or item.get('remarks') or fallback or "No Description",
-                    'received_date': item.get('received_date'),
-                    'received_by': item.get('received_by'),
-                    'department': item.get('department')
-                })
+            else:
+                fs['funds'][mapped_fund]['creditor_paid'] = fs['funds'][mapped_fund].get('creditor_paid', 0.0) + amt
+            fs['funds'][mapped_fund]['disbursed'] += amt
+            fs['total_disbursed'] += amt
+            if mapped_fund == 'General':
+                gen_claimed_by_month[month] = gen_claimed_by_month.get(month, 0.0) + amt
+            # Store for monthly breakdown. Allowance rows have no description field —
+            # fall back to remarks, then purpose + worker.
+            worker = ln.payee
+            fallback = f"{purp} — {worker}" if (purp and worker) else (purp or worker)
+            disb_items_by_month.setdefault(month, []).append({
+                'amount': amt, 'source': src or (f"Paid by {ln.creditor}" if ln.creditor_paid else None), 'purpose': purp,
+                'description': ln.description or ln.remarks or fallback or "No Description",
+                'received_date': ln.received_date,
+                'received_by': ln.received_by or ln.creditor,
+                'department': ln.department
+            })
+
+        # Creditors repaid this year: cash leaves the source account on the
+        # reimbursement date (the expense itself was counted when it happened)
+        reimbursed_by_account = cred.reimbursed_by_account(f'{selected_year}-01-01', f'{selected_year}-12-31')
+        for acc, amt in reimbursed_by_account.items():
+            account_deductions[acc or ''] = account_deductions.get(acc or '', 0.0) + flt(amt)
+        fs['total_reimbursed'] = sum(flt(v) for v in reimbursed_by_account.values())
+        owed_by_fund = cred.owed_by_fund(f'{selected_year}-12-31')
+        fs['owed_to_creditors'] = sum(owed_by_fund.values())
 
         # Whole-year trend: collections vs disbursements (claimed + unclaimed)
         # per month. Deliberately ignores the month filter — the trend chart
@@ -504,28 +486,17 @@ def get_context(context):
                 )
             return result[0][0] if result else 0.0
 
-        # Define display accounts: label -> (ledger accounts list, deduction source accounts list, cumulative flag)
-        general_cash_ledger = [a for a in [
-            settings.tithes_cash_account, settings.offering_cash_account,
-            settings.loose_cash_account, settings.sunday_school_cash_account
-        ] if a]
-        general_cashless_ledger = [a for a in [
-            settings.tithes_cashless_account, settings.offering_cashless_account,
-            settings.loose_cashless_account
-        ] if a]
-
-        # kind drives the "where we stand" KPI cards: cash on hand, cashless, White Gift;
-        # fund groups the accounts into the fund cards.
-        display_accounts = [
-            ('General Cash', general_cash_ledger, ['General Cash - JBC'] + general_cash_ledger, False, 'cash', 'General'),
-            ('General Cashless', general_cashless_ledger, ['General Cashless - JBC'] + general_cashless_ledger, False, 'cashless', 'General'),
-            ('Mission Cash', [settings.mission_cash_account], [settings.mission_cash_account], False, 'cash', 'Mission'),
-            ('Mission Cashless', [settings.mission_cashless_account], [settings.mission_cashless_account], False, 'cashless', 'Mission'),
-            ('Benevolence Cash', [settings.benevolence_cash_account], [settings.benevolence_cash_account], False, 'cash', 'Benevolence'),
-            ('Benevolence Cashless', [settings.benevolence_cashless_account], [settings.benevolence_cashless_account], False, 'cashless', 'Benevolence'),
-            ('White Gift Cash', [settings.white_gift_cash_account], [settings.white_gift_cash_account], True, 'white_gift', 'White Gift'),
-            ('White Gift Cashless', [settings.white_gift_cashless_account], [settings.white_gift_cashless_account], True, 'white_gift', 'White Gift'),
-        ]
+        # Display accounts: label -> (ledger accounts, deduction source accounts, cumulative, kind, fund).
+        # General Cash/Cashless claims may name the umbrella General accounts as source.
+        display_accounts = []
+        for label, ledgers, cumulative, channel, fund in fin.fund_ledgers(settings):
+            sources = list(ledgers)
+            if label == 'General Cash':
+                sources = ['General Cash - JBC'] + sources
+            elif label == 'General Cashless':
+                sources = ['General Cashless - JBC'] + sources
+            kind = 'white_gift' if fund == 'White Gift' else channel
+            display_accounts.append((label, ledgers, sources, cumulative, kind, fund))
 
         pos = res['position']
         matched_sources = set()
@@ -577,7 +548,8 @@ def get_context(context):
         # operating (non-White-Gift) commitments still waiting to be claimed.
         pos['available'] = pos['cash'] + pos['cashless'] + pos['unassigned']
         pos['unclaimed_operating'] = fs['total_unclaimed'] - fs['funds']['White Gift']['unclaimed']
-        pos['projected'] = pos['available'] - pos['unclaimed_operating']
+        pos['owed_operating'] = fs['owed_to_creditors'] - owed_by_fund.get('White Gift', 0.0)
+        pos['projected'] = pos['available'] - pos['unclaimed_operating'] - pos['owed_operating']
 
         # Fund cards — the same ledger figures as the account table and the
         # "today" KPIs, grouped by fund, so all three sections reconcile.
@@ -588,6 +560,7 @@ def get_context(context):
             from_collections = received if fund == 'White Gift' else fs['funds'][fund]['collected']
             available = sum(a['effective_balance'] for a in accts)
             pending = fs['funds'][fund]['unclaimed']
+            owed = owed_by_fund.get(fund, 0.0)
             fund_cards.append({
                 'name': fund,
                 'received': received,
@@ -598,7 +571,10 @@ def get_context(context):
                 'cash': sum(a['effective_balance'] for a in accts if a['channel'] == 'cash'),
                 'cashless': sum(a['effective_balance'] for a in accts if a['channel'] == 'cashless'),
                 'pending': pending,
-                'projected': available - pending,
+                'owed': owed,
+                'creditor_paid': fs['funds'][fund].get('creditor_paid', 0.0),
+                # After both pending claims and what we owe creditors
+                'projected': available - pending - owed,
                 'overdrawn_accounts': [a['name'] for a in accts if a['effective_balance'] < 0],
             })
         res['fund_cards'] = fund_cards

@@ -1,7 +1,11 @@
 import frappe
 from frappe import _
 
+from frappe.utils import getdate, nowdate
+
 from church_management.api import permissions as perms
+from church_management.church_management import disbursement_audit as audit
+from church_management.church_management import finance as fin
 
 
 @frappe.whitelist()
@@ -43,10 +47,7 @@ def get_list(year=None):
 
         for table_field in active_fields:
             for item in doc.get(table_field) or []:
-                claimed = item.get("status") == "Claimed" or (
-                    item.get("received_by") and item.get("received_date")
-                )
-                if not claimed:
+                if fin.state(item) == fin.UNCLAIMED:
                     unclaimed_count += 1
                     unclaimed_amount += (item.get("amount") or 0.0)
 
@@ -75,75 +76,68 @@ def get_summary(name):
 
     doc = frappe.get_doc("Disbursement", name)
     summary = {}
-
-    for week_num in range(1, 6):
-        items = doc.get(f"disbursement_item_week_{week_num}") or []
-        expenses = doc.get(f"expense_item_week_{week_num}") or []
-
-        for item in items:
-            purpose = item.get("purpose") or "Uncategorized"
-            summary.setdefault(purpose, {"total": 0, "claimed": 0, "unclaimed": 0})
-            amount = item.get("amount") or 0
-            summary[purpose]["total"] += amount
-            if item.get("status") == "Claimed":
-                summary[purpose]["claimed"] += amount
-            else:
-                summary[purpose]["unclaimed"] += amount
-
-        for exp in expenses:
-            purpose = exp.get("purpose") or "Uncategorized"
-            summary.setdefault(purpose, {"total": 0, "claimed": 0, "unclaimed": 0})
-            amount = exp.get("amount") or 0
-            summary[purpose]["total"] += amount
-            if exp.get("status") == "Claimed":
-                summary[purpose]["claimed"] += amount
-            else:
-                summary[purpose]["unclaimed"] += amount
-
+    for _f, _l, item in fin.iter_lines(doc):
+        st = fin.state(item)
+        if st == fin.VOIDED:
+            continue
+        purpose = item.get("purpose") or "Uncategorized"
+        summary.setdefault(purpose, {"total": 0, "claimed": 0, "unclaimed": 0})
+        amount = item.get("amount") or 0
+        summary[purpose]["total"] += amount
+        summary[purpose]["claimed" if st == fin.CLAIMED else "unclaimed"] += amount
     return summary
 
 
 @frappe.whitelist()
-def claim_item(disbursement_name, child_doctype, child_name, received_by, received_date, source=None, remarks=None):
-    """Mark a disbursement item as claimed."""
+def claim_item(disbursement_name, child_doctype, child_name, received_by=None, received_date=None, source=None,
+               remarks=None, paid_by=None, creditor=None, creditor_paid_date=None, creditor_reference=None):
+    """Mark a disbursement item as claimed — paid with church money, or paid
+    by a creditor on the church's behalf (which records a payable)."""
     perms.require_finance()
     if not source:
         frappe.throw(_("Source is mandatory when claiming an item"))
 
     frappe.has_permission("Disbursement", doc=disbursement_name, ptype="write", throw=True)
-
     doc = frappe.get_doc("Disbursement", disbursement_name)
-
-    # Find the child row
-    found = False
-    for table_field in _all_child_fields():
-        for row in doc.get(table_field) or []:
-            if row.name == child_name:
-                row.status = "Claimed"
-                row.received_by = received_by
-                row.received_date = received_date
-                row.source = source
-                if remarks is not None:
-                    row.remarks = remarks
-                found = True
-                break
-        if found:
-            break
-
-    if not found:
-        frappe.throw(_("Item not found in disbursement"))
-
+    _field, _label, row = fin.find_line(doc, child_name)
+    if fin.state(row) == fin.CLAIMED:
+        frappe.throw(_("This item is already claimed."))
+    if fin.state(row) == fin.VOIDED:
+        frappe.throw(_("This item is voided. Restore it before claiming."))
+    _apply_claim(row, received_by, received_date, source, remarks, paid_by, creditor, creditor_paid_date, creditor_reference)
+    doc.flags.line_actions = {row.name: {"action": "Claim"}}
     doc.save()
-    return {"success": True}
+    return _result(doc)
+
+
+def _apply_claim(row, received_by, received_date, source, remarks, paid_by, creditor, creditor_paid_date, creditor_reference):
+    row.status = fin.CLAIMED
+    row.source = source
+    row.paid_by = paid_by or fin.CHURCH
+    if row.paid_by == fin.CREDITOR:
+        row.creditor = creditor
+        row.creditor_paid_date = creditor_paid_date
+        row.creditor_reference = creditor_reference
+        row.received_by = received_by or None
+        row.received_date = received_date or creditor_paid_date
+    else:
+        row.creditor = row.creditor_paid_date = row.creditor_reference = None
+        row.received_by = received_by
+        row.received_date = received_date
+    if remarks is not None:
+        row.remarks = remarks
+
+
+def _result(doc, **extra):
+    return {"success": True, "warnings": doc.flags.audit_warnings or [], **extra}
 
 
 @frappe.whitelist()
-def claim_items_bulk(disbursement_name, child_names, received_by, received_date, source, remarks=None):
+def claim_items_bulk(disbursement_name, child_names, received_by=None, received_date=None, source=None, remarks=None,
+                     paid_by=None, creditor=None, creditor_paid_date=None, creditor_reference=None):
     """Mark multiple disbursement items as claimed in one save."""
     perms.require_finance()
-    import json as _json
-    if isinstance(child_names, str):
-        child_names = _json.loads(child_names)
+    child_names = frappe.parse_json(child_names) if isinstance(child_names, str) else child_names
     if not source:
         frappe.throw(_("Source is mandatory when claiming items"))
     if not child_names:
@@ -154,23 +148,120 @@ def claim_items_bulk(disbursement_name, child_names, received_by, received_date,
 
     target = set(child_names)
     matched = set()
-    for table_field in _all_child_fields():
-        for row in doc.get(table_field) or []:
-            if row.name in target and row.get("status") != "Claimed":
-                row.status = "Claimed"
-                row.received_by = received_by
-                row.received_date = received_date
-                row.source = source
-                if remarks is not None:
-                    row.remarks = remarks
-                matched.add(row.name)
+    for _f, _l, row in fin.iter_lines(doc):
+        if row.name in target and fin.state(row) == fin.UNCLAIMED:
+            _apply_claim(row, received_by, received_date, source, remarks, paid_by, creditor, creditor_paid_date, creditor_reference)
+            matched.add(row.name)
 
     missing = target - matched
     if missing:
-        frappe.throw(_("Some items not found or already claimed: {0}").format(", ".join(missing)))
+        frappe.throw(_("Some items not found, voided or already claimed: {0}").format(", ".join(missing)))
 
+    doc.flags.line_actions = {n: {"action": "Claim"} for n in matched}
     doc.save()
-    return {"success": True, "claimed": list(matched)}
+    return _result(doc, claimed=list(matched))
+
+
+# ---------------------------------------------------------------- corrections
+
+def _load_line(disbursement_name, child_name):
+    perms.require_finance()
+    frappe.has_permission("Disbursement", doc=disbursement_name, ptype="write", throw=True)
+    doc = frappe.get_doc("Disbursement", disbursement_name)
+    field, label, row = fin.find_line(doc, child_name)
+    return doc, row
+
+
+@frappe.whitelist()
+def reverse_claim(disbursement_name, child_name, reason):
+    """Set a claimed line back to Unclaimed and clear Received By/Date."""
+    doc, row = _load_line(disbursement_name, child_name)
+    if fin.state(row) != fin.CLAIMED:
+        frappe.throw(_("Only a claimed line can be reversed."))
+    audit.require_reason(reason, _("reversing a claim"))
+    row.status = fin.UNCLAIMED
+    row.received_by = None
+    row.received_date = None
+    doc.flags.line_actions = {row.name: {"action": "Reverse Claim", "reason": reason}}
+    doc.save()
+    return _result(doc)
+
+
+EDIT_CLAIM_FIELDS = ("amount", "received_by", "received_date", "source")
+
+
+@frappe.whitelist()
+def edit_claim(disbursement_name, child_name, changes, reason):
+    """Correct a claimed line: Amount, Received By, Received Date or Source Account."""
+    doc, row = _load_line(disbursement_name, child_name)
+    if fin.state(row) != fin.CLAIMED:
+        frappe.throw(_("Only a claimed line can be edited this way."))
+    changes = frappe.parse_json(changes) if isinstance(changes, str) else (changes or {})
+    bad = set(changes) - set(EDIT_CLAIM_FIELDS)
+    if bad:
+        frappe.throw(_("Edit claim can only change {0}.").format(", ".join(EDIT_CLAIM_FIELDS)))
+    audit.require_reason(reason, _("editing a claim"))
+    for f, v in changes.items():
+        row.set(f, float(v or 0) if f == "amount" else (v or None))
+    doc.flags.line_actions = {row.name: {"action": "Edit Claim", "reason": reason}}
+    doc.save()
+    return _result(doc)
+
+
+@frappe.whitelist()
+def void_line(disbursement_name, child_name, reason):
+    """Discontinue an unclaimed line: it stays visible but is counted nowhere."""
+    doc, row = _load_line(disbursement_name, child_name)
+    if fin.state(row) != fin.UNCLAIMED:
+        frappe.throw(_("Only an unclaimed line can be voided."))
+    audit.require_reason(reason, _("voiding a line"))
+    row.status = fin.VOIDED
+    row.void_reason = reason.strip()
+    doc.flags.line_actions = {row.name: {"action": "Void", "reason": reason}}
+    doc.save()
+    return _result(doc)
+
+
+@frappe.whitelist()
+def unvoid_line(disbursement_name, child_name, reason):
+    """Restore a voided line to Unclaimed."""
+    doc, row = _load_line(disbursement_name, child_name)
+    if fin.state(row) != fin.VOIDED:
+        frappe.throw(_("This line is not voided."))
+    audit.require_reason(reason, _("restoring a voided line"))
+    row.status = fin.UNCLAIMED
+    doc.flags.line_actions = {row.name: {"action": "Unvoid", "reason": reason}}
+    doc.save()
+    return _result(doc)
+
+
+@frappe.whitelist()
+def get_history(disbursement_name, child_name=None):
+    """Audit trail for a monthly document, or for one of its lines."""
+    perms.require_finance()
+    frappe.has_permission("Disbursement", doc=disbursement_name, throw=True)
+    return audit.history(disbursement=None if child_name else disbursement_name, row_name=child_name)
+
+
+@frappe.whitelist()
+def get_overdue_lines(year=None):
+    """Unclaimed lines whose due date has passed, oldest first, for review."""
+    perms.require_finance()
+    today = getdate(nowdate())
+    out = []
+    for ln in fin.collect_lines(year=int(year) if year else None, include_cancelled=False):
+        if ln.kind != "line" or not ln.pending or not ln.due or ln.due >= today:
+            continue
+        out.append({
+            "disbursement": ln.disbursement, "month": ln.month, "year": ln.year, "section": ln.section,
+            "row_name": ln.row_name, "label": ln.payee or ln.description or ln.remarks or ln.purpose,
+            "description": ln.description, "payee": ln.payee, "purpose": ln.purpose, "department": ln.department,
+            "fund": ln.fund, "source": ln.source, "amount": ln.amount, "due": str(ln.due),
+            "days_overdue": (today - ln.due).days, "received_by": ln.received_by,
+            "child_doctype": fin.CHILD_DOCTYPE[ln.field],
+        })
+    out.sort(key=lambda r: (-r["days_overdue"], r["disbursement"]))
+    return out
 
 
 @frappe.whitelist()
@@ -186,51 +277,40 @@ def get_workers():
     )
 
 @frappe.whitelist()
-def update_item(disbursement_name, child_doctype, child_name, updates):
-    """Update editable fields on a sub-item."""
+def update_item(disbursement_name, child_doctype, child_name, updates, reason=None):
+    """Update editable fields on a line. Claimed lines may only change their
+    purpose or department here; use edit_claim for amount, receiver, date or source."""
     perms.require_finance()
-    if isinstance(updates, str):
-        import json
-        updates = json.loads(updates)
+    updates = frappe.parse_json(updates) if isinstance(updates, str) else updates
 
     frappe.has_permission("Disbursement", doc=disbursement_name, ptype="write", throw=True)
     doc = frappe.get_doc("Disbursement", disbursement_name)
-
-    found = False
-    for table_field in _all_child_fields():
-        for row in doc.get(table_field) or []:
-            if row.name == child_name:
-                if row.status == "Claimed":
-                    frappe.throw(_("Cannot edit a claimed item"))
-                # Allowed fields to update
-                if "worker" in updates and hasattr(row, 'worker'):
-                    row.worker = updates["worker"]
-                if "purpose" in updates:
-                    row.purpose = updates["purpose"]
-                if "source" in updates:
-                    row.source = updates["source"]
-                if "is_planned" in updates and hasattr(row, 'is_planned'):
-                    row.is_planned = int(updates["is_planned"])
-                if "amount" in updates:
-                    new_amount = float(updates["amount"] or 0)
-                    if new_amount != (row.amount or 0):
-                        if not row.get("amount_edited"):
-                            row.original_amount = row.amount
-                            row.amount_edited = 1
-                        row.amount = new_amount
-                found = True
-                break
-        if found:
-            break
-
-    if not found:
-        frappe.throw(_("Item not found in disbursement"))
-
+    _f, _l, row = fin.find_line(doc, child_name)
+    st = fin.state(row)
+    if st == fin.VOIDED:
+        frappe.throw(_("This line is voided. Restore it before editing."))
+    allowed = ("purpose", "department", "description", "remarks") if st == fin.CLAIMED else (
+        "worker", "purpose", "department", "source", "is_planned", "amount", "description", "remarks")
+    blocked = [k for k in updates if k not in allowed and k in ("worker", "source", "amount", "is_planned")]
+    if blocked:
+        frappe.throw(_("This line is claimed. Use Edit claim to change {0}.").format(", ".join(blocked)))
+    columns = set(row.meta.get_valid_columns())
+    for k in allowed:
+        if k not in updates or k not in columns:
+            continue
+        v = updates[k]
+        if k == "amount":
+            v = float(v or 0)
+        elif k == "is_planned":
+            v = int(v or 0)
+        row.set(k, v)
+    if reason:
+        doc.flags.audit_reason = reason
     doc.save()
-    return {"success": True}
+    return _result(doc)
 
 @frappe.whitelist()
-def add_item(disbursement_name, table_field, item_data):
+def add_item(disbursement_name, table_field, item_data, reason=None):
     """Add a new item to a specific child table."""
     perms.require_finance()
     if isinstance(item_data, str):
@@ -243,12 +323,14 @@ def add_item(disbursement_name, table_field, item_data):
     if table_field not in _all_child_fields():
         frappe.throw(_("Invalid table field"))
 
+    item_data = {k: v for k, v in (item_data or {}).items() if k not in ("status", "payable", "name")}
     doc.append(table_field, item_data)
+    doc.flags.audit_reason = reason
     doc.save()
-    return {"success": True}
+    return _result(doc)
 
 @frappe.whitelist()
-def delete_item(disbursement_name, child_name):
+def delete_item(disbursement_name, child_name, reason=None):
     """Delete an item from a child table."""
     perms.require_finance()
     frappe.has_permission("Disbursement", doc=disbursement_name, ptype="write", throw=True)
@@ -272,9 +354,10 @@ def delete_item(disbursement_name, child_name):
             
     if not found:
         frappe.throw(_("Item not found or already deleted"))
-        
+
+    doc.flags.audit_reason = reason
     doc.save()
-    return {"success": True}
+    return _result(doc)
 
 @frappe.whitelist()
 def get_purposes():
@@ -342,7 +425,7 @@ def get_templates():
 
 
 TEMPLATE_TABLES = ("weekly_allowances", "weekly_activity", "mission_support", "monthly_expenses")
-TEMPLATE_ROW_FIELDS = ("worker", "description", "purpose", "amount", "source")
+TEMPLATE_ROW_FIELDS = ("worker", "description", "purpose", "amount", "source", "department")
 
 
 @frappe.whitelist()
@@ -358,7 +441,7 @@ def get_template(name):
     }
     for table in TEMPLATE_TABLES:
         out[table] = [
-            {"name": row.name, **{f: row.get(f) for f in TEMPLATE_ROW_FIELDS}}
+            {"name": row.name, **{f: row.get(f) for f in TEMPLATE_ROW_FIELDS if f in row.as_dict()}}
             for row in (doc.get(table) or [])
         ]
     return out
@@ -391,10 +474,11 @@ def save_template(payload):
             continue
         doc.set(table, [])
         for row in payload[table] or []:
+            meta_fields = set(frappe.get_meta(doc.meta.get_field(table).options).get_valid_columns())
             doc.append(
                 table,
                 {
-                    **{f: row.get(f) for f in TEMPLATE_ROW_FIELDS if row.get(f) not in (None, "")},
+                    **{f: row.get(f) for f in TEMPLATE_ROW_FIELDS if f in meta_fields and row.get(f) not in (None, "")},
                     "is_planned": 1,
                 },
             )
@@ -486,3 +570,17 @@ def _claimable_child_fields():
         fields.append(f"disbursement_item_week_{i}")
         fields.append(f"expense_item_week_{i}")
     return fields
+
+
+@frappe.whitelist()
+def get_departments():
+    """Departments for line pickers."""
+    perms.require_finance()
+    return frappe.get_all("Department Name", fields=["name"], order_by="name asc", limit_page_length=0)
+
+
+@frappe.whitelist()
+def get_creditors():
+    """Active creditors for the Paid by picker."""
+    perms.require_finance()
+    return frappe.get_all("Creditor", filters={"active": 1}, fields=["name"], order_by="name asc")

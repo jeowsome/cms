@@ -22,6 +22,17 @@ const receivedBy = ref("");
 const receivedDate = ref("");
 const source = ref("");
 const remarks = ref("");
+// Paid by: church money, or a creditor who paid on the church's behalf
+const paidBy = ref("Church funds");
+const creditor = ref("");
+const creditorPaidDate = ref("");
+const creditorReference = ref("");
+const byCreditor = computed(() => paidBy.value === "Creditor");
+
+const { data: creditors } = useQuery({
+  key: ["creditors"],
+  query: () => call("church_management.api.disbursement.get_creditors"),
+});
 
 const { data: workers } = useQuery({
   key: ["active-workers"],
@@ -52,6 +63,10 @@ watch(
       remarks.value = props.item.remarks || "";
     }
     receivedDate.value = props.defaultDate || getDefaultSunday();
+    paidBy.value = "Church funds";
+    creditor.value = "";
+    creditorPaidDate.value = receivedDate.value;
+    creditorReference.value = "";
   },
   { immediate: true }
 );
@@ -76,12 +91,25 @@ function getDefaultSunday() {
   return sunday.toISOString().slice(0, 10);
 }
 
+const canSubmit = computed(() =>
+  !!source.value &&
+  (byCreditor.value ? !!creditor.value && !!creditorPaidDate.value : !!receivedBy.value && !!receivedDate.value)
+);
+
 async function submit() {
-  if (!receivedBy.value || !receivedDate.value || !source.value) return;
+  if (!canSubmit.value) return;
   submitting.value = true;
+  const paid = {
+    paid_by: paidBy.value,
+    creditor: byCreditor.value ? creditor.value : null,
+    creditor_paid_date: byCreditor.value ? creditorPaidDate.value : null,
+    creditor_reference: byCreditor.value ? creditorReference.value : null,
+  };
   try {
+    let res;
     if (isBulk.value) {
-      await call("church_management.api.disbursement.claim_items_bulk", {
+      res = await call("church_management.api.disbursement.claim_items_bulk", {
+        ...paid,
         disbursement_name: props.disbursementName,
         child_names: JSON.stringify(props.items.map((i) => i.name)),
         received_by: receivedBy.value,
@@ -90,7 +118,8 @@ async function submit() {
         remarks: remarks.value,
       });
     } else {
-      await call("church_management.api.disbursement.claim_item", {
+      res = await call("church_management.api.disbursement.claim_item", {
+        ...paid,
         disbursement_name: props.disbursementName,
         child_doctype: props.item.doctype || props.item.parenttype || "Disbursement Week Item",
         child_name: props.item.name,
@@ -100,9 +129,10 @@ async function submit() {
         remarks: remarks.value,
       });
     }
+    if (res?.warnings?.length) alert(res.warnings.join("\n\n"));
     emit("claimed");
   } catch (e) {
-    alert(e.message || "Failed to claim item");
+    alert(e.messages?.[0] || e.message || "Failed to claim item");
   } finally {
     submitting.value = false;
   }
@@ -146,8 +176,41 @@ async function submit() {
 
           <div class="px-5 py-4 space-y-4 overflow-y-auto flex-1">
             <div>
+              <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5">Paid by</label>
+              <div class="grid grid-cols-2 gap-2">
+                <button v-for="opt in ['Church funds', 'Creditor']" :key="opt" type="button"
+                  class="rounded-xl border px-3 py-2 text-sm font-semibold transition-colors"
+                  :class="paidBy === opt ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-gray-200 text-gray-600 hover:bg-gray-50'"
+                  @click="paidBy = opt">{{ opt === 'Creditor' ? 'A creditor (e.g. the school)' : 'Church funds' }}</button>
+              </div>
+              <p v-if="byCreditor" class="mt-1.5 text-[11px] text-gray-500">
+                The expense counts now, but no church money leaves yet. The church will owe this creditor until it is reimbursed.
+              </p>
+            </div>
+
+            <template v-if="byCreditor">
+              <div>
+                <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5">Creditor <span class="text-red-500">*</span></label>
+                <select v-model="creditor" class="cm-field cm-select">
+                  <option value="" disabled>Select creditor...</option>
+                  <option v-for="c in creditors || []" :key="c.name" :value="c.name">{{ c.name }}</option>
+                </select>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5">Date they paid <span class="text-red-500">*</span></label>
+                  <input v-model="creditorPaidDate" type="date" class="cm-field" />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5">Receipt / ref.</label>
+                  <input v-model="creditorReference" type="text" class="cm-field" placeholder="Optional" />
+                </div>
+              </div>
+            </template>
+
+            <div>
               <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5">
-                Received By
+                Received By <span v-if="!byCreditor" class="text-red-500">*</span>
               </label>
               <select
                 v-model="receivedBy"
@@ -162,7 +225,7 @@ async function submit() {
 
             <div>
               <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5">
-                Source Account <span class="text-red-500">*</span>
+                {{ byCreditor ? "Fund (account it would have come from)" : "Source Account" }} <span class="text-red-500">*</span>
               </label>
               <select
                 v-model="source"
@@ -175,9 +238,9 @@ async function submit() {
               </select>
             </div>
 
-            <div>
+            <div v-if="!byCreditor">
               <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5">
-                Received Date
+                Received Date <span class="text-red-500">*</span>
               </label>
               <input
                 v-model="receivedDate"
@@ -206,7 +269,7 @@ async function submit() {
             <AppButton
               class="flex-1"
               :loading="submitting"
-              :disabled="!receivedBy || !receivedDate || !source"
+              :disabled="!canSubmit"
               @click="submit"
             >
               {{ isBulk ? `Claim ${items.length}` : "Confirm Claim" }}

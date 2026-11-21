@@ -1,0 +1,7 @@
+[pre_model_sync]
+
+[post_model_sync]
+church_management.patches.v2026_11.rename_departments
+church_management.patches.v2026_11.seed_finance_masters
+church_management.patches.v2026_11.backfill_2026_lines
+church_management.patches.v2026_11.apply_2026_corrections

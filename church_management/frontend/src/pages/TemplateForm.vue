@@ -41,6 +41,10 @@ const { data: accounts } = useQuery({
   key: ["accounts"],
   query: () => call("church_management.api.disbursement.get_source_accounts"),
 });
+const { data: departments } = useQuery({
+  key: ["departments"],
+  query: () => call("church_management.api.disbursement.get_departments"),
+});
 const { data: companies } = useQuery({
   key: ["companies"],
   query: () => call("church_management.api.disbursement.get_companies"),
@@ -263,9 +267,11 @@ async function save() {
 
         <div v-else class="px-4 sm:px-5 pb-2 space-y-2.5">
           <!-- Column headers (desktop) -->
-          <div class="hidden sm:grid grid-cols-[1fr_1fr_8rem_1fr_2.25rem] gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+          <div class="hidden sm:grid gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest px-1"
+            :class="s.nameField === 'description' ? 'grid-cols-[1fr_1fr_1fr_8rem_1fr_2.25rem]' : 'grid-cols-[1fr_1fr_8rem_1fr_2.25rem]'">
             <span>{{ s.nameField === "worker" ? "Worker" : "Description" }}</span>
             <span>Purpose</span>
+            <span v-if="s.nameField === 'description'">Department</span>
             <span class="text-right">Amount</span>
             <span>Source</span>
             <span />
@@ -274,7 +280,8 @@ async function save() {
           <div
             v-for="(row, idx) in form[s.field]"
             :key="row.name || idx"
-            class="grid grid-cols-2 sm:grid-cols-[1fr_1fr_8rem_1fr_2.25rem] gap-2 items-center bg-gray-50/40 sm:bg-transparent rounded-xl sm:rounded-none p-2.5 sm:p-0"
+            class="grid grid-cols-2 gap-2 items-center bg-gray-50/40 sm:bg-transparent rounded-xl sm:rounded-none p-2.5 sm:p-0"
+            :class="s.nameField === 'description' ? 'sm:grid-cols-[1fr_1fr_1fr_8rem_1fr_2.25rem]' : 'sm:grid-cols-[1fr_1fr_8rem_1fr_2.25rem]'"
           >
             <!-- worker select or description input -->
             <select
@@ -296,6 +303,11 @@ async function save() {
             <select v-model="row.purpose" class="cm-field cm-select">
               <option value="">Purpose…</option>
               <option v-for="p in purposes" :key="p.name" :value="p.name">{{ p.name }}</option>
+            </select>
+
+            <select v-if="s.nameField === 'description'" v-model="row.department" class="cm-field cm-select">
+              <option value="">Department…</option>
+              <option v-for="d in departments" :key="d.name" :value="d.name">{{ d.name }}</option>
             </select>
 
             <input

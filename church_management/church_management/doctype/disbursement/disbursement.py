@@ -9,7 +9,14 @@ class Disbursement(Document):
 		self.name = f"{self.get('month_recorded')}-{self.get('year_recorded')}"
 
 	def validate(self):
+		from church_management.church_management import disbursement_audit
+
+		from church_management.church_management.finance import schema_ready
+
 		self._enforce_active_weeks()
+		if schema_ready():
+			disbursement_audit.apply_defaults(self)
+			disbursement_audit.validate(self)
 
 		total = 0
 		count = 0
@@ -43,8 +50,10 @@ class Disbursement(Document):
 		# Calculate Totals and Validate Dates
 		for table_field in tables:
 			for item in self.get(table_field) or []:
-				total += item.amount
-				count += 1
+				# Voided lines are discontinued and never paid: not committed
+				if item.get("status") != "Voided":
+					total += item.amount or 0
+					count += 1
 				
 				# Year-based Date Validation
 				if self.year_recorded and item.get("received_date"):
@@ -100,6 +109,14 @@ class Disbursement(Document):
 					)
 				# Drop unclaimed orphan rows silently.
 				self.set(field, [])
+
+	def on_update(self):
+		from church_management.church_management import creditors, disbursement_audit
+		from church_management.church_management.finance import schema_ready
+
+		if schema_ready():
+			disbursement_audit.record(self)
+			creditors.sync_from_disbursement(self)
 
 	def on_submit(self):
 		# TODO: Implement Journal Entry creation for new schema

@@ -1,0 +1,149 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-11-21 03:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "creditor",
+  "posting_date",
+  "source_account",
+  "fund",
+  "column_break_r1",
+  "received_by",
+  "reference",
+  "total_amount",
+  "section_alloc",
+  "allocations",
+  "remarks",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "creditor",
+   "fieldtype": "Link",
+   "label": "Creditor",
+   "options": "Creditor",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Date Paid",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "source_account",
+   "fieldtype": "Link",
+   "label": "Paid From (Source Account)",
+   "options": "Account",
+   "reqd": 1,
+   "link_filters": "[[\"Account\",\"is_group\",\"=\",0],[\"Account\",\"account_type\",\"in\",[\"Cash\",\"Bank\"]]]"
+  },
+  {
+   "fieldname": "fund",
+   "fieldtype": "Select",
+   "label": "Fund",
+   "options": "General\nMission\nBenevolence\nWhite Gift",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_r1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "received_by",
+   "fieldtype": "Data",
+   "label": "Received By (creditor side)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "reference",
+   "fieldtype": "Data",
+   "label": "Reference / Receipt"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "section_alloc",
+   "fieldtype": "Section Break",
+   "label": "Payables settled"
+  },
+  {
+   "fieldname": "allocations",
+   "fieldtype": "Table",
+   "label": "Allocations",
+   "options": "Creditor Reimbursement Allocation",
+   "reqd": 1
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "options": "Creditor Reimbursement",
+   "read_only": 1,
+   "no_copy": 1,
+   "print_hide": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "istable": 0,
+ "links": [],
+ "modified": "2026-11-21 03:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Church Management",
+ "name": "Creditor Reimbursement",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "Finance Team",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 0,
+   "submit": 1,
+   "cancel": 1,
+   "amend": 0
+  },
+  {
+   "role": "System Manager",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 0,
+   "submit": 1,
+   "cancel": 1,
+   "amend": 0
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "is_submittable": 1,
+ "autoname": "format:REIMB-{YYYY}-{#####}",
+ "track_changes": 1
+}

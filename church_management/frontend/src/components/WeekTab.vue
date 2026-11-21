@@ -33,19 +33,17 @@ const sectionTitle = (suffix) => {
   return `${prefix} — ${suffix}`;
 };
 
+// Unclaimed first, then claimed, voided last (greyed out)
+const STATUS_ORDER = { Unclaimed: 0, Claimed: 1, Voided: 2 };
 function sorted(arr) {
-  return [...arr].sort((a, b) => {
-    if (a.status === "Unclaimed" && b.status !== "Unclaimed") return -1;
-    if (a.status !== "Unclaimed" && b.status === "Unclaimed") return 1;
-    return 0;
-  });
+  return [...arr].sort((a, b) => (STATUS_ORDER[a.status] ?? 0) - (STATUS_ORDER[b.status] ?? 0));
 }
 
 const sortedItems = computed(() => sorted(props.items));
 const sortedExpenses = computed(() => sorted(props.expenses));
 
 const allUnclaimed = computed(() =>
-  [...props.items, ...props.expenses].filter((i) => i.status !== "Claimed")
+  [...props.items, ...props.expenses].filter((i) => i.status === "Unclaimed")
 );
 const selectedCount = computed(() => selectedNames.value.size);
 const selectedRows = computed(() =>
@@ -66,9 +64,7 @@ function toggleSelect(item, ev) {
 }
 
 function isOverdueRow(item) {
-  const claimed =
-    item.status === "Claimed" || (!!item.received_by && !!item.received_date);
-  return props.overdue && !claimed;
+  return props.overdue && item.status === "Unclaimed";
 }
 
 function openDetail(item) { detailItem.value = item; }
@@ -145,13 +141,14 @@ function onClaimed() {
           class="bg-white border rounded-xl p-3.5 shadow-sm active:bg-gray-50 active:scale-[0.98] transition-all cursor-pointer relative"
           :class="[
             selectedNames.has(item.name) ? 'border-brand-400 ring-2 ring-brand-200' : 'border-gray-100',
-            isOverdueRow(item) ? 'overdue-blink' : ''
+            isOverdueRow(item) ? 'overdue-blink' : '',
+            item.status === 'Voided' ? 'opacity-55 bg-gray-50' : ''
           ]"
           @click="openDetail(item)"
         >
           <div class="flex items-start gap-3">
             <input
-              v-if="item.status !== 'Claimed'"
+              v-if="item.status === 'Unclaimed'"
               type="checkbox"
               :checked="selectedNames.has(item.name)"
               @click.stop="toggleSelect(item, $event)"
@@ -166,9 +163,11 @@ function onClaimed() {
                   </svg>
                   <span class="text-[9px] font-black text-green-700 uppercase">Claimed</span>
                 </div>
+                <span v-if="item.status === 'Voided'" class="px-1.5 py-0.5 bg-gray-200 text-gray-600 rounded-full text-[9px] font-black uppercase">Voided</span>
+                <span v-if="item.paid_by === 'Creditor' && item.status === 'Claimed'" class="px-1.5 py-0.5 bg-violet-50 text-violet-700 rounded-full text-[9px] font-black uppercase" :title="item.creditor">Paid by creditor</span>
               </div>
               <div class="flex flex-col gap-0.5 mt-0.5">
-                <p class="text-xs text-gray-500 font-medium">{{ item.purpose || "No purpose" }}</p>
+                <p class="text-xs text-gray-500 font-medium">{{ item.purpose || "No purpose" }}<span v-if="item.department" class="text-gray-400"> · {{ item.department }}</span></p>
                 <p class="text-[10px] text-gray-400 font-mono">{{ item.source || "No source" }}</p>
               </div>
             </div>
@@ -177,10 +176,10 @@ function onClaimed() {
                 <span v-if="item.amount_edited" class="text-[10px] text-gray-400 line-through">
                   <CurrencyDisplay :value="item.original_amount" size="xs" />
                 </span>
-                <CurrencyDisplay :value="item.amount" size="sm" weight="bold" />
+                <span :class="item.status === 'Voided' ? 'line-through' : ''"><CurrencyDisplay :value="item.amount" size="sm" weight="bold" /></span>
               </div>
               <button
-                v-if="item.status !== 'Claimed'"
+                v-if="item.status === 'Unclaimed'"
                 class="px-3 py-1.5 text-[10px] font-bold text-brand-600 bg-brand-50 rounded-lg active:bg-brand-100 transition-colors uppercase tracking-wider border border-brand-100"
                 @click="openClaim(item, $event)"
               >
@@ -212,13 +211,14 @@ function onClaimed() {
               class="group text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer"
               :class="[
                 selectedNames.has(item.name) ? 'bg-brand-50/40' : '',
-                isOverdueRow(item) ? 'overdue-blink' : ''
+                isOverdueRow(item) ? 'overdue-blink' : '',
+                item.status === 'Voided' ? 'opacity-55 bg-gray-50/80' : ''
               ]"
               @click="openDetail(item)"
             >
               <td class="py-3.5 pl-4 pr-2">
                 <input
-                  v-if="item.status !== 'Claimed'"
+                  v-if="item.status === 'Unclaimed'"
                   type="checkbox"
                   :checked="selectedNames.has(item.name)"
                   @click.stop="toggleSelect(item, $event)"
@@ -226,25 +226,27 @@ function onClaimed() {
                 />
               </td>
               <td class="py-3.5 pr-4 font-bold text-gray-900">{{ item.worker || "—" }}</td>
-              <td class="py-3.5 pr-4 font-medium">{{ item.purpose || "—" }}</td>
+              <td class="py-3.5 pr-4 font-medium">{{ item.purpose || "—" }}<span v-if="item.department" class="block text-[10px] text-gray-400 font-normal">{{ item.department }}</span></td>
               <td class="py-3.5 pr-4 text-[11px] text-gray-400 font-mono">{{ item.source || "—" }}</td>
               <td class="py-3.5 pr-4 text-right">
                 <div class="flex flex-col items-end leading-tight">
                   <span v-if="item.amount_edited" class="text-[11px] text-gray-400 line-through">
                     <CurrencyDisplay :value="item.original_amount" size="xs" />
                   </span>
-                  <CurrencyDisplay :value="item.amount" />
+                  <span :class="item.status === 'Voided' ? 'line-through' : ''"><CurrencyDisplay :value="item.amount" /></span>
                 </div>
               </td>
               <td class="py-2.5 text-center">
                 <svg v-if="item.status === 'Claimed'" class="w-5 h-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
+                <span v-else-if="item.status === 'Voided'" class="text-[10px] font-black uppercase text-gray-500" :title="item.void_reason">Voided</span>
                 <span v-else class="inline-block w-2 h-2 rounded-full bg-gray-300" />
+                <span v-if="item.paid_by === 'Creditor' && item.status === 'Claimed'" class="block text-[9px] font-bold uppercase text-violet-600 mt-0.5" :title="item.creditor">Creditor</span>
               </td>
               <td class="py-2.5">
                 <button
-                  v-if="item.status !== 'Claimed'"
+                  v-if="item.status === 'Unclaimed'"
                   class="opacity-0 group-hover:opacity-100 px-2.5 py-1 text-[11px] font-semibold text-brand-600 bg-brand-50 hover:bg-brand-100 rounded-lg transition-all"
                   @click="openClaim(item, $event)"
                 >
@@ -283,13 +285,14 @@ function onClaimed() {
           class="bg-white border rounded-xl p-3.5 shadow-sm active:bg-gray-50 active:scale-[0.98] transition-all cursor-pointer"
           :class="[
             selectedNames.has(item.name) ? 'border-brand-400 ring-2 ring-brand-200' : 'border-gray-100',
-            isOverdueRow(item) ? 'overdue-blink' : ''
+            isOverdueRow(item) ? 'overdue-blink' : '',
+            item.status === 'Voided' ? 'opacity-55 bg-gray-50' : ''
           ]"
           @click="openDetail(item)"
         >
           <div class="flex items-start gap-3">
             <input
-              v-if="item.status !== 'Claimed'"
+              v-if="item.status === 'Unclaimed'"
               type="checkbox"
               :checked="selectedNames.has(item.name)"
               @click.stop="toggleSelect(item, $event)"
@@ -304,9 +307,11 @@ function onClaimed() {
                   </svg>
                   <span class="text-[9px] font-black text-green-700 uppercase">Claimed</span>
                 </div>
+                <span v-if="item.status === 'Voided'" class="px-1.5 py-0.5 bg-gray-200 text-gray-600 rounded-full text-[9px] font-black uppercase">Voided</span>
+                <span v-if="item.paid_by === 'Creditor' && item.status === 'Claimed'" class="px-1.5 py-0.5 bg-violet-50 text-violet-700 rounded-full text-[9px] font-black uppercase" :title="item.creditor">Paid by creditor</span>
               </div>
               <div class="flex flex-col gap-0.5 mt-0.5">
-                <p class="text-xs text-gray-500 font-medium">{{ item.purpose || "No purpose" }}</p>
+                <p class="text-xs text-gray-500 font-medium">{{ item.purpose || "No purpose" }}<span v-if="item.department" class="text-gray-400"> · {{ item.department }}</span></p>
                 <p class="text-[10px] text-gray-400 font-mono">{{ item.source || "No source" }}</p>
               </div>
             </div>
@@ -315,10 +320,10 @@ function onClaimed() {
                 <span v-if="item.amount_edited" class="text-[10px] text-gray-400 line-through">
                   <CurrencyDisplay :value="item.original_amount" size="xs" />
                 </span>
-                <CurrencyDisplay :value="item.amount" size="sm" weight="bold" />
+                <span :class="item.status === 'Voided' ? 'line-through' : ''"><CurrencyDisplay :value="item.amount" size="sm" weight="bold" /></span>
               </div>
               <button
-                v-if="item.status !== 'Claimed'"
+                v-if="item.status === 'Unclaimed'"
                 class="px-3 py-1.5 text-[10px] font-bold text-brand-600 bg-brand-50 rounded-lg active:bg-brand-100 transition-colors uppercase tracking-wider border border-brand-100"
                 @click="openClaim(item, $event)"
               >
@@ -350,13 +355,14 @@ function onClaimed() {
               class="group text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer"
               :class="[
                 selectedNames.has(item.name) ? 'bg-brand-50/40' : '',
-                isOverdueRow(item) ? 'overdue-blink' : ''
+                isOverdueRow(item) ? 'overdue-blink' : '',
+                item.status === 'Voided' ? 'opacity-55 bg-gray-50/80' : ''
               ]"
               @click="openDetail(item)"
             >
               <td class="py-3.5 pl-4 pr-2">
                 <input
-                  v-if="item.status !== 'Claimed'"
+                  v-if="item.status === 'Unclaimed'"
                   type="checkbox"
                   :checked="selectedNames.has(item.name)"
                   @click.stop="toggleSelect(item, $event)"
@@ -364,25 +370,27 @@ function onClaimed() {
                 />
               </td>
               <td class="py-3.5 pr-4 font-bold text-gray-900">{{ item.description || "—" }}</td>
-              <td class="py-3.5 pr-4 font-medium">{{ item.purpose || "—" }}</td>
+              <td class="py-3.5 pr-4 font-medium">{{ item.purpose || "—" }}<span v-if="item.department" class="block text-[10px] text-gray-400 font-normal">{{ item.department }}</span></td>
               <td class="py-3.5 pr-4 text-[11px] text-gray-400 font-mono">{{ item.source || "—" }}</td>
               <td class="py-3.5 pr-4 text-right">
                 <div class="flex flex-col items-end leading-tight">
                   <span v-if="item.amount_edited" class="text-[11px] text-gray-400 line-through">
                     <CurrencyDisplay :value="item.original_amount" size="xs" />
                   </span>
-                  <CurrencyDisplay :value="item.amount" />
+                  <span :class="item.status === 'Voided' ? 'line-through' : ''"><CurrencyDisplay :value="item.amount" /></span>
                 </div>
               </td>
               <td class="py-2.5 text-center">
                 <svg v-if="item.status === 'Claimed'" class="w-5 h-5 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
+                <span v-else-if="item.status === 'Voided'" class="text-[10px] font-black uppercase text-gray-500" :title="item.void_reason">Voided</span>
                 <span v-else class="inline-block w-2 h-2 rounded-full bg-gray-300" />
+                <span v-if="item.paid_by === 'Creditor' && item.status === 'Claimed'" class="block text-[9px] font-bold uppercase text-violet-600 mt-0.5" :title="item.creditor">Creditor</span>
               </td>
               <td class="py-2.5">
                 <button
-                  v-if="item.status !== 'Claimed'"
+                  v-if="item.status === 'Unclaimed'"
                   class="opacity-0 group-hover:opacity-100 px-2.5 py-1 text-[11px] font-semibold text-brand-600 bg-brand-50 hover:bg-brand-100 rounded-lg transition-all"
                   @click="openClaim(item, $event)"
                 >

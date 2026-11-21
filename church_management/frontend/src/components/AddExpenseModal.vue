@@ -17,11 +17,17 @@ const form = ref({
   description: "",
   amount: 0,
   purpose: "",
+  department: "",
   source: "",
   is_planned: 0,
 });
 
 const isSaving = ref(false);
+
+const { data: departments } = useQuery({
+  key: ["departments"],
+  query: () => call("church_management.api.disbursement.get_departments"),
+});
 
 const { data: purposes } = useQuery({
   key: ["purposes"],
@@ -34,8 +40,8 @@ const { data: accounts } = useQuery({
 });
 
 async function saveItem() {
-  if (!form.value.description || !form.value.amount) {
-    alert("Please provide a description and amount.");
+  if (!form.value.description || !form.value.amount || !form.value.department) {
+    alert("Please provide a description, amount and department.");
     return;
   }
 
@@ -51,7 +57,7 @@ async function saveItem() {
     });
     
     // reset form
-    form.value = { description: "", amount: 0, purpose: "", source: "", is_planned: 0 };
+    form.value = { description: "", amount: 0, purpose: "", department: "", source: "", is_planned: 0 };
     emit("added");
     emit("close");
   } catch (err) {
@@ -102,6 +108,13 @@ async function saveItem() {
               <select v-model="form.purpose" class="cm-field cm-select">
                 <option value="">Select Purpose</option>
                 <option v-for="p in purposes" :key="p.name" :value="p.name">{{ p.name || p.description }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Department <span class="text-red-500">*</span></label>
+              <select v-model="form.department" class="cm-field cm-select">
+                <option value="">Select Department</option>
+                <option v-for="d in departments" :key="d.name" :value="d.name">{{ d.name }}</option>
               </select>
             </div>
 

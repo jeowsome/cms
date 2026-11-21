@@ -10,3 +10,6 @@ church_management/frontend/node_modules/
 church_management/data/*.dual-graph/
 .dual-graph/
 .claude/settings.local.json
+
+# names for one-time data patches (repository is public)
+church_management/patches/*/people_*.json

@@ -12,6 +12,8 @@
   "column_break_5",
   "full_name",
   "department",
+  "disbursement_department",
+  "default_purpose",
   "contact_details_section",
   "contact_number",
   "email_address"
@@ -40,7 +42,7 @@
   {
    "fieldname": "department",
    "fieldtype": "Link",
-   "label": "Department",
+   "label": "Ministry",
    "options": "Department Name"
   },
   {
@@ -67,11 +69,25 @@
    "fieldname": "email_address",
    "fieldtype": "Data",
    "label": "Email Address"
+  },
+  {
+   "fieldname": "disbursement_department",
+   "fieldtype": "Link",
+   "label": "Default Disbursement Department",
+   "options": "Department Name",
+   "description": "Department charged when allowance or support lines for this worker are generated."
+  },
+  {
+   "fieldname": "default_purpose",
+   "fieldtype": "Link",
+   "label": "Default Disbursement Purpose",
+   "options": "Disbursement Purpose",
+   "description": "Purpose used for new lines when none is given (e.g. Love Gift for guest speakers)."
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-01-07 16:33:53.225880",
+ "modified": "2026-11-21 03:00:00.000000",
  "modified_by": "Administrator",
  "module": "Church Management",
  "name": "Church Worker",

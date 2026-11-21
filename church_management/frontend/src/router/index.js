@@ -18,6 +18,10 @@ const routes = [
 
   // Disbursements (Finance Team or Admin)
   { path: "/disbursements", name: "DisbursementList", component: () => import("@/pages/DisbursementList.vue"), meta: { requiresAuth: true, requiresFinance: true } },
+  { path: "/overdue", name: "OverdueReview", component: () => import("@/pages/OverdueReview.vue"), meta: { requiresAuth: true, requiresFinance: true } },
+  { path: "/creditors", name: "Creditors", component: () => import("@/pages/Creditors.vue"), meta: { requiresAuth: true, requiresFinance: true } },
+  { path: "/fund-summary", name: "FundSummary", component: () => import("@/pages/FundSummary.vue"), meta: { requiresAuth: true, requiresFinance: true } },
+  { path: "/audit-log", name: "AuditLog", component: () => import("@/pages/AuditLog.vue"), meta: { requiresAuth: true, requiresFinance: true } },
   { path: "/disbursements/:name", name: "DisbursementForm", component: () => import("@/pages/DisbursementForm.vue"), props: true, meta: { requiresAuth: true, requiresFinance: true } },
 
   // Disbursement Templates (Finance Team or Admin)

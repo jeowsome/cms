@@ -31,7 +31,10 @@ const {
 });
 
 function isClaimed(i) {
-  return i.status === "Claimed" || (!!i.received_by && !!i.received_date);
+  return i.status === "Claimed";
+}
+function isVoided(i) {
+  return i.status === "Voided";
 }
 
 // Collect items only from weeks that actually exist in the month, so the summary
@@ -45,8 +48,28 @@ const allItems = computed(() => {
   }
   for (const row of monthlyItems.value) result.push(row);
   for (const row of monthlyExpenses.value) result.push(row);
-  return result;
+  return result.filter((r) => !isVoided(r));
 });
+
+const voidedItems = computed(() => {
+  const rows = [...monthlyItems.value, ...monthlyExpenses.value];
+  for (const w of weeks.value) rows.push(...w.items, ...w.expenses);
+  return rows.filter(isVoided);
+});
+const voidedAmount = computed(() => voidedItems.value.reduce((s, i) => s + (i.amount || 0), 0));
+
+const historyOpen = ref(false);
+const { data: docHistory, isPending: docHistoryLoading, refetch: refetchHistory } = useQuery({
+  key: () => ["disbursement-history", route.params.name],
+  query: () => call("church_management.api.disbursement.get_history", { disbursement_name: route.params.name }),
+  enabled: () => historyOpen.value && route.params.name !== "new",
+});
+function fmtWhen(ts) {
+  if (!ts) return "";
+  return new Date(ts.replace(" ", "T")).toLocaleString("en-PH", {
+    month: "short", day: "numeric", hour: "numeric", minute: "2-digit",
+  });
+}
 
 // Summary stats
 const totalClaimed = computed(() =>
@@ -133,7 +156,8 @@ function isoDate(dt) {
 const monthlyItems = computed(() => disbursement.value?.monthly_disbursement_items || []);
 const monthlyExpenses = computed(() => disbursement.value?.monthly_expense_items || []);
 
-function tabStats(rows) {
+function tabStats(allRows) {
+  const rows = allRows.filter((r) => !isVoided(r));
   const total = rows.length;
   const claimed = rows.filter(isClaimed).length;
   const unclaimedAmount = rows
@@ -207,6 +231,7 @@ const status = computed(() => {
 
 function onClaimed() {
   refetch();
+  if (historyOpen.value) refetchHistory();
 }
 </script>
 
@@ -257,6 +282,7 @@ function onClaimed() {
             <span class="text-sm font-bold text-gray-800">Summary</span>
             <span class="text-xs text-gray-400">
               {{ claimedCount }}/{{ totalCount }} claimed
+              <template v-if="voidedItems.length"> · {{ voidedItems.length }} voided ({{ peso.format(voidedAmount) }}, not counted)</template>
             </span>
           </div>
           <svg
@@ -444,6 +470,36 @@ function onClaimed() {
             :disbursement-name="route.params.name"
             @claimed="onClaimed"
           />
+        </div>
+      </div>
+
+      <!-- Change history of the whole month -->
+      <div class="mt-5 bg-white rounded-2xl border border-gray-100">
+        <button class="w-full flex items-center justify-between px-4 py-3" @click="historyOpen = !historyOpen">
+          <span class="text-sm font-bold text-gray-800">History</span>
+          <span class="text-xs text-gray-400">{{ historyOpen ? "Hide" : "Every claim, correction and void on this month" }}</span>
+        </button>
+        <div v-if="historyOpen" class="px-4 pb-4 max-h-[480px] overflow-y-auto">
+          <p v-if="docHistoryLoading" class="text-xs text-gray-400">Loading…</p>
+          <p v-else-if="!docHistory?.length" class="text-xs text-gray-400">No changes recorded yet.</p>
+          <table v-else class="w-full text-xs">
+            <thead>
+              <tr class="text-left text-[10px] text-gray-400 uppercase tracking-wider border-b border-gray-100">
+                <th class="py-2 pr-2">When</th><th class="py-2 pr-2">Who</th><th class="py-2 pr-2">Action</th>
+                <th class="py-2 pr-2">Line</th><th class="py-2 pr-2">Change</th><th class="py-2">Reason</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+              <tr v-for="h in docHistory" :key="h.name" class="align-top">
+                <td class="py-1.5 pr-2 whitespace-nowrap text-gray-500">{{ fmtWhen(h.timestamp) }}</td>
+                <td class="py-1.5 pr-2 whitespace-nowrap">{{ h.user_name }}</td>
+                <td class="py-1.5 pr-2 whitespace-nowrap font-semibold">{{ h.action }}</td>
+                <td class="py-1.5 pr-2">{{ h.line_label }}<span class="block text-gray-400">{{ h.section }}</span></td>
+                <td class="py-1.5 pr-2 whitespace-pre-line text-gray-600">{{ h.summary }}</td>
+                <td class="py-1.5 text-gray-500 italic">{{ h.reason }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </template>

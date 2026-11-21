@@ -1,0 +1,7190 @@
+{
+ "source": "Finance team's edited workbook JBC_Financial_Statement_2026.xlsx (export of 2026-11-20)",
+ "changes": [
+  {
+   "disbursement": "January-2026",
+   "row": "s0otcrqef9",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 300"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0oas5o6j4",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 4500"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0op0ct5n0",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 2700"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0oia79h66",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 4000"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0odmd96ok",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 2500"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0oaottmp5",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 400"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0o5n52u1o",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 400"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0ou7j0svm",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0otmar87j",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0oaeloohd",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 300"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0om4jd68e",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 2000"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0onv7lkdt",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 500"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0ohl7crn3",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 700"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0o8fjsd10",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 4500"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0of26um2q",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2700"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0osnsc1ei",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 4000"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0ohd6gceo",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 300"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0oma44ja1",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2500"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0o4k2va67",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 400"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0opqntc52",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0o8qf3rnq",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0oirkt7sv",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 300"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0odpngrr2",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 400"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0o4dnr58g",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0ommq0155",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 2000"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0o6fr2bq8",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 500"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0onr4bqtt",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 700"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0ojlbnta8",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 4500"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0odepv59n",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 2700"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0ooh8pelb",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 1500"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0o1sb44dn",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 300"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0ovdkdu0q",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 2500"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0o7uji9r9",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 400"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0oit89rp3",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0oj58pn34",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0o5ien539",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0o900rvdl",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 300"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0otqsuqfa",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 400"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0oeap8o2k",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 2000"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0oe7e5hg3",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 500"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0ogm08p6i",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 700"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0obp9jmpi",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 2500"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0ome2pgal",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 4500"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0o0aa25gk",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 2700"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0oe1i5m9e",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 4000"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0ondeoall",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 300"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0ovh5bfc2",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 400"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0olj958ha",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0of82eq1a",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0olrvlk2r",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0oe0op762",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 300"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0ono9k2gg",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 400"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0oe54nt2l",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 2000"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0ojo3t61o",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 500"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0oi16nk3k",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 700"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0o8sv8h0s",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": "Pasig General",
+   "new": "Cainta General",
+   "line": "Monthly Expenses · 2500"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0olvgivi6",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Government",
+   "new": "Professional Fees",
+   "line": "Monthly Expenses · 3000"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0of7ld964",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Allowance",
+   "new": "Student Allowance",
+   "line": "Monthly Expenses · 500"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "ghn61t4cl9",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Government",
+   "new": "Professional Fees",
+   "line": "Monthly Expenses · 3000"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "7gnmn9geia",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Government",
+   "new": "White Gift Project",
+   "line": "Monthly Expenses · 15400"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "7gnjds8p78",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Maintenance",
+   "new": "White Gift Project",
+   "line": "Monthly Expenses · 8000"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "1r869pje29",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Regular Activity",
+   "new": "Love Gift",
+   "line": "Monthly Expenses · 2500"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0oc7krm36",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3060"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0o75if6tc",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0o22ohe71",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "January-2026",
+   "row": "s0oebj5a3h",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 1200"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp69kec3u4",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 4500"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6pq2tfln",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 2700"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6at78m9n",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 300"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6f64873v",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 4000"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp640ffplb",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 400"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp63lje6t7",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6qftgnis",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6q16mrp5",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6k57l8np",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 2500"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6b1nuhsg",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 300"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6eg0j318",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 400"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6trmiqbo",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 2000"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp675bkmnk",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 500"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6p1krvj1",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 700"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp670eedua",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 4500"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6oiqf14d",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 400"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6hpth3dg",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2700"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6g8p5msv",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 4000"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp67mcdanj",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6lntk24a",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 300"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp679lnu93",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2500"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6vkgos68",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6brfvbna",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6v39u495",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 300"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6o0tf32f",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 400"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp61ilqij2",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 2000"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6mgl76u0",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 500"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6400jpm1",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 700"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "hvqqejfq5c",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2500"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "hvqqejfq5c",
+   "doctype": "Disbursement Week Item",
+   "field": "purpose",
+   "old": "Allowance",
+   "new": "Love Gift",
+   "line": "Week 2 Allowances · 2500"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6tvjutbf",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 4500"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp692brqv1",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 2700"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6i9bgqjl",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 4000"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6v0jf6u6",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 300"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6r62q70h",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 300"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp63hmkkd5",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 400"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6duolskn",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 2500"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6nfcjtqj",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6rglu5o2",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp66svpqd3",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6s5952v8",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 400"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp65t10v54",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 2000"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp66bc5ua6",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 500"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6d8pfl4h",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 700"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp65h90fr1",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 4500"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6lqb3rcp",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 2700"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6etv5794",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 4000"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6m9c7l2a",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 300"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6065biku",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 2500"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6oi8t85v",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 400"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp68a5afl0",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6i9ca80j",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6m5e32al",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 300"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6a4agaku",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 400"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp601fvsuh",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 2000"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6qoaoun9",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 500"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6fbcnr0l",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 700"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6sq6org6",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": "Pasig General",
+   "new": "Cainta General",
+   "line": "Monthly Expenses · 2500"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp62m36459",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Allowance",
+   "new": "Student Allowance",
+   "line": "Monthly Expenses · 500"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "tf60dvv04t",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig SocMed",
+   "line": "Monthly Expenses · 2500"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "60hpsbvrtp",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Maintenance",
+   "new": "White Gift Project",
+   "line": "Monthly Expenses · 1600"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "mdlo7bet52",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Maintenance",
+   "new": "White Gift Project",
+   "line": "Monthly Expenses · 8770"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "5cp1iaequk",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Regular Activity",
+   "new": "Kitchen Supplies",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6nqstrc1",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3060"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6eso6rh0",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6ak3q39r",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "February-2026",
+   "row": "rp6e1914dl",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 1200"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdl0n5dog",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 4500"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdd7cqm1b",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 2700"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvds1h88v6",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 4000"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdhflvrm1",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 300"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvd0up0302",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 2500"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdtf68ll4",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 400"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdooqdjcd",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvde0n1rck",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvd6bd5j51",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvd74vlo28",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 300"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdccl3p6o",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 400"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdsa9j45u",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 2000"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdlrhu9pu",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 500"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdk53k86l",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 700"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "pm3id00hb6",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 2500"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "pm3id00hb6",
+   "doctype": "Disbursement Week Item",
+   "field": "purpose",
+   "old": "Allowance",
+   "new": "Love Gift",
+   "line": "Week 1 Allowances · 2500"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvd8fsev5t",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 4500"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvd7ih3bm5",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2700"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdtnra70c",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 4000"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdegn0cfo",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 300"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdf96g33c",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2500"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdct9fer7",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 400"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvd2r3jh4i",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvd58rp5jl",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvd4aunkqj",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvd8git6h3",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 300"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdektbd2j",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 400"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvd87ui48c",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 2000"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdn383948",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 500"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdt4nbmto",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 700"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvd2l2vj5o",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 4500"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdojqnnq7",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 2700"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvd45np6s2",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 1500"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdodub72h",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 300"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdbvchgrk",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 2500"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvd8gapkvj",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 400"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdoajvh4t",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdu3s3q5p",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvd7mr0dss",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 300"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvd7fik2mb",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 400"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdoa6k327",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 2000"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdla6lkqd",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 500"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdfcc1on0",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 700"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvd0cuqa6r",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 4500"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvd6i9ipo1",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 2700"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvde5fvacf",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 4000"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdpukjnlm",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 300"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvd0jlpaoi",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 2500"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvd6p5he68",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdrv85lbu",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdhqcklhv",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvd5a9og6t",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 400"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdn3m4jv0",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 2000"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdgabvkn4",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 500"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvd8h7uh0h",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 700"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdpptvjt7",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 4500"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdvjnp042",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 2700"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdiq9qj7i",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 4000"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvduqoushi",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 300"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdd4739dq",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 2500"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdc0jgti4",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 400"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdl7t4va2",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 200"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvd8ducddv",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 200"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvde8md5dj",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 200"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdt6lenne",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 300"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdqi929pr",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 400"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdcbujp3b",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 5 Allowances · 2000"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdtrd4rpu",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 5 Allowances · 500"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdmtnbagg",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 5 Allowances · 700"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdstgj7vp",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": "Pasig General",
+   "new": "Cainta General",
+   "line": "Monthly Expenses · 2500"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdh7hkaii",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Allowance",
+   "new": "Student Allowance",
+   "line": "Monthly Expenses · 500"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "tpti06tj5m",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Regular Activity",
+   "new": "Love Gift",
+   "line": "Monthly Expenses · 2500"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "vj73q0n119",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig Sunday School",
+   "line": "Monthly Expenses · 3000"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "0dp3quc727",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 2000 (voided; department per finance team)"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "67dd2tc5h7",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 2500"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "f8dgq2l59b",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig Young People",
+   "line": "Monthly Expenses · 5000"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "t1qbr4lg6k",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig ColSPro",
+   "line": "Monthly Expenses · 5000"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdl3h559d",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3060"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdq6pknsj",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdkp42hah",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "March-2026",
+   "row": "lvdnq58krb",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 1200"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bi39fq3ct",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 4500"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5biorc092u",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 2700"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5biilbrnsk",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 4000"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bid792ff9",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 300"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bi6uql8ob",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 2500"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bibk5iuc4",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 400"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5biijc6nhr",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5biefupqa1",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bi9hhhlgq",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 300"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bicr1gfo4",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 400"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5biv12coo4",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 2000"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bimk5om7d",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 500"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "01agtrhabn",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bi2l6rt8g",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 700"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bit7ahp4g",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 4500"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5binsf4409",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2700"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bit8i4ees",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 4000"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bidarirmg",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 300"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bi3355p3o",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2500"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bia5gsh4m",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5biokj95lc",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 300"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bi95nqf1v",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 400"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bir0n0cp6",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 2000"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bieqbd4js",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 500"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bik04r7qh",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 700"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bibl2gg4j",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 4500"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bivhc614n",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 2700"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bijgb1e5j",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 4000"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bi8cbdg1q",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 300"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bi6hav6ss",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 2500"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bido1me6o",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 400"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bi1juicgk",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bijd94e2g",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bincg58ac",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 300"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bipigaird",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 400"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bissmid7j",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 2000"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5biii9o12j",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 500"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5biimkma0g",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 700"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bijsrs70a",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 4500"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bi9eq5gkb",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 2700"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bibgv3gde",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 4000"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5biplou94d",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 300"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bio5rnah0",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 2500"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bi1m8stqq",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 400"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bianla6j3",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5biqt7aa0l",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bias18ln5",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 300"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bitf4pde3",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 400"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bie0jcg93",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 2000"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bihj94pth",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 500"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5biapg9t3g",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 700"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bihot2p0b",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": "Pasig General",
+   "new": "Cainta General",
+   "line": "Monthly Expenses · 2500"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bikictsq6",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Allowance",
+   "new": "Student Allowance",
+   "line": "Monthly Expenses · 500"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "gtv0ra1t9j",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig ColSPro",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "t28t44hkrg",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 5000"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "u2tqm3g8kp",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 1500"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "v05mhued43",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 1400"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bistg1dop",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bi3l8kr9s",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5bijd76fdh",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "April-2026",
+   "row": "5biifdltnh",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 1200"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4gokffba7l",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 4500"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4go0i2prps",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 2700"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4gonpmnnkj",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 4000"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4gocbphq96",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 300"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4gojlv7ubv",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 2500"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4goc38sj2h",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4go3p3bpbm",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4goq38bc9i",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 300"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4go0e0orrb",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 400"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4goneem8nr",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 2000"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4go98knq5q",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 500"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4go0tsi3c6",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 700"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4go9n0fe4r",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 4500"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4goi0uels9",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2700"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4goiripi32",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 4000"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4gochn0rhp",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 300"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4gokmlbhgg",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2500"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4gohna0b6f",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 400"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4gong4hbop",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4god2ofp4h",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4goq7618gg",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 300"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4gok15hba9",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 400"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4got1t7j6o",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 2000"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4goutn79ud",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 500"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4gos9jt6ii",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 700"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4govh36nn9",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 4000"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4goqm1pujo",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 300"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4go0sje238",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 2500"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4godjptpv9",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 400"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4go9ttj2ca",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4go0g1iahl",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4gokakc4ti",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 300"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4go3r810me",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 400"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4gocj34gqu",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 2000"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4goka82av8",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 500"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4go1ruachh",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 700"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4gons1d6tl",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 4000"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4go4nje08a",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 300"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4gom94hbu1",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 2500"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4goq4rl92m",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 400"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4go0t50rg8",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4gop5l9pgs",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4gopjbcq6t",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4godrreh3r",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 300"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4goel2423p",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 400"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4govkur323",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 2000"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4gopiu4jpr",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 500"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4go0b26mhi",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 700"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4go0gv8grm",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 4500"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4go2l8qdvk",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 2700"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4gotmg6v61",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 4000"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4goq5hle6h",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 300"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4goceh89g2",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 2500"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4go05kbefk",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 400"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4go5o8625g",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 200"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4gourppkh2",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 200"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4go1emubf1",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 200"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4goagpu7sj",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 300"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4go2n5oe6p",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 400"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4god8v8m8e",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 5 Allowances · 2000"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4goj8fjdfs",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 5 Allowances · 500"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4gofp2ha00",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 5 Allowances · 700"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4goui3rguq",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": "Pasig General",
+   "new": "Cainta General",
+   "line": "Monthly Expenses · 2500"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4gorejs4uj",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Allowance",
+   "new": "Student Allowance",
+   "line": "Monthly Expenses · 500"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "631de3erhh",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig ColSPro",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "7de0pm74d3",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 9500"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "rdnmuvau9e",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 5000"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "tqgd53tiec",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig Music Team",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "7brmseqdud",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig ColSPro",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4gov1tqubh",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4gosdhqi5u",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4go3u2v487",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4goo1em4d6",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 1200"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcatkre3i",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 4500"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfc2kt6p8p",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 2700"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcd9rvdee",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 4000"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfc4qhokt2",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 300"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcjk1c82n",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 2500"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcm807pkv",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 400"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcpgbtj1e",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcor0bmcj",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcs07nukp",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcemgr12v",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 300"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfc2ve937o",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 400"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfckre1ir6",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 2000"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcf8v36h0",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 500"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfc73asvul",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 700"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcmqbr4e1",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 4500"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcki5vl9j",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2700"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcqa8mkmn",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 4000"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfc078l9a7",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 300"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcdhmdn8s",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2500"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcsu229lc",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 400"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcpim9atc",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcgtv6nc5",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcajaoku0",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcqpeohof",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 300"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcturr8ca",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 400"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcl1686ec",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 2000"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcka06kk3",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 500"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcik9e9gs",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 700"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "rdduc8giv4",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 1500"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "rdduc8giv4",
+   "doctype": "Disbursement Week Item",
+   "field": "purpose",
+   "old": "Allowance",
+   "new": "Love Gift",
+   "line": "Week 2 Allowances · 1500"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcdeo17t6",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 4500"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcfaocv3q",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 2700"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcm5unpac",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 4000"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfck6ntru9",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 300"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfc69jvsk3",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 2500"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcnak99nq",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 400"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfc8lgucap",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfc1905kof",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfc05465bu",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfc48ufq86",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 300"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfckdfjh8f",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 400"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfc46b7sdu",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 2000"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfc979rbqi",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 500"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcuob3dst",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 700"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfct87g9lo",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 4500"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfckpm1sm7",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 2700"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfc6jeg1pu",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 4000"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcidhelf1",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 300"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcft8a52h",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 2500"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfc310ad9u",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 400"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcdajbkov",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcu3dm2t0",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfc6imto0c",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfc3o52s70",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 300"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcqvb848q",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 400"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcps22i6n",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 2000"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcrd7jfv6",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 500"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfced7asaf",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 700"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "rthfviglio",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 1500"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "rthfviglio",
+   "doctype": "Disbursement Week Item",
+   "field": "purpose",
+   "old": "Allowance",
+   "new": "Love Gift",
+   "line": "Week 4 Allowances · 1500"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfc46o0g87",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": "Pasig General",
+   "new": "Cainta General",
+   "line": "Monthly Expenses · 2500"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcj92a2gr",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Allowance",
+   "new": "Student Allowance",
+   "line": "Monthly Expenses · 500"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "t4s2n51fg0",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 6200"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "h1ljmkg4qb",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 1350"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "upbi68pjpb",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 16000"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcvvrdhv7",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3060"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfck3rtlpe",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfcivf059v",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "June-2026",
+   "row": "qfc07kdl1b",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 1200"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs1jhmljn",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 4500"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsk1f56ok",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 2700"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs7425j58",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 4000"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrss7r5erm",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 300"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsbmf84td",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 2500"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsvg1rits",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 400"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsr7icm9u",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs77sb6b4",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs2n9p49t",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsev4gnbv",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 300"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsfqcqso8",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 400"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs127hva2",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 2000"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrse23q48i",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 500"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs0erun7p",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 700"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs1obst3r",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 4500"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrstqbbh48",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2700"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsfajr34j",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 4000"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrssvdm4lc",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 300"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsijlsmse",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2500"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsa0vq2mg",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 400"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs7pss6rn",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsvo190su",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsrstimuo",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs4pjai0i",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 300"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrspp865j9",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 400"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs9o32idg",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 2000"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrscu1thqt",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 500"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsf62gk7v",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 700"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsk38m369",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 4500"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs0p12oj8",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 2700"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsanmk4fg",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 4000"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs3upsh09",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 300"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs1m6ni9f",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 2500"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsvdhp88o",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 400"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsouheatj",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsb2o90gs",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs5rgu7cb",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs83nrhah",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 300"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs9rj6bnc",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 400"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsfosgd38",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 2000"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsmc5e3ia",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 500"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs2jpijk2",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 700"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsr10i5i7",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 4500"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs3pq7ann",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 2700"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs2e8qv79",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 4000"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs2np6bl4",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 300"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs2a27pcb",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 2500"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsrq1lsdo",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrspb76cpb",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsr2hckns",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsa140p03",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 300"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs9l89jes",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 400"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrskp7a860",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 2000"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsk5gt705",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 500"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "dh8adbjq8s",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 2500"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs1feoqnb",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 700"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsr30qbkm",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": "Pasig General",
+   "new": "Cainta General",
+   "line": "Monthly Expenses · 2500"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrsm8mkhh2",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Allowance",
+   "new": "Student Allowance",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "1gpldi4i7p",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 1200"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "5bpiv8cc6p",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig Young People",
+   "line": "Monthly Expenses · 800"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "22v24mouuh",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "22v24mouuh",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Allowance",
+   "new": "Student Allowance",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "a7hs45dasf",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 19350"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "a7hs45dasf",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Transportation",
+   "new": "White Gift Project",
+   "line": "Monthly Expenses · 19350"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "akn13isqbq",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 5000"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "akn13isqbq",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Transportation",
+   "new": "White Gift Project",
+   "line": "Monthly Expenses · 5000"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "emm7l49v88",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 1300"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "uoevki2dkp",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 30000"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "uoevki2dkp",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Kitchen Supplies",
+   "new": "White Gift Project",
+   "line": "Monthly Expenses · 30000"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "6e04urp6rc",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs2117lec",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3060"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrseug93cj",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs1nnvdce",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs44pogv5",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 1200"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5kmvu4th",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 4500"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5niv9kvd",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 2700"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5hm911i9",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 4000"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5c60jdlm",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 300"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5abl76hj",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 2500"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv51ntkqb1",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 400"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5t2mqlvg",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv577t4q9i",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5mhv64qu",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 300"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5d435ou9",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 400"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv56itqcuc",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 2000"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5r7nm5ps",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 500"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5oca3a0s",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 700"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5rqb0n17",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 4500"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5v9t131m",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2700"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv54r21s0o",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 4000"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv56c5e7ip",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 300"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv52k4ioqs",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2500"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5ba1fho8",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 400"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5pvp4qc6",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5tvduvmj",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5q6ecrnc",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv53lbp5sf",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 300"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv59e1eo6k",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 400"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5bv79buc",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 2000"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5ra97gjn",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 500"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5658kst1",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 700"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "ced2iatlug",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2500"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "ced2iatlug",
+   "doctype": "Disbursement Week Item",
+   "field": "purpose",
+   "old": "Allowance",
+   "new": "Love Gift",
+   "line": "Week 2 Allowances · 2500"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv55rcq77u",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 4500"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv52oehdak",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 2700"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5d4hlpdt",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 4000"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv51cgo9ve",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 300"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5k1k7f3p",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 2500"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5of2nmq4",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 400"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5q9sd6ui",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv53v8p89f",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5rtq3oko",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5avlrlss",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 300"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv574sv49u",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 400"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5genprml",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 2000"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5mo7ils9",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 500"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5dd355gq",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 700"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5gf464nf",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 4500"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv58dr6env",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 2700"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5cqtthac",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 4000"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5ekubhut",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 300"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5a6mj9s3",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 2500"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv59a3bmkp",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 400"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5htpt1pt",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv53t6tpjg",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5lfukgib",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5k8l2tlm",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 300"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5f2b4b8n",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 400"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5juughb3",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 2000"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv53hktooa",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 500"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5gctbomd",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 700"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5ork7a3q",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 4500"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv557n176v",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 2700"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5i8lublo",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 4000"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5bnucv49",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 300"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv53j88vsp",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 2500"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv540mvnvh",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 400"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5f3agse2",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 200"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5941cqdd",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 200"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5133m21g",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 200"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5diuqiq4",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 300"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5n2h8al6",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 400"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5t4k9l9m",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 5 Allowances · 2000"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5cj4t93f",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 5 Allowances · 500"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5f97spli",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 5 Allowances · 700"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5tshpdot",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": "Pasig General",
+   "new": "Cainta General",
+   "line": "Monthly Expenses · 2500"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5spc5941",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Government",
+   "new": "Professional Fees",
+   "line": "Monthly Expenses · 1500"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5jnuc4oq",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Allowance",
+   "new": "Student Allowance",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "4sa5u539kd",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 2500"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "unks00dde4",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "unks00dde4",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Allowance",
+   "new": "Student Allowance",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "5rkt30tlro",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "8nae70s34q",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig Young People",
+   "line": "Monthly Expenses · 1500"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "93d3ijimb7",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 2500"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv510knoiu",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3060"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5c8o1aq8",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5hk15ha9",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv53ekk0gn",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 1200"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fmtofpp9p",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 4500"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fmhd127cl",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 2700"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fmk5o0o2n",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 4000"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fm1u2ilcg",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 300"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fmun1n8rk",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 2500"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fndfl12m5",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 400"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnpat90is",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnts4uokq",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnhpe9lou",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnckhsmqp",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 300"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fn0jv8en3",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 400"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnm4ioa42",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 2000"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnirl1h0g",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 500"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fntms8h1f",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 700"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fn59opf9g",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 4500"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnb762mub",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2700"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnvmu1v3m",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 4000"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fn54v1bib",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 300"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnpg9c2dv",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2500"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fns9mobln",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 400"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fn0jvjk88",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fn6fbferv",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnis8gncv",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnbgdrsr7",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 300"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fndct9344",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 400"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnsnt6dnk",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 2000"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fns5i386d",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 500"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnnlidkjm",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 700"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fns9mbuot",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 4500"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fn55i5j1v",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 2700"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnhnjechi",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 4000"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnuhig5cs",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 300"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fn7f0iu3a",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 2500"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnhf5ivgq",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 400"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnmmgett3",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnbjhm9b8",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnfbtam46",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnlufftat",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 300"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fn33mt2e4",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 400"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnqnod5s7",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 2000"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnjqlc0bo",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 500"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fn4soalbo",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 700"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fn2ik7l40",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 4500"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnl1fc7lp",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 2700"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnt31kstr",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 4000"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fn3bcvosp",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 300"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fngrh3drq",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 2500"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fncum02ph",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 400"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnjhkfglb",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnhi584ok",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fn63bijt0",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnc6vjg05",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 300"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnbuvfqnv",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 400"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fngq44lqa",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 2000"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fno7iq2l6",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 500"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fno0hm1u8",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 700"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fne98aup6",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": "Pasig General",
+   "new": "Cainta General",
+   "line": "Monthly Expenses · 2500"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnejp95sd",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Government",
+   "new": "Professional Fees",
+   "line": "Monthly Expenses · 1500"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fntfpji3u",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Allowance",
+   "new": "Student Allowance",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6us1ncnil5",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6us1ncnil5",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Allowance",
+   "new": "Student Allowance",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "njs1vimanq",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 2500"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "h1slcelgk9",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "o0qdep2hpj",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig Young People",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnmd5mphp",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3060"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnqec24hq",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnq5sk79r",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnnik7cvu",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 1200"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqda6cm4d",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 4500"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqgbec4jj",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 2700"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjq046s4fi",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 4000"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqorfvjht",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 300"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjq9bq653m",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 2500"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqe4o06j4",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 400"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqb24q2ht",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqmnnnf88",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqo923qqo",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjq0hvfm5q",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 300"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqtk27oua",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 400"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjq4j4b97u",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 2000"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqoea4ik8",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 500"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqic1i8af",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 700"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqdhjotm5",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 4500"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqn85816k",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2700"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjq2j7f6pt",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 4000"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjq0qc5mq9",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 300"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqt0a0ffl",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2500"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqilpk9br",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 400"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqqq0rjf5",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjq1g3buec",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqqmffnsu",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqfbkv522",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 300"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqqrrvbbi",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 400"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqvepe6vn",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 2000"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjq9ivk5bt",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 500"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqjbdju6n",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 700"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqecpbkob",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 4500"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjq43qtcuf",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 2700"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjq593hoel",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 4000"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqkf4t5ra",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 300"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqr9dcr26",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 2500"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjq9mh4fnk",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 400"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqu6p2vnj",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjq7ciof2t",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqe1pum8k",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 300"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjq2fr1rjg",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 400"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqfhr0fvn",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 2000"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjql9ebelp",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 500"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqdsicc33",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 700"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjq34ntv9a",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 4500"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqslpo5uo",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 2700"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqvackmk1",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 4000"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjq83rpa1a",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 300"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqnrbgm4e",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 2500"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqgdbbbtl",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 400"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjq3eers3j",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqmidh9lr",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqlpt7mbt",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 300"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqff63v4j",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 400"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjq8o6tahr",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 2000"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqfdv2v3t",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 500"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjq6b2gdeh",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 700"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqah12r97",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": "Pasig General",
+   "new": "Cainta General",
+   "line": "Monthly Expenses · 2500"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjq2t4r9h0",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Government",
+   "new": "Professional Fees",
+   "line": "Monthly Expenses · 1500"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqar3s4ot",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Allowance",
+   "new": "Student Allowance",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqcccile1",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Allowance",
+   "new": "Student Allowance",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "brunusb68d",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 5000"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "ca2uckr9vq",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 1450"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "moqpe2qt17",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 2400"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "ac8fbtvoeg",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "au04ct0tqc",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "egvprn91ca",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Monthly Expenses · 500"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqm1tmrll",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3060"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqbhqnn0t",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqicoa1fk",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqrlj9f6e",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 1200"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98qcef9vp",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 4500"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98l7b7ltp",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 2700"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98871gda4",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 4000"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k982m93cen",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 300"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98dakcuqg",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 2500"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98uesvnp6",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 400"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98pkb5417",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k985u5b4m4",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 200"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98ti9gq1n",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 300"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k987h7poba",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 1 Allowances · 400"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k9877c0pdf",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 2000"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98071i2v0",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 500"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98app1c79",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 1 Allowances · 700"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98315qj1m",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 4500"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98uua1pr6",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2700"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k988ptb830",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 4000"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k9804ojhco",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 300"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98bnm43qj",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2500"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98638frhq",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 400"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98h9o9p9e",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98379p5c1",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k989ka4rap",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 200"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98ut7dnro",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 300"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98t9t2sdm",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 400"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98c2s6lda",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 2000"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98vgiq8ei",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 500"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98uh46ckb",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 2 Allowances · 700"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "cg985b5oaf",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 1500"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "cot1k86v28",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 2 Allowances · 2500"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98g53t0f6",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 4500"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98i3rl6or",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 2700"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98qlvev72",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 4000"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98kba5u9i",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 300"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98ieam3v6",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 2500"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98h7erpgs",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98ld8jmc7",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98c4va6kf",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 200"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98ludtkcb",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 300"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98tffdse4",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 400"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98ilihnev",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 2000"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k981b5k0lp",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 500"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "bntv2ff66s",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 3 Allowances · 2500"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98s01j7kn",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 3 Allowances · 700"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98tm3hsmo",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 4500"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k981vsuehh",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 2700"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98efp49sq",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 4000"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98mec8dm7",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 300"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98e14r73q",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 2500"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k9850489pb",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 400"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98pht4k0u",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98kr0lfjj",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k983buqo0h",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 200"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k988amp1qm",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 300"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98iamcjb1",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 4 Allowances · 400"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98tkj4r83",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 2000"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98vugajhf",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 500"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98jkf3g47",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 4 Allowances · 700"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98b3l3dma",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 4500"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98eb3knii",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 2700"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98hduevpi",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 4000"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k982m5n564",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 300"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98525kpn5",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 2500"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k9824nsohc",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 400"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k9883cfnj3",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 200"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k987p2i25u",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 200"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98lkcs4n4",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 200"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98og6g2km",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 300"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98t4erthu",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Pasig General",
+   "line": "Week 5 Allowances · 400"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98drlsgur",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 5 Allowances · 2000"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k9883kisdi",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 5 Allowances · 500"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98on93oc9",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Cainta General",
+   "line": "Week 5 Allowances · 700"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98u98tju2",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "department",
+   "old": "Pasig General",
+   "new": "Cainta General",
+   "line": "Monthly Expenses · 2500"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k9837i8f3o",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Government",
+   "new": "Professional Fees",
+   "line": "Monthly Expenses · 1500"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98cguh584",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Allowance",
+   "new": "Student Allowance",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98u0rvjmj",
+   "doctype": "Disbursement Week Expense Item",
+   "field": "purpose",
+   "old": "Allowance",
+   "new": "Student Allowance",
+   "line": "Monthly Expenses · 1000"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k980ceac4b",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k9855tlq5j",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98lk9isr6",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 3000"
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98js3jutr",
+   "doctype": "Disbursement Week Item",
+   "field": "department",
+   "old": null,
+   "new": "Mission",
+   "line": "Monthly Mission Support · 1200"
+  }
+ ],
+ "voids": [
+  {
+   "disbursement": "March-2026",
+   "row": "0dp3quc727",
+   "description": "Driving Lessons with Men",
+   "amount": 2000.0
+  },
+  {
+   "disbursement": "May-2026",
+   "row": "4golbg6e64",
+   "description": "Workers PhilHealth Contribution",
+   "amount": 1100.0
+  },
+  {
+   "disbursement": "July-2026",
+   "row": "qrs474939f",
+   "description": "Workers PhilHealth Contribution",
+   "amount": 1100.0
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5dpqlk5j",
+   "description": "Workers SSS Contribution",
+   "amount": 4230.0
+  },
+  {
+   "disbursement": "August-2026",
+   "row": "nv5jct7j46",
+   "description": "YP Regular Fellowship",
+   "amount": 500.0
+  },
+  {
+   "disbursement": "September-2026",
+   "row": "6fnotgb6ai",
+   "description": "Workers PhilHealth Contribution",
+   "amount": 1100.0
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqvhkgu8k",
+   "description": "Workers SSS Contribution",
+   "amount": 4230.0
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqitgdvrh",
+   "description": "Workers PhilHealth Contribution",
+   "amount": 1100.0
+  },
+  {
+   "disbursement": "October-2026",
+   "row": "bjqimj8aar",
+   "description": "YP Regular Fellowship",
+   "amount": 500.0
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98vuv5bej",
+   "description": "Workers SSS Contribution",
+   "amount": 4230.0
+  },
+  {
+   "disbursement": "November-2026",
+   "row": "k98aj64418",
+   "description": "YP Regular Fellowship",
+   "amount": 500.0
+  }
+ ],
+ "august_benevolence": {
+  "disbursement": "August-2026",
+  "row": "5rkt30tlro",
+  "amount": 1000.0,
+  "old_source": "General Cash - JBC",
+  "new_source": "Benevolence Cash - JBC"
+ }
+}

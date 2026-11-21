@@ -1,0 +1,218 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-11-21 03:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "creditor",
+  "posting_date",
+  "amount",
+  "reference",
+  "column_break_p1",
+  "status",
+  "paid_amount",
+  "outstanding_amount",
+  "section_expense",
+  "fund",
+  "purpose",
+  "department",
+  "column_break_p2",
+  "description",
+  "source_type",
+  "disbursement",
+  "disbursement_row",
+  "section",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "creditor",
+   "fieldtype": "Link",
+   "label": "Creditor",
+   "options": "Creditor",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Date Creditor Paid",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "reqd": 1,
+   "in_list_view": 1,
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "reference",
+   "fieldtype": "Data",
+   "label": "Reference / Receipt",
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "column_break_p1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nUnpaid\nPartly Paid\nPaid\nCancelled",
+   "default": "Draft",
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "paid_amount",
+   "fieldtype": "Currency",
+   "label": "Reimbursed",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "outstanding_amount",
+   "fieldtype": "Currency",
+   "label": "Outstanding",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "section_expense",
+   "fieldtype": "Section Break",
+   "label": "Expense"
+  },
+  {
+   "fieldname": "fund",
+   "fieldtype": "Select",
+   "label": "Fund",
+   "options": "General\nMission\nBenevolence\nWhite Gift",
+   "reqd": 1,
+   "allow_on_submit": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "purpose",
+   "fieldtype": "Link",
+   "label": "Purpose",
+   "options": "Disbursement Purpose",
+   "reqd": 1,
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department Name",
+   "reqd": 1,
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "column_break_p2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Data",
+   "label": "Description",
+   "reqd": 1,
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "source_type",
+   "fieldtype": "Select",
+   "label": "Recorded From",
+   "options": "Direct\nDisbursement Line",
+   "default": "Direct",
+   "read_only": 1
+  },
+  {
+   "fieldname": "disbursement",
+   "fieldtype": "Link",
+   "label": "Disbursement",
+   "options": "Disbursement",
+   "read_only": 1,
+   "depends_on": "eval:doc.source_type=='Disbursement Line'"
+  },
+  {
+   "fieldname": "disbursement_row",
+   "fieldtype": "Data",
+   "label": "Disbursement Line",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "section",
+   "fieldtype": "Data",
+   "label": "Section",
+   "read_only": 1,
+   "depends_on": "eval:doc.source_type=='Disbursement Line'"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "options": "Creditor Payable",
+   "read_only": 1,
+   "no_copy": 1,
+   "print_hide": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "istable": 0,
+ "links": [],
+ "modified": "2026-11-21 03:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Church Management",
+ "name": "Creditor Payable",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "Finance Team",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 0,
+   "submit": 1,
+   "cancel": 1,
+   "amend": 0
+  },
+  {
+   "role": "System Manager",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "create": 1,
+   "write": 1,
+   "delete": 0,
+   "submit": 1,
+   "cancel": 1,
+   "amend": 0
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "is_submittable": 1,
+ "autoname": "format:PAY-{YYYY}-{#####}",
+ "title_field": "description",
+ "show_title_field_in_link": 0,
+ "track_changes": 1
+}

@@ -15,6 +15,10 @@ const navItems = computed(() => {
   if (session.hasFinanceAccess) {
     items.push({ label: "Collections", to: "/collections", icon: "inbox" });
     items.push({ label: "Disbursements", to: "/disbursements", icon: "wallet" });
+    items.push({ label: "Overdue Review", to: "/overdue", icon: "wallet" });
+    items.push({ label: "Creditors", to: "/creditors", icon: "wallet" });
+    items.push({ label: "Fund Summary", to: "/fund-summary", icon: "layers" });
+    items.push({ label: "Audit Log", to: "/audit-log", icon: "shield" });
     items.push({ label: "Templates", to: "/templates", icon: "layers" });
     items.push({ label: "Members", to: "/members", icon: "users" });
   }
