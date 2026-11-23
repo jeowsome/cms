@@ -3,8 +3,17 @@
  * Supports + - * / with parentheses and decimals, e.g. "500+250*2" or "(100+50)/2".
  * Returns a finite number, or null when the expression is invalid.
  */
+// Phone keyboards may type the typographic operators (× ÷ −) instead of * / -
+function normalize(input) {
+  return String(input ?? "")
+    .replace(/[₱,\s]/g, "")
+    .replace(/[×xX]/g, "*")
+    .replace(/÷/g, "/")
+    .replace(/[−–]/g, "-");
+}
+
 export function evaluateExpression(input) {
-  const src = String(input ?? "").replace(/[₱,\s]/g, "");
+  const src = normalize(input);
   if (!src) return null;
   if (!/^[\d+\-*/().]+$/.test(src)) return null;
 
@@ -63,6 +72,6 @@ export function evaluateExpression(input) {
 
 /** True when the string contains math beyond a plain number. */
 export function isExpression(input) {
-  const src = String(input ?? "").replace(/[₱,\s]/g, "");
+  const src = normalize(input);
   return /[+*/()]/.test(src) || /\d-/.test(src);
 }

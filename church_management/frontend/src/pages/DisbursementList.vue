@@ -9,13 +9,16 @@ import StatusBadge from "@/components/StatusBadge.vue";
 import CurrencyDisplay from "@/components/CurrencyDisplay.vue";
 import AppButton from "@/components/AppButton.vue";
 import CreateDisbursementModal from "@/components/CreateDisbursementModal.vue";
+import YearSwitcher from "@/components/YearSwitcher.vue";
+import { usePersistedRef } from "@/composables/usePersistedRef";
 
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 const router = useRouter();
 const showCreate = ref(false);
 const filter = ref("all"); // all | open | overdue
-const pickedYear = ref(null);
+// Kept for the browser tab, so coming back from a month keeps the chosen year
+const pickedYear = usePersistedRef("cm-disbursements-year", null, "session");
 
 const {
   data: disbursements,
@@ -82,8 +85,15 @@ const allRows = computed(() =>
     .sort((a, b) => b.index - a.index)
 );
 
-const years = computed(() => [...new Set(allRows.value.map((r) => r.year))].sort((a, b) => b - a));
-const year = computed(() => (years.value.includes(pickedYear.value) ? pickedYear.value : years.value[0]));
+// Years with records, plus the current year so a new year is reachable
+// before its first disbursement exists.
+const years = computed(() =>
+  [...new Set([...allRows.value.map((r) => r.year).filter(Boolean), today.getFullYear()])].sort((a, b) => b - a)
+);
+const year = computed({
+  get: () => (years.value.includes(pickedYear.value) ? pickedYear.value : today.getFullYear()),
+  set: (y) => (pickedYear.value = y),
+});
 const yearRows = computed(() => allRows.value.filter((r) => r.year === year.value));
 
 const totals = computed(() => {
@@ -120,7 +130,7 @@ const rows = computed(() => {
 const emptyText = computed(() => {
   if (filter.value === "overdue") return "Nothing overdue — every past month is fully claimed";
   if (filter.value === "open") return "Nothing left to claim";
-  return "No disbursements yet";
+  return `No disbursements for ${year.value} yet`;
 });
 
 const columns = [
@@ -165,6 +175,11 @@ function goTo(row) {
         {{ l.label }}
       </RouterLink>
     </nav>
+
+    <!-- Year -->
+    <div class="mb-4">
+      <YearSwitcher v-model="year" :years="years" />
+    </div>
 
     <!-- Year at a glance -->
     <div v-if="yearRows.length" class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
@@ -216,19 +231,6 @@ function goTo(row) {
         >
           {{ f.label }}
           <span class="ml-1 text-xs" :class="f.key === 'overdue' && f.count ? 'text-red-600 font-semibold' : 'text-gray-400'">{{ f.count }}</span>
-        </button>
-      </div>
-      <div v-if="years.length > 1" class="inline-flex p-1 rounded-xl bg-gray-100 text-sm font-medium" role="group" aria-label="Year">
-        <button
-          v-for="y in years"
-          :key="y"
-          type="button"
-          class="px-3 py-1.5 rounded-lg transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-          :class="year === y ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
-          :aria-pressed="year === y"
-          @click="pickedYear = y"
-        >
-          {{ y }}
         </button>
       </div>
     </div>

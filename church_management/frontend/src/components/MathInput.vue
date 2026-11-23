@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from "vue";
+import { computed, nextTick, ref } from "vue";
 import { evaluateExpression, isExpression } from "@/utils/mathExpr";
 
 /**
@@ -18,6 +18,41 @@ const text = ref("");
 const focused = ref(false);
 const invalid = ref(false);
 const justCalculated = ref(false);
+const inputEl = ref(null);
+
+// Phone keypads opened by inputmode="decimal" have no + - * / keys, so touch
+// devices get an operator strip under the field while it is focused.
+const isTouch =
+  typeof window !== "undefined" && !!window.matchMedia?.("(pointer: coarse)").matches;
+const OPS = [
+  { ch: "+", label: "+" },
+  { ch: "-", label: "−" },
+  { ch: "*", label: "×" },
+  { ch: "/", label: "÷" },
+  { ch: "(", label: "(" },
+  { ch: ")", label: ")" },
+];
+const showOps = computed(() => isTouch && focused.value && !props.disabled);
+
+function insert(ch) {
+  const el = inputEl.value;
+  if (!el) return;
+  const start = el.selectionStart ?? text.value.length;
+  const end = el.selectionEnd ?? text.value.length;
+  text.value = text.value.slice(0, start) + ch + text.value.slice(end);
+  invalid.value = false;
+  nextTick(() => {
+    el.value = text.value;
+    el.setSelectionRange(start + ch.length, start + ch.length);
+  });
+}
+
+function equals() {
+  if (commit()) {
+    const el = inputEl.value;
+    nextTick(() => el && el.setSelectionRange(el.value.length, el.value.length));
+  }
+}
 
 const peso = new Intl.NumberFormat("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -81,6 +116,7 @@ function onBlur() {
   <div class="relative group/math">
     <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">₱</span>
     <input
+      ref="inputEl"
       type="text"
       inputmode="decimal"
       :value="displayed"
@@ -122,16 +158,51 @@ function onBlur() {
       <span class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 bg-gray-900/95" />
     </span>
 
+    <!-- Operator strip for phone keypads (touch only). touchstart/mousedown are
+         prevented so the input keeps focus and the keypad stays open. -->
+    <div
+      v-if="showOps"
+      class="absolute left-0 right-0 top-[calc(100%+4px)] z-30 flex gap-1 rounded-xl bg-gray-900/95 p-1 shadow-xl anim-fadein"
+      role="toolbar"
+      aria-label="Math operators"
+    >
+      <button
+        v-for="op in OPS"
+        :key="op.ch"
+        type="button"
+        tabindex="-1"
+        class="flex-1 h-9 rounded-lg bg-white/10 text-base font-bold text-white active:bg-white/30"
+        :aria-label="`Insert ${op.ch}`"
+        @touchstart.prevent="insert(op.ch)"
+        @mousedown.prevent="insert(op.ch)"
+      >
+        {{ op.label }}
+      </button>
+      <button
+        type="button"
+        tabindex="-1"
+        class="flex-1 h-9 rounded-lg bg-brand-500 text-base font-bold text-white active:bg-brand-400"
+        aria-label="Calculate"
+        @touchstart.prevent="equals"
+        @mousedown.prevent="equals"
+      >
+        =
+      </button>
+    </div>
+
     <!-- Live "= result" preview while typing an expression -->
+    <!-- Sits above the field when the operator strip occupies the space below -->
     <span
       v-if="preview"
-      class="pointer-events-none absolute right-0 top-[calc(100%+4px)] z-20 rounded-lg bg-brand-600 px-2.5 py-1 text-xs font-bold text-white shadow-lg anim-fadein tabular"
+      class="pointer-events-none absolute right-0 z-20 rounded-lg bg-brand-600 px-2.5 py-1 text-xs font-bold text-white shadow-lg anim-fadein tabular"
+      :class="showOps ? 'bottom-[calc(100%+4px)]' : 'top-[calc(100%+4px)]'"
     >
       = {{ preview }}
     </span>
     <span
       v-else-if="showInvalid"
-      class="pointer-events-none absolute right-0 top-[calc(100%+4px)] z-20 rounded-lg bg-red-600 px-2.5 py-1 text-[11px] font-semibold text-white shadow-lg anim-fadein"
+      class="pointer-events-none absolute right-0 z-20 rounded-lg bg-red-600 px-2.5 py-1 text-[11px] font-semibold text-white shadow-lg anim-fadein"
+      :class="showOps ? 'bottom-[calc(100%+4px)]' : 'top-[calc(100%+4px)]'"
     >
       Can't calculate — check the expression
     </span>

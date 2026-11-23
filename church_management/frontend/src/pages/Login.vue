@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useSessionStore } from "@/stores/session";
+import { homeRoute } from "@/router";
 
 const router = useRouter();
 const route = useRoute();
@@ -26,7 +27,7 @@ async function submit() {
     } else if (redirect && typeof redirect === "string") {
       router.replace(redirect);
     } else {
-      router.replace(session.landingRoute());
+      router.replace(homeRoute(session));
     }
   } catch (e) {
     errorMsg.value = e.message || "Invalid email or password.";

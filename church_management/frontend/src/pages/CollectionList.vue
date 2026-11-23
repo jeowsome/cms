@@ -1,18 +1,26 @@
 <script setup>
-import { computed, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useQuery } from "@pinia/colada";
 import { call } from "@/composables/useFrappeApi";
+import { usePersistedRef } from "@/composables/usePersistedRef";
 import PageHeader from "@/components/PageHeader.vue";
 import StatusBadge from "@/components/StatusBadge.vue";
 import CurrencyDisplay from "@/components/CurrencyDisplay.vue";
 import AppButton from "@/components/AppButton.vue";
+import YearSwitcher from "@/components/YearSwitcher.vue";
 
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const MIN_YEAR = 2026; // the API only lists 2026 onwards
 
 const router = useRouter();
-const pickedYear = ref(null);
-const month = ref(null); // "2026-11", or null for the whole year
+// "scroll": every month of the year in one list; "month": one month at a time.
+// Remembered on this device so the list opens the way it was left.
+const viewMode = usePersistedRef("cm-collections-view", "scroll");
+// Year and month are kept for the browser tab, so opening a collection and
+// coming back lands on the same place.
+const pickedYear = usePersistedRef("cm-collections-year", null, "session");
+const pickedMonth = usePersistedRef("cm-collections-month", null, "session"); // "2026-11"
 const draftsOnly = ref(false);
 
 const {
@@ -39,6 +47,9 @@ const peso = new Intl.NumberFormat("en-PH", { style: "currency", currency: "PHP"
 function compact(v) {
   return v >= 1e6 ? `₱${(v / 1e6).toFixed(1)}M` : v >= 1e3 ? `₱${Math.round(v / 1e3)}k` : `₱${Math.round(v)}`;
 }
+function monthName(ym) {
+  return MONTHS[Number(String(ym).slice(5, 7)) - 1] || ym;
+}
 
 // "2026-07-12 MORNING" → day + service tag; the name is the reliable source of both.
 const allRows = computed(() =>
@@ -48,8 +59,19 @@ const allRows = computed(() =>
   })
 );
 
-const years = computed(() => [...new Set(allRows.value.map((r) => r.year))].sort((a, b) => b - a));
-const year = computed(() => (years.value.includes(pickedYear.value) ? pickedYear.value : years.value[0]));
+const nowYear = new Date().getFullYear();
+// Years with records plus the current one, so a new year is reachable before
+// its first collection is entered.
+const years = computed(() =>
+  [...new Set([...allRows.value.map((r) => r.year), nowYear])].filter((y) => y >= MIN_YEAR).sort((a, b) => b - a)
+);
+const year = computed({
+  get: () => (years.value.includes(pickedYear.value) ? pickedYear.value : years.value.includes(nowYear) ? nowYear : years.value[0]),
+  set: (y) => {
+    pickedYear.value = y;
+    pickedMonth.value = null;
+  },
+});
 // Cancelled records stay visible in the list but never count toward a total
 const yearRows = computed(() => allRows.value.filter((r) => r.year === year.value));
 const counted = computed(() => yearRows.value.filter((r) => r.docstatus !== 2));
@@ -84,7 +106,10 @@ const ytdCards = computed(() => {
   ];
 });
 
-// One bar per month of the year, oldest first — doubles as the month filter.
+const now = new Date();
+const nowKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+
+// One bar per month of the year with records, oldest first.
 const monthBars = computed(() => {
   const by = new Map();
   for (const r of counted.value) {
@@ -96,21 +121,108 @@ const monthBars = computed(() => {
   }
   const bars = [...by.values()].sort((a, b) => a.key.localeCompare(b.key));
   const max = Math.max(...bars.map((b) => b.total), 1);
-  const now = new Date();
-  const nowKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-  return bars.map((b) => {
-    const name = MONTHS[Number(b.key.slice(5, 7)) - 1] || b.key;
-    return { ...b, name, short: name.slice(0, 3), sundays: b.days.size, pct: Math.max((b.total / max) * 100, 3), current: b.key === nowKey };
+  return bars.map((b, i) => {
+    const name = monthName(b.key);
+    const prev = bars[i - 1];
+    return {
+      ...b,
+      name,
+      short: name.slice(0, 3),
+      sundays: b.days.size,
+      pct: Math.max((b.total / max) * 100, 3),
+      current: b.key === nowKey,
+      change: prev && prev.total ? (b.total - prev.total) / prev.total : null,
+      prevShort: prev ? monthName(prev.key).slice(0, 3) : null,
+    };
   });
 });
 
-const activeMonth = computed(() => (monthBars.value.some((b) => b.key === month.value) ? month.value : null));
+// Months of the year that can be paged through: every month with records,
+// plus the current month in the current year so a new month opens empty.
+const monthKeys = computed(() => {
+  const keys = new Set(yearRows.value.map((r) => r.ym));
+  if (year.value === nowYear) keys.add(nowKey);
+  return [...keys].sort();
+});
+
+// Month view: the chosen month, defaulting to the latest one
+const activeMonth = computed(() =>
+  monthKeys.value.includes(pickedMonth.value) ? pickedMonth.value : monthKeys.value[monthKeys.value.length - 1] || null
+);
+
+function monthsOf(y) {
+  return [...new Set(allRows.value.filter((r) => r.year === y).map((r) => r.ym))].sort();
+}
+
+// Paging past either end of the year moves into the neighbouring year.
+const monthStep = computed(() => {
+  const i = monthKeys.value.indexOf(activeMonth.value);
+  const sortedYears = [...years.value].sort((a, b) => a - b);
+  const yi = sortedYears.indexOf(year.value);
+  let prev = null;
+  let next = null;
+  if (i > 0) prev = { year: year.value, key: monthKeys.value[i - 1] };
+  else if (yi > 0) {
+    const y = sortedYears[yi - 1];
+    const ms = monthsOf(y);
+    if (ms.length) prev = { year: y, key: ms[ms.length - 1] };
+  }
+  if (i >= 0 && i < monthKeys.value.length - 1) next = { year: year.value, key: monthKeys.value[i + 1] };
+  else if (yi >= 0 && yi < sortedYears.length - 1) {
+    const y = sortedYears[yi + 1];
+    const ms = monthsOf(y);
+    next = { year: y, key: ms[0] || (y === nowYear ? nowKey : null) };
+    if (!next.key) next = null;
+  }
+  return { prev, next };
+});
+
+function goMonth(step) {
+  if (!step) return;
+  pickedYear.value = step.year;
+  pickedMonth.value = step.key;
+}
+
+// Scroll view: the month whose section is at the top of the screen
+const inViewMonth = ref(null);
+
+// The bar the chart highlights follows whichever view is in use
+const highlighted = computed(() => (viewMode.value === "month" ? activeMonth.value : inViewMonth.value));
+const highlightedBar = computed(() => monthBars.value.find((b) => b.key === highlighted.value) || null);
+
+// Trend line over the bars: x at each bar's centre, y at its top (0–100 box).
+// Each segment is coloured by direction; the one into the current, unfinished
+// month is dashed.
+const trend = computed(() => {
+  const n = monthBars.value.length;
+  const pts = monthBars.value.map((b, i) => ({ x: ((i + 0.5) / n) * 100, y: 100 - b.pct, total: b.total, current: b.current }));
+  return pts.slice(1).map((p, i) => ({
+    x1: pts[i].x,
+    y1: pts[i].y,
+    x2: p.x,
+    y2: p.y,
+    up: p.total >= pts[i].total,
+    partial: p.current,
+  }));
+});
+
+function pctText(change) {
+  return `${Math.abs(Math.round(change * 100))}%`;
+}
+
+function onBarClick(b) {
+  if (viewMode.value === "month") {
+    pickedMonth.value = b.key;
+  } else {
+    scrollToMonth(b.key);
+  }
+}
 
 // The list: newest first, grouped by month with a subtotal, and each Sunday's
 // services kept together with a combined total when there are two.
 const groups = computed(() => {
   let rows = yearRows.value;
-  if (activeMonth.value) rows = rows.filter((r) => r.ym === activeMonth.value);
+  if (viewMode.value === "month") rows = rows.filter((r) => r.ym === activeMonth.value);
   if (draftsOnly.value) rows = rows.filter((r) => r.docstatus === 0);
   rows = [...rows].sort((a, b) => b.day.localeCompare(a.day) || a.tag.localeCompare(b.tag));
 
@@ -127,7 +239,7 @@ const groups = computed(() => {
   for (const r of rows) {
     let g = out[out.length - 1];
     if (!g || g.key !== r.ym) {
-      g = { key: r.ym, label: `${MONTHS[Number(r.ym.slice(5, 7)) - 1] || r.ym} ${r.ym.slice(0, 4)}`, rows: [], total: 0, count: 0, days: new Set() };
+      g = { key: r.ym, label: `${monthName(r.ym)} ${r.ym.slice(0, 4)}`, rows: [], total: 0, count: 0, days: new Set() };
       out.push(g);
       prevDay = null;
     }
@@ -143,9 +255,23 @@ const groups = computed(() => {
   return out.map((g) => ({ ...g, sundays: g.days.size }));
 });
 
+// Month view header: the chosen month's counted totals (unaffected by the
+// drafts filter), and zeros for a month with nothing entered yet.
+const activeGroup = computed(() => {
+  const key = activeMonth.value;
+  const bar = monthBars.value.find((m) => m.key === key);
+  return {
+    label: key ? `${monthName(key)} ${key.slice(0, 4)}` : "",
+    total: bar?.total || 0,
+    count: bar?.count || 0,
+    sundays: bar?.sundays || 0,
+  };
+});
+
 const emptyText = computed(() => {
   if (draftsOnly.value) return "No drafts — every collection is submitted";
-  return "No collections recorded yet this year";
+  if (viewMode.value === "month" && activeMonth.value) return `No collections recorded in ${monthName(activeMonth.value)} yet`;
+  return `No collections recorded in ${year.value} yet`;
 });
 
 function tagClass(tag) {
@@ -155,6 +281,111 @@ function tagClass(tag) {
 function goTo(row) {
   router.push({ name: "CollectionForm", params: { name: row.name } });
 }
+
+// ── Scroll view: month tracking + floating month indicator ────────────────
+// The app scrolls inside #main-scroll-area, not the window.
+let scroller = null;
+const indicator = ref({ show: false, top: 0 });
+let hideTimer = null;
+let frame = 0;
+const SCROLL_KEY = "cm-collections-scroll";
+
+function sectionEls() {
+  return [...document.querySelectorAll("[data-month-section]")];
+}
+
+function updateInView() {
+  frame = 0;
+  if (!scroller || viewMode.value !== "scroll") return;
+  const box = scroller.getBoundingClientRect();
+  // A section is "in view" once its top passes a reading line near the top of
+  // the screen. Over the last screenful of scrolling the line slides down to
+  // the bottom edge, so the final (oldest) months — whose tops can never reach
+  // the upper line — still become current in turn as the list bottoms out.
+  const base = Math.min(160, box.height / 3);
+  const remaining = scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop;
+  const line = box.top + base + Math.max(0, box.height - base - remaining);
+  let current = null;
+  for (const el of sectionEls()) {
+    if (el.offsetParent === null) continue; // the hidden desktop/mobile copy
+    if (el.getBoundingClientRect().top <= line) current = el.dataset.monthSection;
+  }
+  const visible = sectionEls().filter((el) => el.offsetParent !== null);
+  inViewMonth.value = current || visible[0]?.dataset.monthSection || null;
+
+  const range = scroller.scrollHeight - scroller.clientHeight;
+  const progress = range > 0 ? scroller.scrollTop / range : 0;
+  indicator.value = { show: true, top: box.top + 12 + progress * Math.max(box.height - 64, 0) };
+  clearTimeout(hideTimer);
+  hideTimer = setTimeout(() => (indicator.value = { ...indicator.value, show: false }), 900);
+}
+
+function onScroll() {
+  if (!frame) frame = requestAnimationFrame(updateInView);
+}
+
+// The month just jumped to from the chart; its header flashes on arrival.
+const flashMonth = ref(null);
+let flashTimer = null;
+
+function scrollToMonth(key) {
+  const el = sectionEls().find((e) => e.dataset.monthSection === key && e.offsetParent !== null);
+  if (!el || !scroller) return;
+  const top = el.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop - 8;
+  scroller.scrollTo({ top, behavior: "smooth" });
+  flashMonth.value = key;
+  clearTimeout(flashTimer);
+  flashTimer = setTimeout(() => (flashMonth.value = null), 1800);
+}
+
+// Header look for a month: the flashed one glows, the one in view is accented.
+function headerState(key) {
+  if (flashMonth.value === key) return "flash";
+  return inViewMonth.value === key ? "active" : "idle";
+}
+
+const indicatorLabel = computed(() => (inViewMonth.value ? `${monthName(inViewMonth.value)} ${inViewMonth.value.slice(0, 4)}` : ""));
+
+onMounted(() => {
+  scroller = document.getElementById("main-scroll-area");
+  scroller?.addEventListener("scroll", onScroll, { passive: true });
+});
+
+// Coming back from a collection in scroll view: restore where the list was.
+const cameFromForm = String(window.history.state?.back || "").startsWith("/collections/");
+let restored = false;
+watch(
+  () => !loading.value && groups.value.length,
+  async (ready) => {
+    if (!ready || restored) return;
+    restored = true;
+    await nextTick();
+    let saved = null;
+    try {
+      saved = Number(sessionStorage.getItem(SCROLL_KEY));
+    } catch {}
+    if (cameFromForm && viewMode.value === "scroll" && scroller && saved) scroller.scrollTop = saved;
+    updateInView();
+    indicator.value.show = false;
+  },
+  { immediate: true }
+);
+
+watch([viewMode, year], async () => {
+  await nextTick();
+  updateInView();
+  indicator.value.show = false;
+});
+
+onBeforeUnmount(() => {
+  try {
+    if (scroller) sessionStorage.setItem(SCROLL_KEY, String(scroller.scrollTop));
+  } catch {}
+  scroller?.removeEventListener("scroll", onScroll);
+  clearTimeout(hideTimer);
+  clearTimeout(flashTimer);
+  if (frame) cancelAnimationFrame(frame);
+});
 </script>
 
 <template>
@@ -171,19 +402,22 @@ function goTo(row) {
       </template>
     </PageHeader>
 
-    <!-- Year tabs (only once there is more than one year) -->
-    <div v-if="years.length > 1" class="inline-flex p-1 mb-4 rounded-xl bg-gray-100 text-sm font-medium" role="group" aria-label="Year">
-      <button
-        v-for="y in years"
-        :key="y"
-        type="button"
-        class="px-3 py-1.5 rounded-lg transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-        :class="year === y ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
-        :aria-pressed="year === y"
-        @click="pickedYear = y; month = null"
-      >
-        {{ y }}
-      </button>
+    <!-- Year + how the list is shown -->
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+      <YearSwitcher v-model="year" :years="years" />
+      <div class="inline-flex p-1 rounded-xl bg-gray-100 text-sm font-medium" role="group" aria-label="List view">
+        <button
+          v-for="v in [{ key: 'scroll', label: 'Scroll' }, { key: 'month', label: 'By month' }]"
+          :key="v.key"
+          type="button"
+          class="px-3 py-1.5 rounded-lg transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+          :class="viewMode === v.key ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'"
+          :aria-pressed="viewMode === v.key"
+          @click="viewMode = v.key"
+        >
+          {{ v.label }}
+        </button>
+      </div>
     </div>
 
     <!-- YTD summary -->
@@ -199,46 +433,118 @@ function goTo(row) {
       </div>
     </div>
 
-    <!-- Month by month: tap a bar to show only that month -->
-    <div v-if="monthBars.length > 1" class="rounded-2xl border border-gray-100 bg-white p-3.5 sm:p-4 mb-4">
-      <div class="flex items-center justify-between gap-3 mb-3">
+    <!-- Month by month: bars with a trend line. The highlighted bar follows the
+         view — the chosen month, or the month scrolled into view. -->
+    <div v-if="monthBars.length" class="isolate rounded-2xl border border-gray-100 bg-white p-3.5 sm:p-4 mb-4">
+      <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 mb-3">
         <p class="text-sm font-semibold text-gray-900">
           Month by month
-          <span class="font-normal text-gray-400">· tap a month to show only its services</span>
+          <span class="font-normal text-gray-400">· tap a month to {{ viewMode === "month" ? "open it" : "jump to it" }}</span>
         </p>
-        <button
-          v-if="activeMonth"
-          type="button"
-          class="text-xs font-semibold text-brand-700 hover:underline cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
-          @click="month = null"
-        >
-          Show all months
-        </button>
+        <p v-if="highlightedBar" class="text-xs text-gray-500 tabular-nums">
+          <span class="font-semibold text-gray-900">{{ highlightedBar.name }}</span>
+          {{ peso.format(highlightedBar.total) }}<template v-if="highlightedBar.current"> so far</template>
+          <span
+            v-if="highlightedBar.change !== null"
+            class="ml-1 font-semibold"
+            :class="highlightedBar.change >= 0 ? 'text-green-700' : 'text-red-600'"
+          >
+            {{ highlightedBar.change >= 0 ? "▲" : "▼" }} {{ pctText(highlightedBar.change) }}
+            <span class="font-normal text-gray-400">vs {{ highlightedBar.prevShort }}</span>
+          </span>
+        </p>
       </div>
-      <div class="flex items-end gap-1 sm:gap-2 h-28">
+      <div class="relative flex">
+        <!-- Trend line, drawn over the bar area (below the 16px value labels) -->
+        <svg
+          v-if="trend.length"
+          class="pointer-events-none absolute inset-x-0 top-4 h-24 w-full overflow-visible z-10"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <line
+            v-for="(seg, i) in trend"
+            :key="i"
+            :x1="seg.x1" :y1="seg.y1" :x2="seg.x2" :y2="seg.y2"
+            :class="seg.up ? 'stroke-green-600' : 'stroke-red-500'"
+            stroke-width="2"
+            stroke-linecap="round"
+            :stroke-dasharray="seg.partial ? '4 3' : null"
+            vector-effect="non-scaling-stroke"
+          />
+        </svg>
         <button
           v-for="b in monthBars"
           :key="b.key"
           type="button"
-          class="group flex-1 min-w-0 h-full flex flex-col justify-end items-center gap-1 cursor-pointer focus:outline-none"
-          :aria-pressed="activeMonth === b.key"
-          :aria-label="`${b.name}: ${peso.format(b.total)} from ${b.count} services${b.current ? ', month still in progress' : ''}`"
+          class="group flex-1 min-w-0 px-0.5 sm:px-1 flex flex-col items-center cursor-pointer focus:outline-none"
+          :aria-pressed="highlighted === b.key"
+          :aria-label="`${b.name}: ${peso.format(b.total)} from ${b.count} services${b.change !== null ? `, ${b.change >= 0 ? 'up' : 'down'} ${pctText(b.change)} from ${b.prevShort}` : ''}${b.current ? ', month still in progress' : ''}`"
           :title="`${b.name}: ${peso.format(b.total)} · ${b.sundays} Sunday${b.sundays === 1 ? '' : 's'}`"
-          @click="month = activeMonth === b.key ? null : b.key"
+          @click="onBarClick(b)"
         >
-          <span class="hidden sm:block text-[10px] font-medium tabular-nums" :class="activeMonth === b.key ? 'text-brand-700' : 'text-gray-500'">{{ compact(b.total) }}</span>
           <span
-            class="w-full max-w-10 rounded-t-md transition-colors group-focus-visible:ring-2 group-focus-visible:ring-brand-500 group-focus-visible:ring-offset-1"
-            :class="[
-              activeMonth === b.key ? 'bg-brand-600' : activeMonth ? 'bg-gray-200 group-hover:bg-brand-300' : 'bg-brand-400 group-hover:bg-brand-600',
-              b.current && activeMonth !== b.key ? 'opacity-60' : '',
-            ]"
-            :style="{ height: b.pct + '%' }"
-          />
-          <span class="text-[10px] sm:text-[11px] font-medium" :class="activeMonth === b.key ? 'text-brand-700 font-bold' : 'text-gray-500'">{{ b.short }}</span>
+            class="h-4 leading-4 text-[10px] font-medium tabular-nums whitespace-nowrap"
+            :class="[highlighted === b.key ? 'text-brand-700 font-bold' : 'text-gray-500 invisible sm:visible']"
+          >{{ compact(b.total) }}</span>
+          <span class="relative w-full h-24 flex items-end justify-center">
+            <span
+              class="w-full max-w-10 rounded-t-md transition-colors group-focus-visible:ring-2 group-focus-visible:ring-brand-500 group-focus-visible:ring-offset-1"
+              :class="[
+                highlighted === b.key ? 'bg-brand-600' : highlighted ? 'bg-brand-200 group-hover:bg-brand-300' : 'bg-brand-400 group-hover:bg-brand-600',
+                b.current && highlighted !== b.key ? 'opacity-60' : '',
+              ]"
+              :style="{ height: b.pct + '%' }"
+            />
+            <!-- Trend point at the top of the bar -->
+            <span
+              class="pointer-events-none absolute left-1/2 z-20 w-2 h-2 -translate-x-1/2 translate-y-1/2 rounded-full bg-white border-2"
+              :class="highlighted === b.key ? 'border-brand-800' : 'border-gray-500'"
+              :style="{ bottom: b.pct + '%' }"
+            />
+          </span>
+          <span class="h-5 leading-5 text-[10px] sm:text-[11px] font-medium" :class="highlighted === b.key ? 'text-brand-700 font-bold' : 'text-gray-500'">{{ b.short }}</span>
         </button>
       </div>
-      <p v-if="monthBars.some((b) => b.current)" class="mt-2 text-[11px] text-gray-400">The paler bar is the current month — still in progress.</p>
+      <p class="mt-2 text-[11px] text-gray-400">
+        The line turns <span class="font-semibold text-green-700">green</span> when a month is up on the one before and
+        <span class="font-semibold text-red-600">red</span> when it is down<template v-if="monthBars.some((b) => b.current)">; the dashed part and paler bar are the current month, still in progress</template>.
+      </p>
+    </div>
+
+    <!-- Month view: step through months (and into the next/previous year) -->
+    <div
+      v-if="viewMode === 'month' && activeMonth"
+      class="sticky top-0 z-20 -mx-4 sm:mx-0 px-4 sm:px-0 py-2 mb-2 bg-gray-50/95 backdrop-blur"
+    >
+      <div class="flex items-center gap-2 rounded-2xl border border-gray-100 bg-white p-1.5 shadow-sm">
+        <button
+          type="button"
+          class="w-10 h-10 shrink-0 flex items-center justify-center rounded-xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 disabled:text-gray-200 disabled:hover:bg-transparent cursor-pointer disabled:cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+          :disabled="!monthStep.prev"
+          :aria-label="monthStep.prev ? `Previous month: ${monthName(monthStep.prev.key)} ${monthStep.prev.year}` : 'No earlier month'"
+          @click="goMonth(monthStep.prev)"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+        </button>
+        <div class="flex-1 min-w-0 text-center" aria-live="polite">
+          <p class="text-sm font-bold text-gray-900">{{ activeGroup.label }}</p>
+          <p class="text-[11px] text-gray-500 tabular-nums">
+            {{ activeGroup.sundays }} Sunday{{ activeGroup.sundays === 1 ? "" : "s" }} · {{ activeGroup.count }} service{{ activeGroup.count === 1 ? "" : "s" }} ·
+            <span class="font-semibold text-gray-900">{{ peso.format(activeGroup.total) }}</span>
+          </p>
+        </div>
+        <button
+          type="button"
+          class="w-10 h-10 shrink-0 flex items-center justify-center rounded-xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 disabled:text-gray-200 disabled:hover:bg-transparent cursor-pointer disabled:cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+          :disabled="!monthStep.next"
+          :aria-label="monthStep.next ? `Next month: ${monthName(monthStep.next.key)} ${monthStep.next.year}` : 'No later month'"
+          @click="goMonth(monthStep.next)"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+        </button>
+      </div>
     </div>
 
     <!-- Drafts waiting to be submitted -->
@@ -296,10 +602,19 @@ function goTo(row) {
                 <th scope="col" class="px-5 py-3 text-right">Grand Total</th>
               </tr>
             </thead>
-            <tbody v-for="g in groups" :key="g.key" class="divide-y divide-gray-50 border-t border-gray-100">
-              <tr class="bg-gray-50/60">
-                <th scope="colgroup" colspan="2" class="px-5 py-2.5 text-left">
-                  <span class="text-sm font-bold text-gray-900">{{ g.label }}</span>
+            <tbody v-for="g in groups" :key="g.key" :data-month-section="g.key" class="divide-y divide-gray-50 border-t border-gray-100">
+              <tr
+                v-if="viewMode === 'scroll'"
+                class="transition-colors duration-500"
+                :class="{ flash: 'bg-brand-100', active: 'bg-brand-50', idle: 'bg-gray-100/70' }[headerState(g.key)]"
+              >
+                <th
+                  scope="colgroup"
+                  colspan="2"
+                  class="px-5 py-3 text-left border-l-4 transition-colors duration-500"
+                  :class="headerState(g.key) === 'idle' ? 'border-gray-300' : 'border-brand-600'"
+                >
+                  <span class="text-base font-bold" :class="headerState(g.key) === 'idle' ? 'text-gray-900' : 'text-brand-800'">{{ g.label }}</span>
                   <span class="ml-2 text-xs font-normal text-gray-500">{{ g.sundays }} Sunday{{ g.sundays === 1 ? "" : "s" }} · {{ g.count }} service{{ g.count === 1 ? "" : "s" }}</span>
                 </th>
                 <td colspan="3" class="hidden lg:table-cell" />
@@ -339,13 +654,22 @@ function goTo(row) {
 
       <!-- Mobile: cards under a month heading -->
       <div class="sm:hidden space-y-5">
-        <section v-for="g in groups" :key="g.key" :aria-label="g.label">
-          <div class="flex items-end justify-between gap-3 px-1 mb-2">
+        <section v-for="g in groups" :key="g.key" :data-month-section="g.key" :aria-label="g.label">
+          <div v-if="viewMode === 'scroll'" class="sticky top-0 z-10 -mx-4 px-4 py-2 mb-1 bg-gray-50/95 backdrop-blur">
+            <div
+              class="flex items-center justify-between gap-3 rounded-xl border border-l-4 px-3 py-2 shadow-sm transition-all duration-500"
+              :class="{
+                flash: 'bg-brand-100 border-brand-400 border-l-brand-600 ring-4 ring-brand-200',
+                active: 'bg-brand-50 border-brand-200 border-l-brand-600',
+                idle: 'bg-white border-gray-200 border-l-gray-300',
+              }[headerState(g.key)]"
+            >
             <div>
-              <h2 class="text-sm font-bold text-gray-900">{{ g.label }}</h2>
+              <h2 class="text-base font-bold" :class="headerState(g.key) === 'idle' ? 'text-gray-900' : 'text-brand-800'">{{ g.label }}</h2>
               <p class="text-[11px] text-gray-500">{{ g.sundays }} Sunday{{ g.sundays === 1 ? "" : "s" }} · {{ g.count }} service{{ g.count === 1 ? "" : "s" }}</p>
             </div>
             <CurrencyDisplay :value="g.total" weight="bold" />
+            </div>
           </div>
           <div class="space-y-2.5">
             <div
@@ -390,5 +714,18 @@ function goTo(row) {
         </section>
       </div>
     </template>
+
+    <!-- Month indicator beside the scrollbar while scrolling (scroll view) -->
+    <Teleport to="body">
+      <div
+        v-if="viewMode === 'scroll' && indicatorLabel"
+        class="pointer-events-none fixed right-4 z-40 rounded-full bg-gray-900/90 px-3 py-1.5 text-xs font-bold text-white shadow-lg transition-opacity duration-300"
+        :class="indicator.show ? 'opacity-100' : 'opacity-0'"
+        :style="{ top: indicator.top + 'px' }"
+        aria-hidden="true"
+      >
+        {{ indicatorLabel }}
+      </div>
+    </Teleport>
   </div>
 </template>

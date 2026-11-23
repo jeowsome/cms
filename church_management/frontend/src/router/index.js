@@ -77,6 +77,56 @@ router.afterEach((to) => {
   sessionStorage.removeItem("cm-preload-reload");
 });
 
+// Returns where to send a user who may not open `to`, or null when allowed.
+function accessRedirect(to, session) {
+  if (to.meta.requiresAuth && session.isGuest) {
+    return { name: "Login", query: { redirect: to.fullPath } };
+  }
+  const denied =
+    (to.meta.requiresFinance && !session.hasFinanceAccess) ||
+    (to.meta.requiresDonation && !session.hasDonationAccess) ||
+    (to.meta.requiresMusic && !session.hasMusicAccess) ||
+    (to.meta.requiresWorshipLeader && !session.isWorshipLeader) ||
+    (to.meta.requiresLeader && !session.isLeader) ||
+    (to.meta.requiresRoleAdmin && !session.isLeader && !session.isDonationAdmin);
+  return denied ? session.landingRoute() : null;
+}
+
+// The last section a user opened (e.g. /collections, /music/worship), kept per
+// user so the Member Portal link reopens it instead of the role default.
+const LAST_KEY = (user) => `cm-last-section:${user}`;
+
+function sectionOf(path) {
+  const parts = path.split("?")[0].split("/").filter(Boolean);
+  // Detail pages (/collections/<name>, /collections/new) reopen their list
+  const depth = parts[0] === "music" || parts[0] === "admin" ? 2 : 1;
+  return "/" + parts.slice(0, depth).join("/");
+}
+
+/** Where a signed-in user lands: their last section if still allowed, else the role default. */
+export function homeRoute(session) {
+  if (session.tempPasswordPending) return session.landingRoute();
+  let last = null;
+  try {
+    last = localStorage.getItem(LAST_KEY(session.user));
+  } catch {}
+  if (last) {
+    const target = router.resolve(last);
+    if (target.matched.length && !target.meta.public && target.meta.chrome !== false && !accessRedirect(target, session)) {
+      return target.fullPath;
+    }
+  }
+  return session.landingRoute();
+}
+
+router.afterEach((to) => {
+  const session = useSessionStore();
+  if (session.isGuest || to.meta.public || to.meta.chrome === false || !to.matched.length) return;
+  try {
+    localStorage.setItem(LAST_KEY(session.user), sectionOf(to.fullPath));
+  } catch {}
+});
+
 router.beforeEach(async (to) => {
   const session = useSessionStore();
   if (!session.ready) {
@@ -98,34 +148,13 @@ router.beforeEach(async (to) => {
     // A landing of "/login" (account with no SPA roles) must fall through,
     // or this guard would redirect /login → /login forever.
     if (!session.isGuest && (to.name === "Login" || to.name === "ForgotPassword")) {
-      const landing = session.landingRoute();
+      const landing = homeRoute(session);
       if (landing !== "/login") return landing;
     }
     return true;
   }
 
-  if (to.meta.requiresAuth && session.isGuest) {
-    return { name: "Login", query: { redirect: to.fullPath } };
-  }
-  if (to.meta.requiresFinance && !session.hasFinanceAccess) {
-    return session.landingRoute();
-  }
-  if (to.meta.requiresDonation && !session.hasDonationAccess) {
-    return session.landingRoute();
-  }
-  if (to.meta.requiresMusic && !session.hasMusicAccess) {
-    return session.landingRoute();
-  }
-  if (to.meta.requiresWorshipLeader && !session.isWorshipLeader) {
-    return session.landingRoute();
-  }
-  if (to.meta.requiresLeader && !session.isLeader) {
-    return session.landingRoute();
-  }
-  if (to.meta.requiresRoleAdmin && !session.isLeader && !session.isDonationAdmin) {
-    return session.landingRoute();
-  }
-  return true;
+  return accessRedirect(to, session) ?? true;
 });
 
 export default router;
