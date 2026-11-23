@@ -1,0 +1,60 @@
+{% extends "templates/base.html" %}
+
+{% block title %}Church Calendar — Jezreel Baptist Church Pasig{% endblock %}
+
+{% block favicon %}
+<link rel="shortcut icon" href="/assets/church_management/images/jbc-logo-192.png" type="image/png">
+{% endblock %}
+
+{# Drop frappe's website.bundle.css: its `.hidden{display:none!important}`
+   defeats Tailwind's responsive `sm:block`, which the calendar grid uses. #}
+{%- block head -%}{%- endblock -%}
+
+{% block head_include %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<link rel="stylesheet" href="{{ spa_css }}" />
+<style>
+    html, body { margin: 0 !important; padding: 0 !important; overflow: hidden; height: 100%; background: #f8fafc !important; }
+    #app { min-height: 100vh; }
+    /* Branded splash shown until the SPA mounts (Vue replaces #app content) */
+    .jbc-splash {
+        min-height: 100vh; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 16px;
+        background: linear-gradient(160deg, #064e3b 0%, #022c22 100%);
+    }
+    .jbc-splash img { width: 88px; height: 88px; border-radius: 9999px; box-shadow: 0 0 0 8px rgba(255,255,255,0.08); }
+    .jbc-splash p {
+        margin: 0; color: #d1fae5; font-size: 14px; font-weight: 600; letter-spacing: 0.08em;
+        text-transform: uppercase; font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+    .jbc-splash .spinner {
+        width: 22px; height: 22px; border-radius: 9999px;
+        border: 3px solid rgba(250, 204, 21, 0.25); border-top-color: #facc15;
+        animation: jbc-spin 0.8s linear infinite;
+    }
+    @keyframes jbc-spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { .jbc-splash .spinner { animation-duration: 2s; } }
+</style>
+{% endblock %}
+
+{% block navbar %}{% endblock %}
+{% block banner %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div id="app">
+    <div class="jbc-splash" aria-label="Loading">
+        <img src="/assets/church_management/images/jbc-logo-192.png" alt="Jezreel Baptist Church logo">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Loading calendar&hellip;</p>
+    </div>
+</div>
+<script>
+    window.csrfToken = "{{ csrf_token }}";
+    // Open the public calendar route on first paint.
+    if (!location.hash || location.hash === "#/") {
+        location.hash = "#/church-calendar";
+    }
+</script>
+<script type="module" src="{{ spa_js }}"></script>
+{% endblock %}

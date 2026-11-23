@@ -1,0 +1,231 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-11-23 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "gpoa",
+  "department",
+  "description",
+  "active",
+  "on_calendar",
+  "section_rule",
+  "frequency",
+  "weekday",
+  "weeks_of_month",
+  "column_break_r1",
+  "start_month",
+  "months",
+  "section_time",
+  "all_day",
+  "start_time",
+  "end_time",
+  "column_break_r2",
+  "venue",
+  "service_relation",
+  "section_budget",
+  "budget_per_occurrence",
+  "occurrences",
+  "column_break_r3",
+  "annual_budget",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "gpoa",
+   "fieldtype": "Link",
+   "label": "GPOA",
+   "options": "GPOA",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department Name",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Data",
+   "label": "Description",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "active",
+   "fieldtype": "Check",
+   "label": "Active",
+   "default": "1"
+  },
+  {
+   "fieldname": "on_calendar",
+   "fieldtype": "Check",
+   "label": "Show on Calendar",
+   "default": "1",
+   "description": "Untick for budget-only lines such as rent, which need no calendar dates."
+  },
+  {
+   "fieldname": "section_rule",
+   "fieldtype": "Section Break",
+   "label": "When"
+  },
+  {
+   "fieldname": "frequency",
+   "fieldtype": "Select",
+   "label": "Frequency",
+   "reqd": 1,
+   "in_list_view": 1,
+   "default": "Monthly",
+   "options": "Weekly\nTwice a Month\nMonthly\nEvery 2 Months\nQuarterly\nThrice a Year\nYearly"
+  },
+  {
+   "fieldname": "weekday",
+   "fieldtype": "Select",
+   "label": "Day",
+   "options": "Sunday\nMonday\nTuesday\nWednesday\nThursday\nFriday\nSaturday",
+   "default": "Sunday"
+  },
+  {
+   "fieldname": "weeks_of_month",
+   "fieldtype": "Data",
+   "label": "Weeks of Month",
+   "description": "Which weeks: 1, 2, 3, 4, 5 or last. E.g. \"2,4\" or \"1,last\". Blank = every week (weekly) or 1st week."
+  },
+  {
+   "fieldname": "column_break_r1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "start_month",
+   "fieldtype": "Int",
+   "label": "Starting Month",
+   "default": "1",
+   "description": "1-12, for every-2-months, quarterly, thrice-a-year and yearly."
+  },
+  {
+   "fieldname": "months",
+   "fieldtype": "Data",
+   "label": "Specific Months",
+   "description": "Optional month numbers, e.g. \"3,7,11\". Overrides the frequency's months."
+  },
+  {
+   "fieldname": "section_time",
+   "fieldtype": "Section Break",
+   "label": "Time and Place"
+  },
+  {
+   "fieldname": "all_day",
+   "fieldtype": "Check",
+   "label": "All Day",
+   "default": "0"
+  },
+  {
+   "fieldname": "start_time",
+   "fieldtype": "Time",
+   "label": "Start Time"
+  },
+  {
+   "fieldname": "end_time",
+   "fieldtype": "Time",
+   "label": "End Time"
+  },
+  {
+   "fieldname": "column_break_r2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "venue",
+   "fieldtype": "Link",
+   "label": "Venue",
+   "options": "Church Venue"
+  },
+  {
+   "fieldname": "service_relation",
+   "fieldtype": "Select",
+   "label": "Worship Service",
+   "options": "Separate from worship service\nPart of worship service\nReplaces worship service",
+   "default": "Separate from worship service"
+  },
+  {
+   "fieldname": "section_budget",
+   "fieldtype": "Section Break",
+   "label": "Budget"
+  },
+  {
+   "fieldname": "budget_per_occurrence",
+   "fieldtype": "Currency",
+   "label": "Budget per Occurrence",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "occurrences",
+   "fieldtype": "Int",
+   "label": "Occurrences in the Year",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_r3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "annual_budget",
+   "fieldtype": "Currency",
+   "label": "Annual Budget",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "istable": 0,
+ "links": [],
+ "modified": "2026-11-23 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Church Management",
+ "name": "GPOA Regular Activity",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  },
+  {
+   "role": "Finance Team",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "hash",
+ "title_field": "description",
+ "show_title_field_in_link": 0
+}

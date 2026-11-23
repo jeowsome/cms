@@ -14,6 +14,7 @@ MANAGED_ROLES = (
 	"Music Team Member",
 	"Worship Leader",
 	"Donation Editor",
+	"Pastor",
 )
 # Subsets a non-admin operator may manage. Admin can manage all MANAGED_ROLES.
 LEADER_GRANTABLE = ("Music Team Member", "Worship Leader")

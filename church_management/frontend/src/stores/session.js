@@ -21,6 +21,9 @@ export const useSessionStore = defineStore("session", () => {
     has_finance_access: false,
     has_donation_access: false,
     is_donation_admin: false,
+    is_pastor: false,
+    has_planning_access: false,
+    is_planning_admin: false,
   });
 
   const isGuest = computed(() => !user.value || user.value === "Guest");
@@ -35,6 +38,9 @@ export const useSessionStore = defineStore("session", () => {
   const hasFinanceAccess = computed(() => flags.value.has_finance_access);
   const hasDonationAccess = computed(() => flags.value.has_donation_access);
   const isDonationAdmin = computed(() => flags.value.is_donation_admin);
+  const isPastor = computed(() => flags.value.is_pastor);
+  const hasPlanningAccess = computed(() => flags.value.has_planning_access);
+  const isPlanningAdmin = computed(() => flags.value.is_planning_admin);
   // True only when a user has *only* slim-member privileges and no leader role.
   const isMemberOnly = computed(
     () =>
@@ -59,6 +65,9 @@ export const useSessionStore = defineStore("session", () => {
       has_finance_access: !!r.has_finance_access,
       has_donation_access: !!r.has_donation_access,
       is_donation_admin: !!r.is_donation_admin,
+      is_pastor: !!r.is_pastor,
+      has_planning_access: !!r.has_planning_access,
+      is_planning_admin: !!r.is_planning_admin,
     };
   }
 
@@ -77,6 +86,9 @@ export const useSessionStore = defineStore("session", () => {
       has_finance_access: false,
       has_donation_access: false,
       is_donation_admin: false,
+      is_pastor: false,
+      has_planning_access: false,
+      is_planning_admin: false,
     };
   }
 
@@ -126,6 +138,7 @@ export const useSessionStore = defineStore("session", () => {
     if (flags.value.is_music_member) return "/music/profile";
     if (flags.value.is_finance) return "/disbursements";
     if (flags.value.has_donation_access) return "/donations";
+    if (flags.value.has_planning_access) return "/calendar";
     return "/login";
   }
 
@@ -133,6 +146,7 @@ export const useSessionStore = defineStore("session", () => {
     user, roles, churchMember, tempPasswordPending, ready, flags,
     isGuest, isAdmin, isFinance, isLeader, isWorshipLeader, isMusicMember,
     isMemberOnly, hasMusicAccess, hasFinanceAccess, hasDonationAccess, isDonationAdmin,
+    isPastor, hasPlanningAccess, isPlanningAdmin,
     refresh, login, logout, landingRoute,
   };
 });

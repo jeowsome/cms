@@ -1,0 +1,263 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-11-23 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "title",
+  "department",
+  "status",
+  "column_break_a1",
+  "gpoa",
+  "regular_activity",
+  "manually_edited",
+  "is_public",
+  "section_when",
+  "start_date",
+  "end_date",
+  "all_day",
+  "column_break_a2",
+  "start_time",
+  "end_time",
+  "venue",
+  "location_details",
+  "section_service",
+  "service_relation",
+  "pastor_approval",
+  "column_break_a3",
+  "approved_by",
+  "approved_on",
+  "approval_remarks",
+  "section_plan",
+  "budget",
+  "transport_needed",
+  "column_break_a4",
+  "headcount",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Title",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department Name",
+   "reqd": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Proposed\nConfirmed\nCancelled\nDone",
+   "default": "Proposed",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "column_break_a1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gpoa",
+   "fieldtype": "Link",
+   "label": "GPOA",
+   "options": "GPOA",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "regular_activity",
+   "fieldtype": "Link",
+   "label": "Regular Activity",
+   "options": "GPOA Regular Activity",
+   "read_only": 1,
+   "description": "Set when this date was generated from a regular activity."
+  },
+  {
+   "fieldname": "manually_edited",
+   "fieldtype": "Check",
+   "label": "Edited After Generating",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "is_public",
+   "fieldtype": "Check",
+   "label": "Show on Public Calendar",
+   "default": "1"
+  },
+  {
+   "fieldname": "section_when",
+   "fieldtype": "Section Break",
+   "label": "When and Where"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date"
+  },
+  {
+   "fieldname": "all_day",
+   "fieldtype": "Check",
+   "label": "All Day",
+   "default": "1"
+  },
+  {
+   "fieldname": "column_break_a2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "start_time",
+   "fieldtype": "Time",
+   "label": "Start Time",
+   "depends_on": "eval:!doc.all_day"
+  },
+  {
+   "fieldname": "end_time",
+   "fieldtype": "Time",
+   "label": "End Time",
+   "depends_on": "eval:!doc.all_day"
+  },
+  {
+   "fieldname": "venue",
+   "fieldtype": "Link",
+   "label": "Venue",
+   "options": "Church Venue"
+  },
+  {
+   "fieldname": "location_details",
+   "fieldtype": "Data",
+   "label": "Location Details"
+  },
+  {
+   "fieldname": "section_service",
+   "fieldtype": "Section Break",
+   "label": "Worship Service"
+  },
+  {
+   "fieldname": "service_relation",
+   "fieldtype": "Select",
+   "label": "Relation to Worship Service",
+   "options": "Separate from worship service\nPart of worship service\nReplaces worship service",
+   "default": "Separate from worship service"
+  },
+  {
+   "fieldname": "pastor_approval",
+   "fieldtype": "Select",
+   "label": "Pastor Approval",
+   "options": "\nRequested\nApproved\nDeclined",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_a3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approved_by",
+   "fieldtype": "Link",
+   "label": "Decided By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approved_on",
+   "fieldtype": "Datetime",
+   "label": "Decided On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approval_remarks",
+   "fieldtype": "Small Text",
+   "label": "Pastor's Remarks",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_plan",
+   "fieldtype": "Section Break",
+   "label": "Planning"
+  },
+  {
+   "fieldname": "budget",
+   "fieldtype": "Currency",
+   "label": "Budget",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "transport_needed",
+   "fieldtype": "Check",
+   "label": "Needs Transport"
+  },
+  {
+   "fieldname": "column_break_a4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "headcount",
+   "fieldtype": "Int",
+   "label": "Expected Headcount"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "istable": 0,
+ "links": [],
+ "modified": "2026-11-23 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Church Management",
+ "name": "Church Activity",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  },
+  {
+   "role": "Finance Team",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "start_date",
+ "sort_order": "ASC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "CA-.YYYY.-.#####",
+ "title_field": "title",
+ "show_title_field_in_link": 0,
+ "search_fields": "title,department,start_date"
+}

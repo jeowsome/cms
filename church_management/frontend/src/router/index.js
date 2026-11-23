@@ -9,6 +9,14 @@ const routes = [
   { path: "/forgot-password", name: "ForgotPassword", component: () => import("@/pages/ForgotPassword.vue"), meta: { public: true, chrome: false } },
   { path: "/register", name: "MusicRegister", component: () => import("@/pages/MusicRegister.vue"), meta: { public: true, chrome: false } },
 
+  // Church calendar: public members' page, and the signed-in view
+  // (planners also see proposed activities and conflicts).
+  { path: "/church-calendar", name: "PublicCalendar", component: () => import("@/pages/ChurchCalendar.vue"), props: { publicView: true }, meta: { public: true, chrome: false } },
+  { path: "/calendar", name: "ChurchCalendar", component: () => import("@/pages/ChurchCalendar.vue"), meta: { requiresAuth: true } },
+
+  // GPOA planning: Finance, pastor, Pasig Admin, and department users for their departments
+  { path: "/gpoa/:year?", name: "Gpoa", component: () => import("@/pages/Gpoa.vue"), meta: { requiresAuth: true, requiresPlanning: true } },
+
   // Collections (Finance Team or Admin)
   { path: "/collections", name: "CollectionList", component: () => import("@/pages/CollectionList.vue"), meta: { requiresAuth: true, requiresFinance: true } },
   { path: "/collections/:name", name: "CollectionForm", component: () => import("@/pages/CollectionForm.vue"), props: true, meta: { requiresAuth: true, requiresFinance: true } },
@@ -85,6 +93,7 @@ function accessRedirect(to, session) {
   const denied =
     (to.meta.requiresFinance && !session.hasFinanceAccess) ||
     (to.meta.requiresDonation && !session.hasDonationAccess) ||
+    (to.meta.requiresPlanning && !session.hasPlanningAccess) ||
     (to.meta.requiresMusic && !session.hasMusicAccess) ||
     (to.meta.requiresWorshipLeader && !session.isWorshipLeader) ||
     (to.meta.requiresLeader && !session.isLeader) ||

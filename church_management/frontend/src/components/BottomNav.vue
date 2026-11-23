@@ -48,6 +48,9 @@ const navItems = computed(() => {
   if (session.hasDonationAccess) {
     items.push({ label: "Donations", to: "/donations", icon: "gift" });
   }
+  if (session.hasPlanningAccess) {
+    items.push({ label: "Calendar", to: "/calendar", icon: "calendar" });
+  }
   if (session.hasMusicAccess) {
     items.push({ label: "Music", to: "/music/lineup", icon: "music" });
     if (session.isWorshipLeader) {

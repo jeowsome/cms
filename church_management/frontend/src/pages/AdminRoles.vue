@@ -23,11 +23,13 @@ const ROLE_META = {
   "Music Team Member": { color: "sky", label: "Music Member" },
   "Worship Leader": { color: "amber", label: "Worship Leader" },
   "Donation Editor": { color: "violet", label: "Donations" },
+  "Pastor": { color: "indigo", label: "Pastor" },
 };
 
 const COLOR_MAP = {
   emerald: { chip: "bg-emerald-100 text-emerald-700 ring-emerald-200", on: "bg-emerald-600 text-white", off: "bg-white text-ink-500 ring-ink-200 hover:bg-emerald-50" },
   rose:    { chip: "bg-rose-100 text-rose-700 ring-rose-200",          on: "bg-rose-600 text-white",    off: "bg-white text-ink-500 ring-ink-200 hover:bg-rose-50" },
+  indigo:  { chip: "bg-indigo-100 text-indigo-700 ring-indigo-200",    on: "bg-indigo-600 text-white",  off: "bg-white text-ink-500 ring-ink-200 hover:bg-indigo-50" },
   sky:     { chip: "bg-sky-100 text-sky-700 ring-sky-200",             on: "bg-sky-600 text-white",     off: "bg-white text-ink-500 ring-ink-200 hover:bg-sky-50" },
   amber:   { chip: "bg-amber-100 text-amber-700 ring-amber-200",       on: "bg-amber-600 text-white",   off: "bg-white text-ink-500 ring-ink-200 hover:bg-amber-50" },
   violet:  { chip: "bg-violet-100 text-violet-700 ring-violet-200",    on: "bg-violet-600 text-white",  off: "bg-white text-ink-500 ring-ink-200 hover:bg-violet-50" },

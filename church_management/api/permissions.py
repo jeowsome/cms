@@ -26,6 +26,7 @@ MUSIC_LEADER_ROLES = {"Music Team Leader"} | ADMIN_ROLES
 WORSHIP_LEADER_ROLES = {"Worship Leader"} | MUSIC_LEADER_ROLES
 MUSIC_MEMBER_ROLES = {"Music Team Member"} | WORSHIP_LEADER_ROLES
 MUSIC_ANY_ROLES = MUSIC_MEMBER_ROLES  # any music role grants music-area access
+PASTOR_ROLES = {"Pastor"} | ADMIN_ROLES
 
 
 def _roles(user=None):
@@ -172,6 +173,52 @@ def require_worship_leader():
 		frappe.throw("Only Worship Leader can perform this action.", frappe.PermissionError)
 
 
+def is_pastor(user=None):
+	return bool(_roles(user) & PASTOR_ROLES)
+
+
+def is_planning_admin(user=None):
+	"""Plans every department's GPOA entries: Finance Team, the pastor,
+	Pasig Admin (donation admins) and Administrator."""
+	return has_finance_access(user) or is_pastor(user) or is_donation_admin(user)
+
+
+def planning_departments(user=None):
+	"""Departments a user may plan for, or None for every department.
+	Department users are the ones on that department's Donation record."""
+	if is_planning_admin(user):
+		return None
+	if not has_donation_access(user):
+		return []
+	return donation_departments(user)
+
+
+def has_planning_access(user=None):
+	return is_planning_admin(user) or bool(planning_departments(user))
+
+
+def require_planning_access():
+	if not has_planning_access():
+		frappe.throw("GPOA planning access required.", frappe.PermissionError)
+
+
+def require_planning_admin():
+	if not is_planning_admin():
+		frappe.throw("Only Finance Team, the pastor or Pasig Admin can do this.", frappe.PermissionError)
+
+
+def require_department(department):
+	"""Department users may only change their own departments' entries."""
+	allowed = planning_departments()
+	if allowed is not None and department not in allowed:
+		frappe.throw(f"You can only plan for {', '.join(allowed) or 'your department'}.", frappe.PermissionError)
+
+
+def require_pastor():
+	if not is_pastor():
+		frappe.throw("Only the pastor can do this.", frappe.PermissionError)
+
+
 def role_flags(user=None):
 	"""Single dict of every role flag — used by whoami() so the SPA can route
 	without re-querying."""
@@ -187,6 +234,9 @@ def role_flags(user=None):
 			"has_finance_access": False,
 			"has_donation_access": False,
 			"is_donation_admin": False,
+			"is_pastor": False,
+			"has_planning_access": False,
+			"is_planning_admin": False,
 		}
 	roles = _roles(user)
 	return {
@@ -199,4 +249,7 @@ def role_flags(user=None):
 		"has_finance_access": bool(roles & FINANCE_ROLES),
 		"has_donation_access": has_donation_access(user),
 		"is_donation_admin": is_donation_admin(user),
+		"is_pastor": bool(roles & PASTOR_ROLES),
+		"has_planning_access": has_planning_access(user),
+		"is_planning_admin": is_planning_admin(user),
 	}
